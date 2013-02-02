@@ -6,7 +6,13 @@ Cempori Dev
 
 Hardware/Software Requirements  
 ============================
+- CentOS 6.3
 - LAMP 
+- Server IP: 198.101.201.124
+- User/password: magento/maxxxxxxx
+- Install directory: /opt/cempori
+
+
 
 
 Git and Checkout
