@@ -1,0 +1,388 @@
+From 6d8aa3f4ff84667e95098e517914d922926c9733 Mon Sep 17 00:00:00 2001
+From: altairus <mail@queldorei.com>
+Date: Tue, 13 Nov 2012 00:17:47 +0200
+Subject: [PATCH 18/25] add top compare block fix compare popup
+
+---
+ .../AjaxWishlist/controllers/IndexController.php   |    4 ++
+ .../frontend/default/shopper/layout/local.xml      |    2 +
+ .../template/catalog/product/compare/top.phtml     |   63 ++++++++++++++++++++
+ .../shopper/template/page/html/header.phtml        |    1 +
+ skin/frontend/default/shopper/css/animation.css    |   26 ++++----
+ skin/frontend/default/shopper/css/local.css        |   39 +++++++++++-
+ skin/frontend/default/shopper/css/mobile.css       |    2 +
+ skin/frontend/default/shopper/css/options.css.php  |    5 ++
+ skin/frontend/default/shopper/css/responsive.css   |   10 +++-
+ .../shopper/js/ajaxwishlist/ajaxwishlist.js        |    1 +
+ skin/frontend/default/shopper/js/script.js         |   14 +++++
+ 11 files changed, 152 insertions(+), 15 deletions(-)
+ create mode 100644 app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
+
+diff --git a/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php b/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
+index ac39c4e..3b4d35f 100644
+--- a/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
++++ b/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
+@@ -22,6 +22,10 @@ class Excellence_AjaxWishlist_IndexController extends Mage_Core_Controller_Front
+ 				$sidebar_block->setTemplate('catalog/product/compare/sidebar.phtml');
+ 				$sidebar = $sidebar_block->toHtml();
+ 				$response['sidebar'] = $sidebar;
++                $top_block = $this->getLayout()->getBlock('catalog.compare.top');
++                $top_block->setTemplate('catalog/product/compare/top.phtml');
++				$top = $top_block->toHtml();
++				$response['top'] = $top;
+ 			}
+ 		}
+         $this->getResponse()->setHeader('Content-type', 'application/json');
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index ba858a3..76daf0e 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -63,6 +63,8 @@
+                     <label>Shopping Cart Sidebar Extra Actions</label>
+                 </block>
+             </block>
++            <block type="catalog/product_compare_sidebar" name="catalog.compare.top" as="compareTop" template="catalog/product/compare/top.phtml"/>
++
+ 
+             <block type="shoppersettings/navigation" name="queldorei.topnav" as="topShopperMenu"
+ 			       template="queldorei/navigation/top.phtml"/>
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml b/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
+new file mode 100644
+index 0000000..71b4b6b
+--- /dev/null
++++ b/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
+@@ -0,0 +1,63 @@
++<?php
++/* @var $this Mage_Catalog_Block_Product_Compare_Sidebar */
++$_helper = $this->helper('catalog/product_compare');
++$deleteAllUrl = $_helper->getClearListUrl();
++
++$refererUrl = Mage::registry('referrer_url');
++if (empty($refererUrl)) {
++    $refererUrl = Mage::getBaseUrl();
++}
++$params = $this->getRequest()->getParams();
++if(!empty($params['isAjax'])){
++    $deleteAllUrl = $this->getUrl(
++        'catalog/product_compare/clear',
++        array(
++            Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => $this->helper('core/url')->getEncodedUrl($refererUrl)
++        )
++    );
++}
++?>
++<?php
++$_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
++?>
++<div class="compare-top-container">
++    <div class="compare-top">
++        <a class="summary" href="#" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"></a>
++    </div>
++    <div class="details">
++        <div class="details-border"></div>
++        <div class="compare-top-title"><a href="#" class="clearfix" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"><span class="icon"></span><?php echo $this->__('Compare') . ' - ' . $_helper->getItemCount() .' '. $this->__('item(s)'); ?></a></div>
++
++    <?php if($_helper->getItemCount() > 0): ?>
++        <ol id="compare-items-top">
++        <?php foreach($_items as $_index => $_item): ?>
++        <?php
++            $deleteUrl = $_helper->getRemoveUrl($_item);
++            if(!empty($params['isAjax'])){
++                $deleteUrl = $this->getUrl(
++                    'catalog/product_compare/remove',
++                    array(
++                        'product'=>$_item->getId(),
++                        Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => $this->helper('core/url')->getEncodedUrl($refererUrl)
++                    )
++                );
++            }
++        ?>
++            <li class="item">
++                <input type="hidden" class="compare-item-id" value="<?php echo $_item->getId() ?>" />
++                <a href="<?php echo $deleteUrl ?>" title="<?php echo $this->__('Remove This Item') ?>" class="btn-remove" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the compare products?') ?>');"><?php echo $this->__('Remove This Item') ?></a>
++                <p class="product-name"><a href="<?php echo $this->getProductUrl($_item) ?>"><?php echo $this->helper('catalog/output')->productAttribute($_item, $_item->getName(), 'name') ?></a></p>
++            </li>
++        <?php endforeach; ?>
++        </ol>
++        <div class="actions">
++            <button type="button" title="<?php echo $this->__('Compare') ?>" class="button" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"><span><span><?php echo $this->__('Compare') ?></span></span></button>
++            <div class="f-right">
++                <a href="<?php echo $deleteAllUrl; ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove all products from your comparison?') ?>');"><?php echo $this->__('Clear All') ?></a>
++            </div>
++        </div>
++    <?php else: ?>
++        <p class="empty"><?php echo $this->__('You have no items to compare.') ?></p>
++    <?php endif; ?>
++    </div>
++</div>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/page/html/header.phtml b/app/design/frontend/default/shopper/template/page/html/header.phtml
+index b3c2b0b..212dc02 100644
+--- a/app/design/frontend/default/shopper/template/page/html/header.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/header.phtml
+@@ -60,6 +60,7 @@
+                     ?>
+                     <!-- NAVIGATION EOF -->
+                     <?php echo $this->getChildHtml('cartTop') ?>
++                    <?php echo $this->getChildHtml('compareTop') ?>
+                     <?php echo $this->getChildHtml('topSearch'); ?>
+                     <div class="clear"></div>
+                     <?php echo $this->getChildHtml('topContainer'); ?>
+diff --git a/skin/frontend/default/shopper/css/animation.css b/skin/frontend/default/shopper/css/animation.css
+index 823ae14..e21ebd3 100644
+--- a/skin/frontend/default/shopper/css/animation.css
++++ b/skin/frontend/default/shopper/css/animation.css
+@@ -26,8 +26,7 @@ a:hover{
+ footer .footer-subscribe button.button span,
+ .quick-view,
+ nav .nav-top-title, .nav-container .nav-top-title,
+-nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span,
+-#queldoreiNav>li>a>span, #nav>li>a>span{
++nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span{
+ transition: all 400ms ease-in-out;
+ -webkit-transition: all 400ms ease-in-out;
+ -moz-transition: all 400ms ease-in-out;
+@@ -54,6 +53,7 @@ button.button span,
+ .slideshow-nav a,
+ .header-dropdown ul li a,
+ .cart-top-container .details .cart-top-title a span.icon,
++.compare-top-container .details .compare-top-title a span.icon,
+ .search-top-container .search-form .search-top-title span.icon,
+ .footer-info ul.social li a,
+ .footer-info ul.twitterList li span.tweet-icon,
+@@ -70,20 +70,22 @@ transition: background 200ms ease-in-out;
+ #nav>li>a,
+ #nav ul li a,
+ #queldoreiNav>li>a,
+-#queldoreiNav ul li a {
+-    transition: background 600ms ease-in-out;
+-    -webkit-transition: background 600ms ease-in-out;
+-    -moz-transition: background 600ms ease-in-out;
+-    -o-transition: background 600ms ease-in-out;
++#queldoreiNav ul li a,
++#queldoreiNav>li>a>span, #nav>li>a>span {
++    transition: all 600ms ease-in-out;
++    -webkit-transition: all 600ms ease-in-out;
++    -moz-transition: all 600ms ease-in-out;
++    -o-transition: all 600ms ease-in-out;
+ }
+ #nav>li>a:hover,
+ #nav ul li a:hover,
+ #queldoreiNav>li>a:hover,
+-#queldoreiNav ul li a:hover {
+-    transition: background 100ms ease-in-out;
+-    -webkit-transition: background 100ms ease-in-out;
+-    -moz-transition: background 100ms ease-in-out;
+-    -o-transition: background 100ms ease-in-out;
++#queldoreiNav ul li a:hover,
++#queldoreiNav>li>a:hover>span, #nav>li>a:hover>span{
++    transition: all 100ms ease-in-out;
++    -webkit-transition: all 100ms ease-in-out;
++    -moz-transition: all 100ms ease-in-out;
++    -o-transition: all 100ms ease-in-out;
+ }
+ 
+ .products-grid .add-to-links li a:hover span {
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index dc408e2..98069da 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -209,6 +209,7 @@ h1, h2, h3 { color:#000; color:rgba(0,0,0,0.75); letter-spacing:-0.1em; font-wei
+ 
+ .page-title { border:none; padding:0 0 58px;margin:0 15px; }
+ .col2-left-layout .page-title { margin-left:-285px; }
++.page-popup .page-title { padding:0 0 18px; }
+ .page-title h1, .page-title h2 {text-transform: uppercase; font-size:36px; font-family:"Myriad Pro",serif; font-weight:400; line-height:30px; letter-spacing:-1.5px }
+ .page-head-alt {margin:0 0 20px; padding:0 0 15px; border-bottom:1px solid #e6e6e6;}
+ .page-head-alt h3 {text-transform: uppercase; font-size: 24px; color:#4c4c4c;}
+@@ -399,6 +400,28 @@ header.fixed .cart-top-container {margin-top:13px;}
+ .search-autocomplete ul li:hover{background:#ddd;}
+ /********** < Search form */
+ 
++/* top compare block*/
++.compare-top-container {float:right; position:relative; margin:33px 0 0 4px;}
++.compare-top {display:block; overflow:hidden; background:#97d2c9 url('../images/icon_compare.png') 50% 50% no-repeat; width:38px; height:38px; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; cursor:pointer; }
++.compare-top:hover {background-color:#322c29; }
++.compare-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:1002; right:-40px; top:48px;
++    -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
++    -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px; }
++.compare-top-container .details-border{background:#97d2c9; height:4px; width:254px; padding:0 16px; margin:-16px 0 16px -16px; border-top-left-radius:2px; border-top-right-radius:2px; -moz-border-top-left-radius:2px; -moz-border-top-right-radius:2px; -webkit-border-top-left-radius:2px; -webkit-border-top-right-radius:2px; }
++.compare-top-container .details-border:before{content:""; position:absolute; border-color: transparent transparent #97d2c9 transparent; border-style: solid; border-width:5px; height:0; width:0; top:-9px; right:52px;}
++.compare-top-container .details .compare-top-title{font-family:'Myriad Pro', sans-serif; font-size:16px; line-height:38px; text-align:left; margin:0 0 10px 5px; display:none; }
++.compare-top-container .details .compare-top-title a{display:block; vertical-align:top;}
++.compare-top-container .details .compare-top-title a span.icon {display:block; float:left; background:#97d2c9 url('../images/icon_compare.png') 50% 50% no-repeat; width:38px; height:38px; margin:0 10px 0 0; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; }
++.compare-top-container .details .compare-top-title a:hover span.icon {background-color:#322c29; text-decoration:none; }
++.compare-top-container .details a:hover{text-decoration:none; color:#000; }
++.compare-top-container .details li.item {margin:0 0 9px 25px; padding:0; line-height:16px; background:none;}
++.compare-top-container .details .btn-remove {float:left; margin:1px 0 0 -25px; }
++.compare-top-container .details .actions {margin:10px 0 0 0; padding:10px 0 0; border-top:1px solid #e8e8e8; text-align:center }
++.compare-top-container .details .actions .f-right {float:none !important; line-height:25px; }
++.compare-top-container .details .actions a {float:none;}
++.compare-top-container .details .actions a:before {content:''; position:absolute; width:15px; height:15px; margin:5px 0 0 -20px; background-color:#393431; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; background-image:url(../images/btn_remove.png);}
++
++
+ /* FOOTER ================================================================================ */
+ .footer-container {background:none #322c29; color:#666666; margin:0; padding:0; position:relative;}
+ 
+@@ -465,7 +488,7 @@ nav .nav-top-title:hover div.icon span, .nav-container .nav-top-title:hover div.
+ nav .nav-top-title.active div.icon span, .nav-container .nav-top-title.active div.icon span {background:#fff; }
+ 
+ nav.queldorei {width:100%; margin:0 auto; position:relative; z-index:10010; }
+-#queldoreiNav { width:780px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
++#queldoreiNav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
+ 
+ /* All Levels */
+ #queldoreiNav li { text-align:left; position: static; }
+@@ -534,7 +557,7 @@ nav.queldorei {width:100%; margin:0 auto; position:relative; z-index:10010; }
+ #queldoreiNav li.custom-block div.sub-wrapper>ul>li, #queldoreiNav li.custom-block div.sub-wrapper ul li { width:auto; float:none; background:transparent url("../images/arrow_item.gif") no-repeat 10px 8px !important;; line-height: 22px; padding: 0 10px 0 20px;}
+ 
+ 
+-#nav { width:780px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
++#nav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
+ 
+ /* All Levels */
+ #nav li { text-align:left; position: static; }
+@@ -977,6 +1000,18 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .data-table .btn-continue {float:left;}
+ .data-table button.button span {font-size: 12px; text-transform: lowercase;}
+ 
++/* compare popup table */
++#product_comparison {margin:0 0 20px}
++#product_comparison th{ background:#fafafa; -webkit-box-shadow:inset -6px 0px 6px -6px rgba(0, 0, 0, 0.15);  -moz-box-shadow:inset -6px 0 6px -6px rgba(0, 0, 0, 0.15); box-shadow:inset -6px 0 6px -6px rgba(0, 0, 0, 0.15);}
++#product_comparison thead, #product_comparison tfoot{ background:#fff; }
++#product_comparison thead td{ border:1px solid #e9e9e9; border-top:none; border-left:none;}
++#product_comparison thead tr:last-child td{ border-bottom:none;}
++#product_comparison .btn-remove { float:right;}
++#product_comparison a.product-image { margin:0 0 15px;}
++#product_comparison .price-box, #product_comparison .product-name, #product_comparison p, #product_comparison ul.add-to-links li { text-align:center;}
++#product_comparison .ratings {text-align:center; }
++#product_comparison .ratings .rating-box {float:none; margin:0 auto;}
++
+ .item-options {margin-top:10px;}
+ .item-options dt{float:left; clear:left; font-style: normal; font-weight:300; }
+ .item-options dt:after{content:' - '; }
+diff --git a/skin/frontend/default/shopper/css/mobile.css b/skin/frontend/default/shopper/css/mobile.css
+index 6fcbf8a..e82698d 100644
+--- a/skin/frontend/default/shopper/css/mobile.css
++++ b/skin/frontend/default/shopper/css/mobile.css
+@@ -11,6 +11,7 @@ button.btn-proceed-checkout span span {background-size:44px 20px;  }
+ .notice-msg { background-size:26px 26px}
+ .breadcrumbs span { background-size:3px 5px}
+ .cart-top > a, .cart-top-container .details .cart-top-title a span.icon { background-size:24px 20px}
++.compare-top, .compare-top-container .details .compare-top-title a span.icon { background-size:13px 16px}
+ .products-grid .hover .button-container button.button span span em { background-size:24px 19px}
+ .product-view .add-to-cart button.button span span { background-size:41px 20px}
+ .product-view .add-to-links li span.icon { background-size:17px 16px}
+@@ -65,6 +66,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
+     .notice-msg { background-image:url(../images/i_msg-notice@2x.png);}
+     .breadcrumbs span { background-image:url(../images/icon_breadcrumb@2x.png);}
+     .cart-top > a, .cart-top-container .details .cart-top-title a span.icon { background-image:url(../images/icon_cart@2x.png);}
++    .compare-top, .compare-top-container .details .compare-top-title a span.icon { background-image:url(../images/icon_compare@2x.png);}
+     .products-grid .hover .button-container button.button span span em { background-image:url(../images/icon_cart_listing_mask@2x.png);}
+     .product-view .add-to-cart button.button span span { background-image:url(../images/icon_cart_product@2x.png);}
+     .product-view .add-to-links li span.icon {background-image:url(../images/icon_wishlist@2x.png);}
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index c9899af..56afc98 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -35,6 +35,7 @@ header("Content-type: text/css; charset: UTF-8");
+ .std h1, .std h2, .std h3, .std h4,
+ .page-title h1, .page-title h2,
+ .cart-top-container .details .cart-top-title,
++.compare-top-container .details .compare-top-title,
+ .search-top-container .search-form .search-top-title,
+ .footer-info h4,
+ nav .nav-top-title, .nav-container .nav-top-title,
+@@ -84,6 +85,9 @@ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:
+ .cart-top > a,
+ .cart-top-container .details-border,
+ .cart-top-container .details .cart-top-title a span.icon,
++.compare-top,
++.compare-top-container .details-border,
++.compare-top-container .details .compare-top-title a span.icon,
+ .search-top,
+ .search-form-border,
+ .search-top-container .search-form .search-top-title span.icon,
+@@ -131,6 +135,7 @@ nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span
+ {color:<?php echo $config['appearance']['color']; ?>}
+ 
+ .cart-top-container .details-border:before{border-color: transparent transparent <?php echo $config['appearance']['color']; ?> transparent;}
++.compare-top-container .details-border:before{border-color: transparent transparent <?php echo $config['appearance']['color']; ?> transparent;}
+ .search-form-border:before{border-color: transparent transparent <?php echo $config['appearance']['color']; ?> transparent;}
+ #queldoreiNav>li>a:hover>span,
+ #queldoreiNav>li.over>a>span,
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index a68be08..c7081b1 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -26,7 +26,7 @@
+     .space_10 { margin-left:816px; }
+     .space_11 { margin-left:896px; }
+ 
+-    #queldoreiNav, #nav { width:540px; }
++    #queldoreiNav, #nav { width:510px; }
+     .homepage-banners a .content{margin:18px;}
+     .col1-layout .products-grid { width:900px; margin:0;}
+     .home-right {margin-right:30px;}
+@@ -156,6 +156,10 @@
+     .cart-top-container .cart-top, .cart-top-container .details-border, .cart-top-container .cart-promotion, .cart-top-container .details p, .cart-top-container .details .mini-products-list, .cart-top-container .details .subtotal-wrapper, .cart-top-container .details .buttons {display:none; }
+     .cart-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+     .cart-top-container .details .cart-top-title{display:block; }
++    .compare-top-container {margin:0; float:none; }
++    .compare-top-container .compare-top, .compare-top-container .details ol, .compare-top-container .details .actions, .compare-top-container .details-border, .compare-top-container .details p, .compare-top-container .details .buttons {display:none; }
++    .compare-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .compare-top-container .details .compare-top-title{display:block; }
+     .search-top-container {margin:0 0 10px; padding:0; float:none; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+     .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+@@ -369,6 +373,10 @@
+     .cart-top-container .cart-top, .cart-top-container .details-border, .cart-top-container .cart-promotion, .cart-top-container .details p, .cart-top-container .details .mini-products-list, .cart-top-container .details .subtotal-wrapper, .cart-top-container .details .buttons {display:none; }
+     .cart-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+     .cart-top-container .details .cart-top-title{display:block; }
++    .compare-top-container {margin:0; float:none; }
++    .compare-top-container .compare-top, .compare-top-container .details ol, .compare-top-container .details .actions, .compare-top-container .details-border, .compare-top-container .details p, .compare-top-container .details .buttons {display:none; }
++    .compare-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .compare-top-container .details .compare-top-title{display:block; }
+     .search-top-container {margin:0; padding:0; float:none; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+     .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+diff --git a/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js b/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
+index 3489cbe..bbbf2f6 100644
+--- a/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
++++ b/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
+@@ -39,6 +39,7 @@ jQuery(function ($) {
+                 showMessage(data.message);
+                 if (data.status != 'ERROR' && $('.block-compare').length) {
+                     $('.block-compare').replaceWith(data.sidebar);
++                    $('.compare-top-container').replaceWith(data.top);
+                     $('.col-left').masonry('reload');
+                 }
+             }
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index ed63ad0..e85444a 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -188,6 +188,20 @@ jQuery(function($){
+ 	};
+ 	$("div.cart-top-container").hoverIntent( config );
+ 
++	//compare dropdown
++	var config = {
++	     over: function(){
++            if (mobile) return;
++            $('.compare-top-container .details').animate({opacity:1, height:'toggle'}, 200);
++        },
++	     timeout: 200, // number = milliseconds delay before onMouseOut
++	     out: function(){
++            if (mobile) return;
++            $('.compare-top-container .details').animate({opacity:0, height:'toggle'}, 200);
++         }
++	};
++	$("div.compare-top-container").hoverIntent( config );
++
+ 	//search dropdown
+ 	var config = {
+ 	     over: function(){
+-- 
+1.7.10.msysgit.1
+

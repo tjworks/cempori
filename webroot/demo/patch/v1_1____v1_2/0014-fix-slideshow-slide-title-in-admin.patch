@@ -1,0 +1,25 @@
+From 373465cc57df780c6587fb7f834231ce13d58ecb Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Wed, 10 Oct 2012 19:15:04 +0300
+Subject: [PATCH 14/24] fix slideshow slide title in admin
+
+---
+ .../Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit.php       |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit.php
+index 7388c64..6226e60 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit.php
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit.php
+@@ -34,7 +34,7 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow_Edit extends M
+     public function getHeaderText()
+     {
+         if( Mage::registry('shopperslideshow_data') && Mage::registry('shopperslideshow_data')->getId() ) {
+-            return Mage::helper('shopperslideshow')->__("Edit Slide '%s'", $this->escapeHtml(Mage::registry('shopperslideshow_data')->getTitle()));
++            return Mage::helper('shopperslideshow')->__("Edit Slide");
+         } else {
+             return Mage::helper('shopperslideshow')->__('Add Slide');
+         }
+-- 
+1.7.10.msysgit.1
+

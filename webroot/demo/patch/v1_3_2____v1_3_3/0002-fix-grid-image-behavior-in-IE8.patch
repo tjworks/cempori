@@ -1,0 +1,61 @@
+From 1ca346e7df948002b3db425e54e1630f6227dc55 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 15 Nov 2012 19:05:26 +0200
+Subject: [PATCH 02/17] fix grid image behavior in IE8
+
+---
+ skin/frontend/default/shopper/css/local.css |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 6c270dd..8d5170e 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -428,7 +428,7 @@ header.fixed .search-top-container, header.fixed .cart-top-container, header.fix
+ .footer-container {background:none #322c29; color:#666666; margin:0; padding:0; position:relative;}
+ 
+ .footer-banners {background:#f7f7f6; padding:25px 0;}
+-.footer-banners img{max-width: 100%; height: auto;}
++.footer-banners img{max-width: 100%; height: auto; width:auto\9; /* ie8 */}
+ .footer-banners a:hover img{opacity:0.6;}
+ 
+ .footer-info {background:#f4f4f2; border-top:1px solid #ececea; padding:60px 0;}
+@@ -697,7 +697,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+     -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+     -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+     box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);}
+-.homepage-banners a img{position:relative; z-index:1; max-width:100%; height:auto;}
++.homepage-banners a img{position:relative; z-index:1; max-width:100%; height:auto; width:auto\9; /* ie8 */}
+ .homepage-banners a:hover img{opacity:0.6;}
+ 
+ .homepage-banners a .content{position:absolute; z-index:2; margin:38px; color:#4e4d4b; text-align:center; }
+@@ -797,7 +797,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ 
+ .category-title { display: none; }
+ .category-image { width:100%; overflow:hidden; margin:0 0 30px; text-align:center; }
+-.category-image img {max-width:100%;}
++.category-image img {max-width:100%; width:auto\9; /* ie8 */}
+ .category-description { border:1px solid; border-color:#e3e3e3; border-color:rgba(227,227,227,0.61); margin:0 0 20px 0; padding:20px; line-height:18px; text-align:center; color:#808080; }
+ .category-description h1 {display:block; margin:0; font-size:24px; font-family:"Myriad Pro", sans-serif; font-style:normal; color:#000; color:rgba(0,0,0,0.67); text-transform:uppercase;}
+ .category-description p {margin:22px 0 0;}
+@@ -820,7 +820,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-grid .button-container button.button span {width:35px; height:35px; border-radius:100%; -webkit-border-radius:100%; -moz-border-radius:100%; text-indent:-9999px;}
+ .products-grid .button-container button.button span span {padding:0; background:url('../images/icon_cart_listing.png') 50% 50% no-repeat; }
+ .products-grid .product-image {display: block; margin:0 0 12px; position:relative; z-index:1; }
+-.products-grid .product-image img {position:relative; z-index:0; max-width:100%; height:auto; }
++.products-grid .product-image img {position:relative; z-index:0; max-width:100%; height:auto; width:auto\9; /* ie8 */ }
+ .products-grid .product-name {color:#3c3c3c; font-size:16px; font-weight:300; display:block; margin:4px; line-height:120%; }
+ .products-grid .product-name:hover {color:#000; text-decoration:none;}
+ .products-grid .price-box {margin:0px 0 5px 4px; line-height:14px; letter-spacing:-1.2px }
+@@ -1702,7 +1702,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ *********************************/
+ .flexslider {margin: 0; padding: 0; }
+ .flexslider .slides > li {display: none; -webkit-backface-visibility: hidden;} /* Hide the slides before the JS is loaded. Avoids image jumping */
+-.flexslider .slides img {max-width: 100%; display: block;}
++.flexslider .slides img {max-width: 100%; display: block; width:auto\9; /* ie8 */}
+ .flexslider .slides .small_image{display:none; width:100%; height:auto;}
+ .flex-pauseplay span {text-transform: capitalize;}
+ 
+-- 
+1.7.10.msysgit.1
+

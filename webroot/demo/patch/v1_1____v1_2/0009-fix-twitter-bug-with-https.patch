@@ -1,0 +1,25 @@
+From 4b2e424948f80e332144756c7baac0ffc19f8163 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 17:31:25 +0300
+Subject: [PATCH 09/24] fix twitter bug with https
+
+---
+ skin/frontend/default/shopper/js/script.js |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index f3deff1..bc5bcdd 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -602,7 +602,7 @@ function getTweets(el, utils){
+         el.twitterList.find("li").eq(0).html("You need to specify a username");
+     }else{
+         jQuery.ajax({
+-            url			: "http://twitter.com/statuses/user_timeline/"+utils.username+".json?callback=?",
++            url			: "https://twitter.com/statuses/user_timeline/"+utils.username+".json?callback=?",
+             dataType	: "json",
+             timeout		: 15000,
+             success		: function(data){
+-- 
+1.7.10.msysgit.1
+

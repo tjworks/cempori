@@ -1,0 +1,36 @@
+From 799e9979852677919275f6b3733ce7b01588c4bc Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Sat, 5 Jan 2013 02:04:38 +0200
+Subject: [PATCH 29/34] fix responsive bugs
+
+---
+ skin/frontend/default/shopper/css/responsive.css |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 53dac62..0ba6c80 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -330,7 +330,7 @@
+     .opc {width:600px;}
+     .opc .td-label {display:block; float:left; }
+     #checkout-step-login .block-checkout-register, #checkout-step-login .block-checkout-login { width: 378px;  margin: 20px auto 0 !important; float: none;}
+-
++    .buttons-set .back-link {margin:10px 0;}
+ }
+ 
+ /***** iPhone (portrait) *****/
+@@ -534,6 +534,10 @@
+     #checkout-step-login .block-checkout-register, #checkout-step-login .block-checkout-login { width:228px;  margin: 20px auto 0 !important; float: none;}
+     #checkout-step-login input.input-text {width:218px;}
+     .form-list li.wide select {width:250px}
++
++    .col2-set .col-1, .col2-set .col-2 {float:none; width:100%;}
++    .col2-set address {margin:5px 0;}
++    .buttons-set .back-link {margin:10px 0;}
+ }
+ 
+ /***** iPhone (landscape) *****/
+-- 
+1.7.9.msysgit.0
+

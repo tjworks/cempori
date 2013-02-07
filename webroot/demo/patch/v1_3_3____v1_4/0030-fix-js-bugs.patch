@@ -1,0 +1,25 @@
+From a136288be405370ae81c3eb177cbf21b0a4004b7 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Sat, 5 Jan 2013 02:06:24 +0200
+Subject: [PATCH 30/34] fix js  bugs
+
+---
+ skin/frontend/default/shopper/js/script.js |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 2f3ce9f..5173265 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -590,7 +590,7 @@ jQuery(function($){
+         }
+     }
+ 
+-    if (CONFIG_REVOLUTION !== undefined) {
++    if (typeof CONFIG_REVOLUTION !== 'undefined') {
+         if ($.fn.cssOriginal!=undefined)   // CHECK IF fn.css already extended
+             $.fn.css = $.fn.cssOriginal;
+         $('.fullwidthbanner').revolution(CONFIG_REVOLUTION);
+-- 
+1.7.9.msysgit.0
+

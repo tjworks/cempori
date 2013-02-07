@@ -1,0 +1,39 @@
+From ed39d791c47aea7f1121c5f693d074ac723e3028 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 17:23:17 +0300
+Subject: [PATCH 07/24] add number of items in cart in header
+
+---
+ .../frontend/default/shopper/template/checkout/cart/cart-top.phtml   |    2 +-
+ skin/frontend/default/shopper/css/local.css                          |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+index bede818..87222f2 100644
+--- a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
++++ b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+@@ -35,7 +35,7 @@
+ <!-- cart BOF -->
+ <div class="cart-top-container">
+     <div class="cart-top">
+-        <a class="summary" href="<?php echo $this->getUrl('checkout/cart') ?>"><span><?php echo $this->__('BAG'); ?></span></a>
++        <a class="summary" href="<?php echo $this->getUrl('checkout/cart') ?>"><span><?php echo $this->__('BAG').' ('.$_cartQty.')'; ?></span></a>
+     </div>
+     <div class="details">
+         <div class="details-border"></div>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index d181d78..e56225f 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -331,7 +331,7 @@ header.fixed .cart-top-container {margin-top:13px;}
+ .cart-top {}
+ .cart-top > a {display:block; background:#97d2c9 url('../images/icon_cart.png') 50% 50% no-repeat; width:38px; height:38px; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; }
+ .cart-top > a:hover {background-color:#322c29; text-decoration:none; }
+-.cart-top > a span {padding:0 0 0 48px; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:38px; text-transform:uppercase;}
++.cart-top > a span {padding:0 0 0 48px; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:38px; text-transform:uppercase; white-space:nowrap;}
+ 
+ .cart-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:1002; right:-40px; top:48px;
+     -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+-- 
+1.7.10.msysgit.1
+

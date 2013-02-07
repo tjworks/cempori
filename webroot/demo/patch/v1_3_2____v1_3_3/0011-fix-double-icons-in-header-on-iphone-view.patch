@@ -1,0 +1,41 @@
+From 064fb5f9f9721825b6d5b8174020a4d2b5453891 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 23 Nov 2012 17:08:13 +0200
+Subject: [PATCH 11/17] fix double icons in header on iphone view
+
+---
+ .../default/shopper/template/catalog/product/compare/top.phtml       |    2 ++
+ .../frontend/default/shopper/template/checkout/cart/cart-top.phtml   |    2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml b/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
+index ffda467..117ae98 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/compare/top.phtml
+@@ -20,7 +20,9 @@ if(!empty($params['isAjax'])){
+ <?php
+ $_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
+ ?>
++<?php if(empty($params['isAjax'])) : ?>
+ <div class="compare-top-title"><a href="#" class="clearfix" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"><span class="icon"></span><?php echo $this->__('Compare'); ?></a></div>
++<?php endif; ?>
+ <div class="compare-top-container">
+     <div class="compare-top">
+         <a class="summary" href="#" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"></a>
+diff --git a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+index 95bba4e..78533b7 100644
+--- a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
++++ b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+@@ -33,7 +33,9 @@
+ ?>
+ <?php $_cartQty = $this->getSummaryCount(); if ( is_null($_cartQty) ) $_cartQty = 0; ?>
+ <!-- cart BOF -->
++<?php $params = $this->getRequest()->getParams(); if(empty($params['isAjax'])) : ?>
+ <div class="cart-top-title"><a href="<?php echo $this->getUrl('checkout/cart') ?>" class="clearfix"><span class="icon"></span><?php echo $this->__('Shopping cart'); ?></a></div>
++<?php endif; ?>
+ <div class="cart-top-container">
+     <div class="cart-top">
+         <a class="summary" href="<?php echo $this->getUrl('checkout/cart') ?>"><span><?php echo $this->__('BAG').' ('.$_cartQty.')'; ?></span></a>
+-- 
+1.7.10.msysgit.1
+

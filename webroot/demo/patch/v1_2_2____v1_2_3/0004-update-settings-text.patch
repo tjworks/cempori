@@ -1,0 +1,34 @@
+From 3d0fe67525ec7a42b40629c58643b8c99478ce51 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 26 Oct 2012 23:47:23 +0300
+Subject: [PATCH 04/11] update settings text
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 3656cbd..51c68cc 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -756,7 +756,7 @@
+                             <show_in_store>1</show_in_store>
+                         </wishlist>
+                         <cart translate="label">
+-                            <label>Enable Ajax cart</label>
++                            <label>Enable Ajax cart / Quick View</label>
+                             <frontend_type>select</frontend_type>
+                             <source_model>adminhtml/system_config_source_yesno</source_model>
+                             <sort_order>80</sort_order>
+@@ -765,7 +765,7 @@
+                             <show_in_store>1</show_in_store>
+                         </cart>
+                         <quick_view translate="label">
+-                            <label>Enable Quick view button</label>
++                            <label>Show Quick view button</label>
+                             <comment>Quick view popup will be shown for products with required options regardless of this option</comment>
+                             <frontend_type>select</frontend_type>
+                             <source_model>adminhtml/system_config_source_yesno</source_model>
+-- 
+1.7.10.msysgit.1
+

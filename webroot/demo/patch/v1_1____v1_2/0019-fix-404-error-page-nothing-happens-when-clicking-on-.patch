@@ -1,0 +1,28 @@
+From 4310b68fa6cb382a7d94b638ee595b6a911de163 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Thu, 11 Oct 2012 16:32:55 +0300
+Subject: [PATCH 19/24] fix 404 error page (nothing happens when clicking on
+ buttons)
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/cms.xml |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+index 95003af..cc50937 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+@@ -67,8 +67,8 @@
+                     <dl> <dt>What can you do?</dt> <dd>Have no fear, help is near! There are many ways you can get back on track with Magento Demo Store.</dd> <dd>
+                     <ul class="buttons">
+                     <li><button class="button" onclick="history.go(-1);"><span><span>Go back</span></span></button></li>
+-                    <li><button class="button" onclick="{{store url=""}}"><span><span>Store Home</span></span></button></li>
+-                    <li><button class="button" onclick="{{store url="customer/account"}}"><span><span>My Account</span></span></button></li>
++                    <li><button class="button" onclick="window.location='{{store url=""}}'"><span><span>Store Home</span></span></button></li>
++                    <li><button class="button" onclick="window.location='{{store url="customer/account"}}'"><span><span>My Account</span></span></button></li>
+                     </ul>
+                     </dd></dl>]]></content>
+                 <is_active>1</is_active>
+-- 
+1.7.10.msysgit.1
+

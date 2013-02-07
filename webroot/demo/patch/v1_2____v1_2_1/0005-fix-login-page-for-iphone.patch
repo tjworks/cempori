@@ -1,0 +1,32 @@
+From 4e88863c2692d50df7f9f4f53cae8c1f12744d1c Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Wed, 17 Oct 2012 15:53:50 +0300
+Subject: [PATCH 5/8] fix login page for iphone
+
+---
+ skin/frontend/default/shopper/css/mobile.css |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/skin/frontend/default/shopper/css/mobile.css b/skin/frontend/default/shopper/css/mobile.css
+index 7400194..1fe4e5a 100644
+--- a/skin/frontend/default/shopper/css/mobile.css
++++ b/skin/frontend/default/shopper/css/mobile.css
+@@ -113,4 +113,14 @@ only screen and (-moz-min-device-pixel-ratio: 1.5) and (max-width: 959px),
+ only screen and (-o-min-device-pixel-ratio: 3/2) and (max-width: 959px),
+ only screen and (min-device-pixel-ratio: 1.5) and (max-width: 959px){
+     .toolbar-switch .toolbar-title {background-image:none}
++
++    .block-slider .slides > li,
++    .block-viewed .block-content li,
++    .block-tags .block-content li,
++    .block-slider .flex-control-nav li,
++    .block-poll .block-content li{background:none;}
++
++    .footer-info .information ul li:before,
++    #checkout-step-login .block-checkout-register ul.ul li:before,
++    .block-progress dt:before {top:-2px}
+ }
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

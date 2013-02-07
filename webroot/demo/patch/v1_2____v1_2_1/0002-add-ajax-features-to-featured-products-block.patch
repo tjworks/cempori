@@ -1,0 +1,553 @@
+From d48d2a0fe3f017f6961b473fcf82c54bd79b4f4d Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Wed, 17 Oct 2012 15:34:27 +0300
+Subject: [PATCH 2/8] add ajax features to featured products block
+
+---
+ .../frontend/default/shopper/layout/ajax.xml       |   11 +
+ .../default/shopper/layout/ajaxwishlist.xml        |    7 +
+ .../catalog/product/featured_products.phtml        |   34 +-
+ .../shopper/js/fancybox/jquery.fancybox-1.3.4.css  |  359 +-------------------
+ .../default/shopper/js/fancybox/loader.gif         |  Bin 0 -> 3208 bytes
+ 5 files changed, 49 insertions(+), 362 deletions(-)
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/loader.gif
+
+diff --git a/app/design/frontend/default/shopper/layout/ajax.xml b/app/design/frontend/default/shopper/layout/ajax.xml
+index 39d5c77..bb33969 100644
+--- a/app/design/frontend/default/shopper/layout/ajax.xml
++++ b/app/design/frontend/default/shopper/layout/ajax.xml
+@@ -1,6 +1,17 @@
+ <?xml version="1.0"?>
+ <layout version="0.1.0">
+ 
++    <cms_page>
++    	<reference name="head">
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.easing-1.3.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.mousewheel-3.0.4.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
++            <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
++        </reference>
++    </cms_page>
++
+     <catalog_category_default>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+diff --git a/app/design/frontend/default/shopper/layout/ajaxwishlist.xml b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+index 1ed3027..edf4899 100644
+--- a/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
++++ b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+@@ -1,6 +1,13 @@
+ <?xml version="1.0"?>
+ <layout version="0.1.0">
+ 
++    <cms_page>
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </cms_page>
++
+     <catalog_product_view>
+         <reference name="head">
+             <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml b/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
+index a7e6556..12bb3a3 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
+@@ -28,7 +28,15 @@ $imgY = $helper->calculateHeight($imgX);
+             </a>
+             <div class="button-container">
+                 <?php if($_product->isSaleable()): ?>
+-                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++                    <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php } else { ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php }  ?>
++                    <?php else: ?>
++                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                    <?php endif; ?>
+                 <?php else: ?>
+                 <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                 <?php endif; ?>
+@@ -39,6 +47,9 @@ $imgY = $helper->calculateHeight($imgX);
+             </div>
+ 
+             <div class="hover">
++            <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : //quick view button ?>
++            <a href='<?php echo $this->getUrl('ajax/index/options',array('product_id'=>$_product->getId()));?>' data-fancybox-group="gallery" class='fancybox quick-view' id='fancybox<?php echo $_product->getId()?>'><?php echo $this->__('quick view')?></a>
++            <?php endif; ?>
+             <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">
+                 <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                 <?php
+@@ -55,20 +66,35 @@ $imgY = $helper->calculateHeight($imgX);
+             <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
+             <a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>"><?php echo $_helper->productAttribute($_product, $_product->getName() , 'name'); ?></a>
+             <?php if($_product->getRatingSummary()){ echo $this->getReviewsSummaryHtml($_product); } ?>
++
+             <div class="button-container">
+                 <?php if($_product->isSaleable()): ?>
+-                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++
++                    <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php } else { ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php }  ?>
++
++                    <?php else: ?>
++                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                    <?php endif; ?>
++
+                 <?php else: ?>
+                 <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                 <?php endif; ?>
+             </div>
+ 
++            <span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+             <ul class="add-to-links">
+                 <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-                <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
++                <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
+                 <?php endif; ?>
+                 <?php if ($_compareUrl=$this->getAddToCompareUrl($_product)) : ?>
+-                <li><a href="<?php echo $_compareUrl ?>" class="link-compare"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
++                <li><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
+                 <?php endif; ?>
+             </ul>
+ 
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+index c42d7b0..fd42357 100644
+--- a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+@@ -1,358 +1 @@
+-/*
+- * FancyBox - jQuery Plugin
+- * Simple and fancy lightbox alternative
+- *
+- * Examples and documentation at: http://fancybox.net
+- * 
+- * Copyright (c) 2008 - 2010 Janis Skarnelis
+- * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated.
+- * 
+- * Version: 1.3.4 (11/11/2010)
+- * Requires: jQuery v1.3+
+- *
+- * Dual licensed under the MIT and GPL licenses:
+- *   http://www.opensource.org/licenses/mit-license.php
+- *   http://www.gnu.org/licenses/gpl.html
+- */
+-#fancybox-loading {
+-	position: fixed;
+-	top: 50%;
+-	left: 50%;
+-	width: 40px;
+-	height: 40px;
+-	margin-top: -20px;
+-	margin-left: -20px;
+-	cursor: pointer;
+-	overflow: hidden;
+-	z-index: 11040;
+-	display: none;
+-}
+-
+-#fancybox-loading div {
+-	position: absolute;
+-	top: 0;
+-	left: 0;
+-	width: 40px;
+-	height: 480px;
+-	background-image: url('fancybox.png');
+-}
+-
+-#fancybox-overlay {
+-	position: absolute;
+-	top: 0;
+-	left: 0;
+-	width: 100%;
+-	z-index: 11000;
+-	display: none;
+-}
+-
+-#fancybox-tmp {
+-	padding: 0;
+-	margin: 0;
+-	border: 0;
+-	overflow: auto;
+-	display: none;
+-}
+-
+-#fancybox-wrap {
+-	position: absolute;
+-	top: 0;
+-	left: 0;
+-	padding: 20px;
+-	z-index: 11010;
+-	outline: none;
+-	display: none;
+-}
+-
+-#fancybox-outer {
+-	position: relative;
+-	width: 100%;
+-	height: 100%;
+-	background: #fff;
+-}
+-
+-#fancybox-content {
+-	width: 0;
+-	height: 0;
+-	padding: 0;
+-	outline: none;
+-	position: relative;
+-	overflow: hidden;
+-	z-index: 11020;
+-	border: 0px solid #fff;
+-}
+-
+-#fancybox-hide-sel-frame {
+-	position: absolute;
+-	top: 0;
+-	left: 0;
+-	width: 100%;
+-	height: 100%;
+-	background: transparent;
+-	z-index: 11010;
+-}
+-
+-#fancybox-close {
+-	position: absolute;
+-	top: -15px;
+-	right: -15px;
+-	width: 30px;
+-	height: 30px;
+-	background: transparent url('fancybox.png') -40px 0px;
+-	cursor: pointer;
+-	z-index: 11030;
+-	display: none;
+-}
+-
+-#fancybox-error {
+-	color: #444;
+-	font: normal 12px/20px Arial;
+-	padding: 14px;
+-	margin: 0;
+-}
+-
+-#fancybox-img {
+-	width: 100%;
+-	height: 100%;
+-	padding: 0;
+-	margin: 0;
+-	border: none;
+-	outline: none;
+-	line-height: 0;
+-	vertical-align: top;
+-}
+-
+-#fancybox-frame {
+-	width: 100%;
+-	height: 100%;
+-	border: none;
+-	display: block;
+-}
+-
+-#fancybox-left, #fancybox-right {
+-	position: absolute;
+-	bottom: 0px;
+-	height: 100%;
+-	width: 35%;
+-	cursor: pointer;
+-	outline: none;
+-	background: transparent url('blank.gif');
+-	z-index: 11020;
+-	display: none;
+-}
+-
+-#fancybox-left {
+-	left: 0px;
+-}
+-
+-#fancybox-right {
+-	right: 0px;
+-}
+-
+-#fancybox-left-ico, #fancybox-right-ico {
+-	position: absolute;
+-	top: 50%;
+-	left: -9999px;
+-	width: 30px;
+-	height: 30px;
+-	margin-top: -15px;
+-	cursor: pointer;
+-	z-index: 11020;
+-	display: block;
+-}
+-
+-#fancybox-left-ico {
+-	background-image: url('fancybox.png');
+-	background-position: -40px -30px;
+-}
+-
+-#fancybox-right-ico {
+-	background-image: url('fancybox.png');
+-	background-position: -40px -60px;
+-}
+-
+-#fancybox-left:hover, #fancybox-right:hover {
+-	visibility: visible; /* IE6 */
+-}
+-
+-#fancybox-left:hover span {
+-	left: 20px;
+-}
+-
+-#fancybox-right:hover span {
+-	left: auto;
+-	right: 20px;
+-}
+-
+-.fancybox-bg {
+-	position: absolute;
+-	padding: 0;
+-	margin: 0;
+-	border: 0;
+-	width: 20px;
+-	height: 20px;
+-	z-index: 10010;
+-}
+-
+-#fancybox-bg-n {
+-	top: -20px;
+-	left: 0;
+-	width: 100%;
+-	background-image: url('fancybox-x.png');
+-}
+-
+-#fancybox-bg-ne {
+-	top: -20px;
+-	right: -20px;
+-	background-image: url('fancybox.png');
+-	background-position: -40px -162px;
+-}
+-
+-#fancybox-bg-e {
+-	top: 0;
+-	right: -20px;
+-	height: 100%;
+-	background-image: url('fancybox-y.png');
+-	background-position: -20px 0px;
+-}
+-
+-#fancybox-bg-se {
+-	bottom: -20px;
+-	right: -20px;
+-	background-image: url('fancybox.png');
+-	background-position: -40px -182px; 
+-}
+-
+-#fancybox-bg-s {
+-	bottom: -20px;
+-	left: 0;
+-	width: 100%;
+-	background-image: url('fancybox-x.png');
+-	background-position: 0px -20px;
+-}
+-
+-#fancybox-bg-sw {
+-	bottom: -20px;
+-	left: -20px;
+-	background-image: url('fancybox.png');
+-	background-position: -40px -142px;
+-}
+-
+-#fancybox-bg-w {
+-	top: 0;
+-	left: -20px;
+-	height: 100%;
+-	background-image: url('fancybox-y.png');
+-}
+-
+-#fancybox-bg-nw {
+-	top: -20px;
+-	left: -20px;
+-	background-image: url('fancybox.png');
+-	background-position: -40px -122px;
+-}
+-
+-#fancybox-title {
+-	font-family: Helvetica;
+-	font-size: 12px;
+-	z-index: 11020;
+-}
+-
+-.fancybox-title-inside {
+-	padding-bottom: 10px;
+-	text-align: center;
+-	color: #333;
+-	background: #fff;
+-	position: relative;
+-}
+-
+-.fancybox-title-outside {
+-	padding-top: 10px;
+-	color: #fff;
+-}
+-
+-.fancybox-title-over {
+-	position: absolute;
+-	bottom: 0;
+-	left: 0;
+-	color: #FFF;
+-	text-align: left;
+-}
+-
+-#fancybox-title-over {
+-	padding: 10px;
+-	background-image: url('fancy_title_over.png');
+-	display: block;
+-}
+-
+-.fancybox-title-float {
+-	position: absolute;
+-	left: 0;
+-	bottom: -20px;
+-	height: 32px;
+-}
+-
+-#fancybox-title-float-wrap {
+-	border: none;
+-	border-collapse: collapse;
+-	width: auto;
+-}
+-
+-#fancybox-title-float-wrap td {
+-	border: none;
+-	white-space: nowrap;
+-}
+-
+-#fancybox-title-float-left {
+-	padding: 0 0 0 15px;
+-	background: url('fancybox.png') -40px -90px no-repeat;
+-}
+-
+-#fancybox-title-float-main {
+-	color: #FFF;
+-	line-height: 29px;
+-	font-weight: bold;
+-	padding: 0 0 3px 0;
+-	background: url('fancybox-x.png') 0px -40px;
+-}
+-
+-#fancybox-title-float-right {
+-	padding: 0 0 0 15px;
+-	background: url('fancybox.png') -55px -90px no-repeat;
+-}
+-
+-/* IE6 */
+-
+-.fancybox-ie6 #fancybox-close { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_close.png', sizingMethod='scale'); }
+-
+-.fancybox-ie6 #fancybox-left-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_left.png', sizingMethod='scale'); }
+-.fancybox-ie6 #fancybox-right-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_right.png', sizingMethod='scale'); }
+-
+-.fancybox-ie6 #fancybox-title-over { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }
+-.fancybox-ie6 #fancybox-title-float-left { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_left.png', sizingMethod='scale'); }
+-.fancybox-ie6 #fancybox-title-float-main { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_main.png', sizingMethod='scale'); }
+-.fancybox-ie6 #fancybox-title-float-right { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_right.png', sizingMethod='scale'); }
+-
+-.fancybox-ie6 #fancybox-bg-w, .fancybox-ie6 #fancybox-bg-e, .fancybox-ie6 #fancybox-left, .fancybox-ie6 #fancybox-right, #fancybox-hide-sel-frame {
+-	height: expression(this.parentNode.clientHeight + "px");
+-}
+-
+-#fancybox-loading.fancybox-ie6 {
+-	position: absolute; margin-top: 0;
+-	top: expression( (-20 + (document.documentElement.clientHeight ? document.documentElement.clientHeight/2 : document.body.clientHeight/2 ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop )) + 'px');
+-}
+-
+-#fancybox-loading.fancybox-ie6 div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_loading.png', sizingMethod='scale'); }
+-
+-/* IE6, IE7, IE8 */
+-
+-.fancybox-ie .fancybox-bg { background: transparent !important; }
+-
+-.fancybox-ie #fancybox-bg-n { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_n.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-ne { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-e { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_e.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-se { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_se.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-s { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_s.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-sw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-w { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_w.png', sizingMethod='scale'); }
+-.fancybox-ie #fancybox-bg-nw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
+\ No newline at end of file
++/* * FancyBox - jQuery Plugin * Simple and fancy lightbox alternative * * Examples and documentation at: http://fancybox.net *  * Copyright (c) 2008 - 2010 Janis Skarnelis * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated. *  * Version: 1.3.4 (11/11/2010) * Requires: jQuery v1.3+ * * Dual licensed under the MIT and GPL licenses: *   http://www.opensource.org/licenses/mit-license.php *   http://www.gnu.org/licenses/gpl.html */#fancybox-loading {	position: fixed;	top: 50%;	left: 50%;	width: 40px;	height: 40px;	margin-top: -20px;	margin-left: -20px;	cursor: pointer;	overflow: hidden;	z-index: 11040;	display: none;}#fancybox-loading div {	position: absolute;	top: 0;	left: 0;	width: 40px;	height: 480px;	background-image: url('fancybox.png');}#fancybox-overlay {	position: absolute;	top: 0;	left: 0;	width: 100%;	z-index: 11000;	display: none;}#fancybox-tmp {	padding: 0;	margin: 0;	border: 0;	overflow: auto;	display: none;}#fancybox-wrap {	position: absolute;	top: 0;	left: 0;	padding: 20px;	z-index: 11010;	outline: none;	display: none;}#fancybox-outer {	position: relative;	width: 100%;	height: 100%;	background: #fff;}#fancybox-content {	width: 0;	height: 0;	padding: 0;	outline: none;	position: relative;	overflow: hidden;	z-index: 11020;	border: 0px solid #fff;    background: url('loader.gif') 50% 50% no-repeat;}#fancybox-hide-sel-frame {	position: absolute;	top: 0;	left: 0;	width: 100%;	height: 100%;	background: transparent;	z-index: 11010;}#fancybox-close {	position: absolute;	top: -15px;	right: -15px;	width: 30px;	height: 30px;	background: transparent url('fancybox.png') -40px 0px;	cursor: pointer;	z-index: 11030;	display: none;}#fancybox-error {	color: #444;	font: normal 12px/20px Arial;	padding: 14px;	margin: 0;}#fancybox-img {	width: 100%;	height: 100%;	padding: 0;	margin: 0;	border: none;	outline: none;	line-height: 0;	vertical-align: top;}#fancybox-frame {	width: 100%;	height: 100%;	border: none;	display: block;}#fancybox-left, #fancybox-right {	position: absolute;	bottom: 0px;	height: 100%;	width: 35%;	cursor: pointer;	outline: none;	background: transparent url('blank.gif');	z-index: 11020;	display: none;}#fancybox-left {	left: 0px;}#fancybox-right {	right: 0px;}#fancybox-left-ico, #fancybox-right-ico {	position: absolute;	top: 50%;	left: -9999px;	width: 30px;	height: 30px;	margin-top: -15px;	cursor: pointer;	z-index: 11020;	display: block;}#fancybox-left-ico {	background-image: url('fancybox.png');	background-position: -40px -30px;}#fancybox-right-ico {	background-image: url('fancybox.png');	background-position: -40px -60px;}#fancybox-left:hover, #fancybox-right:hover {	visibility: visible; /* IE6 */}#fancybox-left:hover span {	left: 20px;}#fancybox-right:hover span {	left: auto;	right: 20px;}.fancybox-bg {	position: absolute;	padding: 0;	margin: 0;	border: 0;	width: 20px;	height: 20px;	z-index: 10010;}#fancybox-bg-n {	top: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');}#fancybox-bg-ne {	top: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -162px;}#fancybox-bg-e {	top: 0;	right: -20px;	height: 100%;	background-image: url('fancybox-y.png');	background-position: -20px 0px;}#fancybox-bg-se {	bottom: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -182px; }#fancybox-bg-s {	bottom: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');	background-position: 0px -20px;}#fancybox-bg-sw {	bottom: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -142px;}#fancybox-bg-w {	top: 0;	left: -20px;	height: 100%;	background-image: url('fancybox-y.png');}#fancybox-bg-nw {	top: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -122px;}#fancybox-title {	font-family: Helvetica;	font-size: 12px;	z-index: 11020;}.fancybox-title-inside {	padding-bottom: 10px;	text-align: center;	color: #333;	background: #fff;	position: relative;}.fancybox-title-outside {	padding-top: 10px;	color: #fff;}.fancybox-title-over {	position: absolute;	bottom: 0;	left: 0;	color: #FFF;	text-align: left;}#fancybox-title-over {	padding: 10px;	background-image: url('fancy_title_over.png');	display: block;}.fancybox-title-float {	position: absolute;	left: 0;	bottom: -20px;	height: 32px;}#fancybox-title-float-wrap {	border: none;	border-collapse: collapse;	width: auto;}#fancybox-title-float-wrap td {	border: none;	white-space: nowrap;}#fancybox-title-float-left {	padding: 0 0 0 15px;	background: url('fancybox.png') -40px -90px no-repeat;}#fancybox-title-float-main {	color: #FFF;	line-height: 29px;	font-weight: bold;	padding: 0 0 3px 0;	background: url('fancybox-x.png') 0px -40px;}#fancybox-title-float-right {	padding: 0 0 0 15px;	background: url('fancybox.png') -55px -90px no-repeat;}/* IE6 */.fancybox-ie6 #fancybox-close { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_close.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-left-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-right-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-over { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }.fancybox-ie6 #fancybox-title-float-left { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-main { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_main.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-right { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-bg-w, .fancybox-ie6 #fancybox-bg-e, .fancybox-ie6 #fancybox-left, .fancybox-ie6 #fancybox-right, #fancybox-hide-sel-frame {	height: expression(this.parentNode.clientHeight + "px");}#fancybox-loading.fancybox-ie6 {	position: absolute; margin-top: 0;	top: expression( (-20 + (document.documentElement.clientHeight ? document.documentElement.clientHeight/2 : document.body.clientHeight/2 ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop )) + 'px');}#fancybox-loading.fancybox-ie6 div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_loading.png', sizingMethod='scale'); }/* IE6, IE7, IE8 */.fancybox-ie .fancybox-bg { background: transparent !important; }.fancybox-ie #fancybox-bg-n { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_n.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-ne { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-e { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_e.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-se { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_se.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-s { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_s.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-sw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-w { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_w.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-nw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/js/fancybox/loader.gif b/skin/frontend/default/shopper/js/fancybox/loader.gif
+new file mode 100644
+index 0000000000000000000000000000000000000000..3c2f7c058836808f7f1f5f9a4bdf37d4e5f9284a
+GIT binary patch
+literal 3208
+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
+
+literal 0
+HcmV?d00001
+
+-- 
+1.7.10.msysgit.1
+

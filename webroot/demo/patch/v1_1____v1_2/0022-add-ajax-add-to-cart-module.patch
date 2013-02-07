@@ -1,0 +1,3743 @@
+From dea6111d5237294af274fd3b1d644b0256ac4da4 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 15 Oct 2012 17:26:52 +0300
+Subject: [PATCH 22/24] add ajax add to cart module
+
+---
+ app/code/local/Excellence/Ajax/Block/Ajax.php      |   17 +
+ .../local/Excellence/Ajax/Block/Cart/Sidebar.php   |   19 +
+ app/code/local/Excellence/Ajax/Helper/Data.php     |    6 +
+ app/code/local/Excellence/Ajax/Model/Ajax.php      |   10 +
+ .../local/Excellence/Ajax/Model/Mysql4/Ajax.php    |   10 +
+ .../Ajax/Model/Mysql4/Ajax/Collection.php          |   10 +
+ app/code/local/Excellence/Ajax/Model/Status.php    |   15 +
+ .../Ajax/controllers/IndexController.php           |  107 ++
+ app/code/local/Excellence/Ajax/etc/config.xml      |   77 ++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    9 +
+ .../frontend/default/shopper/layout/ajax.xml       |   88 ++
+ .../frontend/default/shopper/layout/local.xml      |    6 +
+ .../template/ajax/catalog/product/quick_view.phtml |  176 +++
+ .../ajax/catalog/product/view/addtocart.phtml      |    9 +
+ .../shopper/template/catalog/product/list.phtml    |   42 +-
+ .../shopper/template/catalog/product/view.phtml    |   72 +-
+ .../queldorei/priceslider/slider_content.phtml     |   40 +-
+ app/etc/modules/Excellence_Ajax.xml                |    9 +
+ skin/frontend/default/shopper/css/animation.css    |    3 +-
+ skin/frontend/default/shopper/css/local.css        |   10 +-
+ skin/frontend/default/shopper/css/options.css.php  |    3 +-
+ skin/frontend/default/shopper/css/quick_view.css   |    4 +
+ .../default/shopper/js/ajaxcart/ajaxcart.js        |   98 ++
+ .../frontend/default/shopper/js/fancybox/blank.gif |  Bin 0 -> 43 bytes
+ .../default/shopper/js/fancybox/fancy_close.png    |  Bin 0 -> 1517 bytes
+ .../default/shopper/js/fancybox/fancy_loading.png  |  Bin 0 -> 10195 bytes
+ .../default/shopper/js/fancybox/fancy_nav_left.png |  Bin 0 -> 1446 bytes
+ .../shopper/js/fancybox/fancy_nav_right.png        |  Bin 0 -> 1454 bytes
+ .../default/shopper/js/fancybox/fancy_shadow_e.png |  Bin 0 -> 107 bytes
+ .../default/shopper/js/fancybox/fancy_shadow_n.png |  Bin 0 -> 106 bytes
+ .../shopper/js/fancybox/fancy_shadow_ne.png        |  Bin 0 -> 347 bytes
+ .../shopper/js/fancybox/fancy_shadow_nw.png        |  Bin 0 -> 324 bytes
+ .../default/shopper/js/fancybox/fancy_shadow_s.png |  Bin 0 -> 111 bytes
+ .../shopper/js/fancybox/fancy_shadow_se.png        |  Bin 0 -> 352 bytes
+ .../shopper/js/fancybox/fancy_shadow_sw.png        |  Bin 0 -> 340 bytes
+ .../default/shopper/js/fancybox/fancy_shadow_w.png |  Bin 0 -> 103 bytes
+ .../shopper/js/fancybox/fancy_title_left.png       |  Bin 0 -> 503 bytes
+ .../shopper/js/fancybox/fancy_title_main.png       |  Bin 0 -> 96 bytes
+ .../shopper/js/fancybox/fancy_title_over.png       |  Bin 0 -> 70 bytes
+ .../shopper/js/fancybox/fancy_title_right.png      |  Bin 0 -> 506 bytes
+ .../default/shopper/js/fancybox/fancybox-x.png     |  Bin 0 -> 203 bytes
+ .../default/shopper/js/fancybox/fancybox-y.png     |  Bin 0 -> 176 bytes
+ .../default/shopper/js/fancybox/fancybox.png       |  Bin 0 -> 15287 bytes
+ .../shopper/js/fancybox/jquery.easing-1.3.pack.js  |   72 ++
+ .../shopper/js/fancybox/jquery.fancybox-1.3.4.css  |  358 ++++++
+ .../shopper/js/fancybox/jquery.fancybox-1.3.4.js   | 1156 ++++++++++++++++++++
+ .../js/fancybox/jquery.fancybox-1.3.4.pack.js      |   46 +
+ .../js/fancybox/jquery.mousewheel-3.0.4.pack.js    |   14 +
+ 49 files changed, 2475 insertions(+), 12 deletions(-)
+ create mode 100644 app/code/local/Excellence/Ajax/Block/Ajax.php
+ create mode 100644 app/code/local/Excellence/Ajax/Block/Cart/Sidebar.php
+ create mode 100644 app/code/local/Excellence/Ajax/Helper/Data.php
+ create mode 100644 app/code/local/Excellence/Ajax/Model/Ajax.php
+ create mode 100644 app/code/local/Excellence/Ajax/Model/Mysql4/Ajax.php
+ create mode 100644 app/code/local/Excellence/Ajax/Model/Mysql4/Ajax/Collection.php
+ create mode 100644 app/code/local/Excellence/Ajax/Model/Status.php
+ create mode 100644 app/code/local/Excellence/Ajax/controllers/IndexController.php
+ create mode 100644 app/code/local/Excellence/Ajax/etc/config.xml
+ create mode 100644 app/design/frontend/default/shopper/layout/ajax.xml
+ create mode 100644 app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
+ create mode 100644 app/design/frontend/default/shopper/template/ajax/catalog/product/view/addtocart.phtml
+ create mode 100644 app/etc/modules/Excellence_Ajax.xml
+ create mode 100644 skin/frontend/default/shopper/css/quick_view.css
+ create mode 100644 skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/blank.gif
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_close.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_loading.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_nav_left.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_nav_right.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_e.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_n.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_ne.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_nw.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_s.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_se.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_sw.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_shadow_w.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_title_left.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_title_main.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_title_over.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancy_title_right.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancybox-x.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancybox-y.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/fancybox.png
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/jquery.easing-1.3.pack.js
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.js
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.pack.js
+ create mode 100644 skin/frontend/default/shopper/js/fancybox/jquery.mousewheel-3.0.4.pack.js
+
+diff --git a/app/code/local/Excellence/Ajax/Block/Ajax.php b/app/code/local/Excellence/Ajax/Block/Ajax.php
+new file mode 100644
+index 0000000..f38ea3a
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Block/Ajax.php
+@@ -0,0 +1,17 @@
++<?php
++class Excellence_Ajax_Block_Ajax extends Mage_Core_Block_Template
++{
++	public function _prepareLayout()
++    {
++		return parent::_prepareLayout();
++    }
++    
++     public function getAjax()     
++     { 
++        if (!$this->hasData('ajax')) {
++            $this->setData('ajax', Mage::registry('ajax'));
++        }
++        return $this->getData('ajax');
++        
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Block/Cart/Sidebar.php b/app/code/local/Excellence/Ajax/Block/Cart/Sidebar.php
+new file mode 100644
+index 0000000..b557757
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Block/Cart/Sidebar.php
+@@ -0,0 +1,19 @@
++<?php
++
++class Excellence_Ajax_Block_Cart_Sidebar extends Mage_Checkout_Block_Cart_Sidebar
++{
++    /*public function getItemRenderer($type)
++    {
++        if (!isset($this->_itemRenders[$type])) {
++            $type = 'default';
++        }
++        if (is_null($this->_itemRenders[$type]['blockInstance'])) {
++            $this->_itemRenders[$type]['blockInstance'] = $this->getLayout()
++                ->createBlock($this->_itemRenders[$type]['block'])
++                ->setTemplate('checkout/cart/cart-top.phtml')
++                ->setRenderedBlock($this);
++        }
++
++        return $this->_itemRenders[$type]['blockInstance'];
++    }*/
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Helper/Data.php b/app/code/local/Excellence/Ajax/Helper/Data.php
+new file mode 100644
+index 0000000..a5dce6f
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Helper/Data.php
+@@ -0,0 +1,6 @@
++<?php
++
++class Excellence_Ajax_Helper_Data extends Mage_Core_Helper_Abstract
++{
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Model/Ajax.php b/app/code/local/Excellence/Ajax/Model/Ajax.php
+new file mode 100644
+index 0000000..5a260bd
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Model/Ajax.php
+@@ -0,0 +1,10 @@
++<?php
++
++class Excellence_Ajax_Model_Ajax extends Mage_Core_Model_Abstract
++{
++    public function _construct()
++    {
++        parent::_construct();
++        $this->_init('ajax/ajax');
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax.php b/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax.php
+new file mode 100644
+index 0000000..896c172
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax.php
+@@ -0,0 +1,10 @@
++<?php
++
++class Excellence_Ajax_Model_Mysql4_Ajax extends Mage_Core_Model_Mysql4_Abstract
++{
++    public function _construct()
++    {    
++        // Note that the ajax_id refers to the key field in your database table.
++        $this->_init('ajax/ajax', 'ajax_id');
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax/Collection.php b/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax/Collection.php
+new file mode 100644
+index 0000000..84829fb
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Model/Mysql4/Ajax/Collection.php
+@@ -0,0 +1,10 @@
++<?php
++
++class Excellence_Ajax_Model_Mysql4_Ajax_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
++{
++    public function _construct()
++    {
++        parent::_construct();
++        $this->_init('ajax/ajax');
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/Model/Status.php b/app/code/local/Excellence/Ajax/Model/Status.php
+new file mode 100644
+index 0000000..5092d34
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/Model/Status.php
+@@ -0,0 +1,15 @@
++<?php
++
++class Excellence_Ajax_Model_Status extends Varien_Object
++{
++    const STATUS_ENABLED	= 1;
++    const STATUS_DISABLED	= 2;
++
++    static public function getOptionArray()
++    {
++        return array(
++            self::STATUS_ENABLED    => Mage::helper('ajax')->__('Enabled'),
++            self::STATUS_DISABLED   => Mage::helper('ajax')->__('Disabled')
++        );
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/controllers/IndexController.php b/app/code/local/Excellence/Ajax/controllers/IndexController.php
+new file mode 100644
+index 0000000..7042ba3
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/controllers/IndexController.php
+@@ -0,0 +1,107 @@
++<?php
++require_once 'Mage/Checkout/controllers/CartController.php';
++class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
++{
++    public function addAction()
++    {
++        $cart = $this->_getCart();
++        $params = $this->getRequest()->getParams();
++        if ($params['isAjax'] == 1) {
++            $response = array();
++            try {
++                if (isset($params['qty'])) {
++                    $filter = new Zend_Filter_LocalizedToNormalized(
++                        array('locale' => Mage::app()->getLocale()->getLocaleCode())
++                    );
++                    $params['qty'] = $filter->filter($params['qty']);
++                }
++
++                $product = $this->_initProduct();
++                $related = $this->getRequest()->getParam('related_product');
++
++                /**
++                 * Check product availability
++                 */
++                if (!$product) {
++                    $response['status'] = 'ERROR';
++                    $response['message'] = $this->__('Unable to find Product ID');
++                }
++
++                $cart->addProduct($product, $params);
++                if (!empty($related)) {
++                    $cart->addProductsByIds(explode(',', $related));
++                }
++
++                $cart->save();
++
++                $this->_getSession()->setCartWasUpdated(true);
++
++                /**
++                 * @todo remove wishlist observer processAddToCart
++                 */
++                Mage::dispatchEvent('checkout_cart_add_product_complete',
++                    array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
++                );
++
++                if (!$cart->getQuote()->getHasError()) {
++                    $message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->htmlEscape($product->getName()));
++                    $response['status'] = 'SUCCESS';
++                    $response['message'] = $message;
++
++                    $this->loadLayout();
++                    $sidebar_header = $this->getLayout()->getBlock('cart_top')->toHtml();
++                    Mage::register('referrer_url', $this->_getRefererUrl());
++                    $response['cart_top'] = $sidebar_header;
++                }
++            } catch (Mage_Core_Exception $e) {
++                $msg = "";
++                if ($this->_getSession()->getUseNotice(true)) {
++                    $msg = $e->getMessage();
++                } else {
++                    $messages = array_unique(explode("\n", $e->getMessage()));
++                    foreach ($messages as $message) {
++                        $msg .= $message . '<br/>';
++                    }
++                }
++
++                $response['status'] = 'ERROR';
++                $response['message'] = $msg;
++            } catch (Exception $e) {
++                $response['status'] = 'ERROR';
++                $response['message'] = $this->__('Cannot add the item to shopping cart.');
++                Mage::logException($e);
++            }
++            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
++            return;
++        } else {
++            return parent::addAction();
++        }
++    }
++
++    public function optionsAction()
++    {
++        $productId = $this->getRequest()->getParam('product_id');
++        // Prepare helper and params
++        $viewHelper = Mage::helper('catalog/product_view');
++
++        $params = new Varien_Object();
++        $params->setCategoryId(false);
++        $params->setSpecifyOptions(false);
++
++        // Render page
++        try {
++            $viewHelper->prepareAndRender($productId, $this, $params);
++        } catch (Exception $e) {
++            if ($e->getCode() == $viewHelper->ERR_NO_PRODUCT_LOADED) {
++                if (isset($_GET['store']) && !$this->getResponse()->isRedirect()) {
++                    $this->_redirect('');
++                } elseif (!$this->getResponse()->isRedirect()) {
++                    $this->_forward('noRoute');
++                }
++            } else {
++                Mage::logException($e);
++                $this->_forward('noRoute');
++            }
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/Ajax/etc/config.xml b/app/code/local/Excellence/Ajax/etc/config.xml
+new file mode 100644
+index 0000000..7567680
+--- /dev/null
++++ b/app/code/local/Excellence/Ajax/etc/config.xml
+@@ -0,0 +1,77 @@
++<?xml version="1.0"?>
++<config>
++    <modules>
++        <Excellence_Ajax>
++            <version>0.1.0</version>
++        </Excellence_Ajax>
++    </modules>
++    <frontend>
++        <routers>
++            <ajax>
++                <use>standard</use>
++                <args>
++                    <module>Excellence_Ajax</module>
++                    <frontName>ajax</frontName>
++                </args>
++            </ajax>
++        </routers>
++        <layout>
++            <updates>
++                <ajax>
++                    <file>ajax.xml</file>
++                </ajax>
++            </updates>
++        </layout>
++    </frontend>
++    <global>
++        <models>
++            <ajax>
++                <class>Excellence_Ajax_Model</class>
++                <resourceModel>ajax_mysql4</resourceModel>
++            </ajax>
++            <ajax_mysql4>
++                <class>Excellence_Ajax_Model_Mysql4</class>
++                <entities>
++                    <ajax>
++                        <table>ajax</table>
++                    </ajax>
++                </entities>
++            </ajax_mysql4>
++        </models>
++        <resources>
++            <ajax_setup>
++                <setup>
++                    <module>Excellence_Ajax</module>
++                </setup>
++                <connection>
++                    <use>core_setup</use>
++                </connection>
++            </ajax_setup>
++            <ajax_write>
++                <connection>
++                    <use>core_write</use>
++                </connection>
++            </ajax_write>
++            <ajax_read>
++                <connection>
++                    <use>core_read</use>
++                </connection>
++            </ajax_read>
++        </resources>
++        <blocks>
++        	<checkout>
++        		<rewrite>
++        			<cart_sidebar>Excellence_Ajax_Block_Cart_Sidebar</cart_sidebar>
++        		</rewrite>
++        	</checkout>
++            <ajax>
++                <class>Excellence_Ajax_Block</class>
++            </ajax>
++        </blocks>
++        <helpers>
++            <ajax>
++                <class>Excellence_Ajax_Helper</class>
++            </ajax>
++        </helpers>
++    </global>
++</config>
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 0014496..80517e5 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -243,6 +243,7 @@
+             <ajax>
+                 <priceslider>1</priceslider>
+                 <wishlist>1</wishlist>
++                <cart>1</cart>
+             </ajax>
+             <blocks>
+                 <block_left_nav>1</block_left_nav>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index bae8120..fc2e154 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -755,6 +755,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </wishlist>
++                        <cart translate="label">
++                            <label>Enable Ajax cart</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>80</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </cart>
+                     </fields>
+                 </ajax>
+ 				<labels translate="label">
+diff --git a/app/design/frontend/default/shopper/layout/ajax.xml b/app/design/frontend/default/shopper/layout/ajax.xml
+new file mode 100644
+index 0000000..39d5c77
+--- /dev/null
++++ b/app/design/frontend/default/shopper/layout/ajax.xml
+@@ -0,0 +1,88 @@
++<?xml version="1.0"?>
++<layout version="0.1.0">
++
++    <catalog_category_default>
++    	<reference name="head">
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.easing-1.3.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.mousewheel-3.0.4.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
++            <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
++        </reference>
++    </catalog_category_default>
++
++    <catalog_category_layered>
++    	<reference name="head">
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.easing-1.3.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.mousewheel-3.0.4.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
++            <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
++        </reference>
++    </catalog_category_layered>
++
++    <ajax_index_options>
++    	<reference name="root">
++            <action method="setTemplate"><template>page/empty.phtml</template></action>
++        </reference>
++        <reference name="head">
++            <action method="removeItem"><type>skin_css</type><name>css/responsive.css</name></action>
++            <action method="addItem"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
++            <action method="addCss"><stylesheet>css/quick_view.css</stylesheet></action>
++
++            <action method="addJs"><script>varien/product.js</script></action>
++            <action method="addJs"><script>varien/configurable.js</script></action>
++
++            <action method="addItem"><type>js_css</type><name>calendar/calendar-win2k-1.css</name><params/><!--<if/><condition>can_load_calendar_js</condition>--></action>
++            <action method="addItem"><type>js</type><name>calendar/calendar.js</name><!--<params/><if/><condition>can_load_calendar_js</condition>--></action>
++            <action method="addItem"><type>js</type><name>calendar/calendar-setup.js</name><!--<params/><if/><condition>can_load_calendar_js</condition>--></action>
++        </reference>
++        <reference name="content">
++            <block type="catalog/product_view" name="product.info" template="ajax/catalog/product/quick_view.phtml">
++
++                <block type="cms/block" name="shopper_product_addthis">
++                    <action method="setBlockId"><block_id>shopper_product_addthis</block_id></action>
++                </block>
++
++                <block type="catalog/product_view" name="product.info.addtocart" as="addtocart" template="ajax/catalog/product/view/addtocart.phtml"/>
++
++                <block type="catalog/product_view" name="product.info.options.wrapper" as="product_options_wrapper" template="catalog/product/view/options/wrapper.phtml" translate="label">
++                    <label>Info Column Options Wrapper</label>
++                    <block type="core/template" name="options_js" template="catalog/product/view/options/js.phtml"/>
++                    <block type="catalog/product_view_options" name="product.info.options" as="product_options" template="catalog/product/view/options.phtml">
++                        <action method="addOptionRenderer"><type>text</type><block>catalog/product_view_options_type_text</block><template>catalog/product/view/options/type/text.phtml</template></action>
++                        <action method="addOptionRenderer"><type>file</type><block>catalog/product_view_options_type_file</block><template>catalog/product/view/options/type/file.phtml</template></action>
++                        <action method="addOptionRenderer"><type>select</type><block>catalog/product_view_options_type_select</block><template>catalog/product/view/options/type/select.phtml</template></action>
++                        <action method="addOptionRenderer"><type>date</type><block>catalog/product_view_options_type_date</block><template>catalog/product/view/options/type/date.phtml</template></action>
++                </block>
++                        <block type="core/html_calendar" name="html_calendar" as="html_calendar" template="page/js/calendar.phtml"/>
++                    </block>
++                <block type="catalog/product_view" name="product.info.options.wrapper.bottom" as="product_options_wrapper_bottom" template="catalog/product/view/options/wrapper/bottom.phtml" translate="label">
++                    <label>Bottom Block Options Wrapper</label>
++                    <action method="insert"><block>product.tierprices</block></action>
++                    <block type="catalog/product_view" name="product.clone_prices" as="prices" template="catalog/product/view/price_clone.phtml"/>
++                    <action ifconfig="shoppersettings/labels/clone_price" method="unsetChild"><name>prices</name></action>
++                    <action method="append"><block>product.info.addtocart</block></action>
++                    <action method="append"><block>product.info.addto</block></action>
++                </block>
++
++                <block type="core/template_facade" name="product.info.container1" as="container1">
++                    <action method="setDataByKey"><key>alias_in_layout</key><value>container1</value></action>
++                    <action method="setDataByKeyFromRegistry"><key>options_container</key><key_in_registry>product</key_in_registry></action>
++                    <action method="append"><block>product.info.options.wrapper</block></action>
++                    <action method="append"><block>product.info.options.wrapper.bottom</block></action>
++                </block>
++                <block type="core/template_facade" name="product.info.container2" as="container2">
++                    <action method="setDataByKey"><key>alias_in_layout</key><value>container2</value></action>
++                    <action method="setDataByKeyFromRegistry"><key>options_container</key><key_in_registry>product</key_in_registry></action>
++                    <action method="append"><block>product.info.options.wrapper</block></action>
++                    <action method="append"><block>product.info.options.wrapper.bottom</block></action>
++                </block>
++                <action method="unsetCallChild"><child>container1</child><call>ifEquals</call><if>0</if><key>alias_in_layout</key><key>options_container</key></action>
++                <action method="unsetCallChild"><child>container2</child><call>ifEquals</call><if>0</if><key>alias_in_layout</key><key>options_container</key></action>
++            </block>
++        </reference>
++    </ajax_index_options>
++</layout> 
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index aac8b44..d33d916 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -245,4 +245,10 @@
+         </reference>
+     </customer_account>
+ 
++    <catalog_product_compare_index>
++        <reference name="head">
++            <action method="removeItem"><type>skin_css</type><name>css/responsive.css</name></action>
++        </reference>
++    </catalog_product_compare_index>
++
+ </layout>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml b/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
+new file mode 100644
+index 0000000..6e43d7e
+--- /dev/null
++++ b/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
+@@ -0,0 +1,176 @@
++<?php
++$_helper = $this->helper('catalog/output');
++$_product = $this->getProduct();
++
++$helper = $this->helper('shoppersettings/image');
++list($defaultImgX, $defaultImgY) = $helper->getDefaultSize();
++list($imgX, $imgY) = $helper->getMainSize();
++if ( $imgX > 300 ) {
++    $imgX = 300;
++    $imgY = $helper->calculateHeight($imgX);
++}
++
++$product_img_box_width = $defaultImgX;
++if ( $defaultImgX != $imgX ) {
++    $product_img_box_width = $imgX;
++}
++//add image border
++$product_img_box_width += 18;
++?>
++
++<script type="text/javascript">
++    var optionsPrice = new Product.OptionsPrice(<?php echo $this->getJsonConfig() ?>);
++</script>
++<div class="product-view">
++    <div class="product-essential">
++        <form action="<?php echo $this->getSubmitUrl($_product) ?>" method="post" id="product_addtocart_form"<?php if($_product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
++            <div class="no-display">
++                <input type="hidden" name="product" value="<?php echo $_product->getId() ?>" />
++                <input type="hidden" name="related_product" id="related-products-field" value="" />
++            </div>
++
++            <div class="product-img-box" style="width:<?php echo $product_img_box_width; ?>px">
++                <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
++
++                <?php if ($_product->getImage() != 'no_selection' && $_product->getImage()): ?>
++                <p class="product-image">
++                    <img src="<?php echo $this->helper('catalog/image')->init($_product, 'image')->resize($imgX, $imgY); ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($_product, 'image')->resize($imgX*2, $imgY*2); ?>" alt="<?php echo $this->escapeHtml($this->getImageLabel());?>" title="<?php echo $this->escapeHtml($this->getImageLabel());?>" width="<?php echo $imgX;?>" height="<?php echo $imgY;?>" />
++                </p>
++                <?php else: ?>
++                <p class="product-image">
++                    <?php
++                    $_img = '<img src="'.$this->helper('catalog/image')->init($_product, 'image')->resize($imgX, $imgY).'" data-srcX2="'.$this->helper('catalog/image')->init($_product, 'image')->resize($imgX*2, $imgY*2).'" alt="'.$this->escapeHtml($this->getImageLabel()).'" title="'.$this->escapeHtml($this->getImageLabel()).'" width="'.$imgX.'" height="'.$imgY.'" />';
++                    echo $_helper->productAttribute($_product, $_img, 'image');
++                    ?>
++                </p>
++                <?php endif; ?>
++
++            </div>
++
++            <div class="product-shop">
++                <div class="product-shop-info">
++                    <div class="product-name">
++                        <h1><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?></h1>
++                    </div>
++
++                    <?php echo $this->getChildHtml('alert_urls') ?>
++                    <?php echo $this->getChildHtml('product_type_data') ?>
++                    <?php echo $this->getTierPriceHtml() ?>
++                    <?php echo $this->getChildHtml('extrahint') ?>
++
++                    <?php if ($_product->getShortDescription()):?>
++                    <div class="short-description">
++                        <div class="std"><?php echo $_helper->productAttribute($_product, nl2br($_product->getShortDescription()), 'short_description') ?></div>
++                    </div>
++                    <?php endif;?>
++
++                    <?php echo $this->getChildHtml('other');?>
++
++                    <?php if(!$_product->isGrouped()): ?>
++                    <div class="qty-container clearfix">
++                        <label for="qty"><?php echo $this->__('Qty') ?>:</label>
++                        <input type="text" name="qty" id="qty" maxlength="12" value="<?php echo $this->getProductDefaultQty() * 1 ?>" title="<?php echo $this->__('Qty') ?>" class="input-text qty" />
++                    </div>
++                    <?php endif; ?>
++
++                    <?php if (!$this->hasOptions()):?>
++                    <div class="add-to-box">
++                        <?php if($_product->isSaleable()): ?>
++                        <?php echo $this->getChildHtml('addtocart') ?>
++                        <?php endif; ?>
++                    </div>
++                    <?php echo $this->getChildHtml('extra_buttons') ?>
++                    <?php endif; ?>
++
++                    <?php if ($_product->isSaleable() && $this->hasOptions()):?>
++                    <?php echo $this->getChildChildHtml('container1', '', true, true) ?>
++                    <?php endif;?>
++
++                    <?php if ($_product->isSaleable() && $this->hasOptions()):?>
++                    <?php echo $this->getChildChildHtml('container2', '', true, true) ?>
++                    <?php endif;?>
++
++                    <?php echo $this->getChildHtml('addto') ?>
++                    <div class="clear"></div>
++                    <?php echo $this->getChildHtml('shopper_product_addthis') ?>
++                </div>
++            </div>
++            <div class="clearer"></div>
++        </form>
++        <script type="text/javascript">
++            //<![CDATA[
++
++            var productAddToCartForm = new VarienForm('product_addtocart_form');
++            productAddToCartForm.submit = function (button, url) {
++                if (this.validator.validate()) {
++                    var form = this.form;
++                    var oldUrl = form.action;
++                    if (url) {
++                        form.action = url;
++                    }
++                    var e = null;
++                    // Start of our new ajax code
++                    if (!url) {
++                        url = jQuery('#product_addtocart_form').attr('action');
++                    }
++                    url = url.replace("checkout/cart", "ajax/index"); // New Code
++                    var data = jQuery('#product_addtocart_form').serialize();
++                    data += '&isAjax=1';
++                    jQuery('#ajax_loader').show();
++                    try {
++                        jQuery.ajax({
++                            url:url,
++                            dataType:'json',
++                            type:'post',
++                            data:data,
++                            success:function (data) {
++                                jQuery('#ajax_loader').hide();
++                                parent.setAjaxData(data, true);
++
++                                jQuery('body').append('<div class="alert"></div>');
++                                jQuery('.alert').slideDown(400);
++                                jQuery('.alert').html(data.message).append('<button></button>');
++                                jQuery('button').click(function () {
++                                    jQuery('.alert').slideUp(400);
++                                });
++                                jQuery('.alert').slideDown('400', function () {
++                                    setTimeout(function () {
++                                        jQuery('.alert').slideUp('400', function () {
++                                            jQuery(this).slideUp(400)
++                                        });
++                                    }, 7000)
++                                });
++                            }
++                        });
++                    } catch (e) {
++                    }
++                    // End of our new ajax code
++                    this.form.action = oldUrl;
++
++                    if (e) {
++                        throw e;
++                    }
++                }
++            }.bind(productAddToCartForm);
++
++            productAddToCartForm.submitLight = function(button, url){
++                if(this.validator) {
++                    var nv = Validation.methods;
++                    delete Validation.methods['required-entry'];
++                    delete Validation.methods['validate-one-required'];
++                    delete Validation.methods['validate-one-required-by-name'];
++                    if (this.validator.validate()) {
++                        if (url) {
++                            this.form.action = url;
++                        }
++                        this.form.submit();
++                    }
++                    Object.extend(Validation.methods, nv);
++                }
++            }.bind(productAddToCartForm);
++
++            //]]>
++        </script>
++
++    </div>
++</div>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/ajax/catalog/product/view/addtocart.phtml b/app/design/frontend/default/shopper/template/ajax/catalog/product/view/addtocart.phtml
+new file mode 100644
+index 0000000..5c2efed
+--- /dev/null
++++ b/app/design/frontend/default/shopper/template/ajax/catalog/product/view/addtocart.phtml
+@@ -0,0 +1,9 @@
++<?php $_product = $this->getProduct(); ?>
++<?php $buttonTitle = $this->__('Add to Cart'); ?>
++<?php if($_product->isSaleable()): ?>
++<div class="add-to-cart">
++    <span class="ajax_loading" id='ajax_loader'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++    <button type="button" title="<?php echo $buttonTitle ?>" class="button btn-cart" onclick="productAddToCartForm.submit(this)"><span><span><?php echo $buttonTitle ?></span></span></button>
++    <?php echo $this->getChildHtml('', true, true) ?>
++</div>
++<?php endif; ?>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list.phtml b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+index e21a562..da7a6bb 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+@@ -58,6 +58,9 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+         <li class="item<?php if( ++$_iterator == sizeof($_productCollection) ): ?> last<?php endif; ?>">
+             <?php // Product Image ?>
+             <div class="f-left">
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : //quick view button ?>
++                <a href='<?php echo $this->getUrl('ajax/index/options',array('product_id'=>$_product->getId()));?>' data-fancybox-group="gallery" class='fancybox quick-view' id='fancybox<?php echo $_product->getId()?>'><?php echo $this->__('quick view')?></a>
++                <?php endif; ?>
+                 <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
+                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                     <?php
+@@ -84,9 +87,17 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+                     </div>
+                     <div class="button-container">
+                         <?php if($_product->isSaleable()): ?>
+-                        <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-add-cart"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                            <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++                                <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                                <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart ajax-cart btn-add-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                                <?php } else { ?>
++                                <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart show-options btn-add-cart" data-id="<?php echo $_product->getId(); ?>"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                                <?php }  ?>
++                            <?php else: ?>
++                            <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart btn-add-cart"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                            <?php endif; ?>
+                         <?php else: ?>
+-                        <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
++                            <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                         <?php endif; ?>
+                     </div>
+ 
+@@ -129,7 +140,15 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+                 </a>
+                 <div class="button-container">
+                     <?php if($_product->isSaleable()): ?>
+-                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++                            <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php } else { ?>
++                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php }  ?>
++                        <?php else: ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php endif; ?>
+                     <?php else: ?>
+                     <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                     <?php endif; ?>
+@@ -140,6 +159,9 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+             </div>
+ 
+             <div class="hover">
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : //quick view button ?>
++                    <a href='<?php echo $this->getUrl('ajax/index/options',array('product_id'=>$_product->getId()));?>' data-fancybox-group="gallery" class='fancybox quick-view' id='fancybox<?php echo $_product->getId()?>'><?php echo $this->__('quick view')?></a>
++                <?php endif; ?>
+                 <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">
+                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                     <?php
+@@ -158,7 +180,19 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+                 <?php if($_product->getRatingSummary()){ echo $this->getReviewsSummaryHtml($_product); } ?>
+                 <div class="button-container">
+                     <?php if($_product->isSaleable()): ?>
+-                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++
++                        <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++
++                            <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php } else { ?>
++                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php }  ?>
++
++                        <?php else: ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php endif; ?>
++
+                     <?php else: ?>
+                     <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                     <?php endif; ?>
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/view.phtml b/app/design/frontend/default/shopper/template/catalog/product/view.phtml
+index 0d23e60..682c4a7 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/view.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/view.phtml
+@@ -152,6 +152,7 @@ echo '<div class="product-category-title">'.$_category->getName().'</div>';
+     </form>
+     <script type="text/javascript">
+     //<![CDATA[
++
+         var productAddToCartForm = new VarienForm('product_addtocart_form');
+         productAddToCartForm.submit = function(button, url) {
+             if (this.validator.validate()) {
+@@ -159,7 +160,7 @@ echo '<div class="product-category-title">'.$_category->getName().'</div>';
+                 var oldUrl = form.action;
+ 
+                 if (url) {
+-                   form.action = url;
++                    form.action = url;
+                 }
+                 var e = null;
+                 try {
+@@ -192,6 +193,75 @@ echo '<div class="product-category-title">'.$_category->getName().'</div>';
+                 Object.extend(Validation.methods, nv);
+             }
+         }.bind(productAddToCartForm);
++
++        <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++
++        function setAjaxData(data,iframe){
++            //showMessage(data.message);
++            if (data.status != 'ERROR' && jQuery('.cart-top-container').length) {
++                jQuery('.cart-top-container').replaceWith(data.cart_top);
++            }
++        }
++
++        function showMessage(message)
++        {
++            jQuery('body').append('<div class="alert"></div>');
++            var $alert = jQuery('.alert');
++            $alert.slideDown(400);
++            $alert.html(message).append('<button></button>');
++            jQuery('button').click(function () {
++                $alert.slideUp(400);
++            });
++            $alert.slideDown('400', function () {
++                setTimeout(function () {
++                    $alert.slideUp('400', function () {
++                        jQuery(this).slideUp(400, function(){ jQuery(this).detach(); })
++                    });
++                }, 7000)
++            });
++        }
++
++        var productAddToCartForm = new VarienForm('product_addtocart_form');
++        productAddToCartForm.submit = function (button, url) {
++            if (this.validator.validate()) {
++                var form = this.form;
++                var oldUrl = form.action;
++                if (url) {
++                    form.action = url;
++                }
++                var e = null;
++                // Start of our new ajax code
++                if (!url) {
++                    url = jQuery('#product_addtocart_form').attr('action');
++                }
++                url = url.replace("checkout/cart", "ajax/index"); // New Code
++                var data = jQuery('#product_addtocart_form').serialize();
++                data += '&isAjax=1';
++                jQuery('#ajax_loading'+ jQuery('#product_addtocart_form').find("[name='product']").val() ).show();
++                try {
++                    jQuery.ajax({
++                        url:url,
++                        dataType:'json',
++                        type:'post',
++                        data:data,
++                        success:function (data) {
++                            jQuery('#ajax_loading'+ jQuery('#product_addtocart_form').find("[name='product']").val() ).hide();
++                            setAjaxData(data, true);
++                            showMessage(data.message);
++                        }
++                    });
++                } catch (e) {
++                }
++                // End of our new ajax code
++                this.form.action = oldUrl;
++
++                if (e) {
++                    throw e;
++                }
++            }
++        }.bind(productAddToCartForm);
++
++        <?php endif; ?>
+     //]]>
+     </script>
+     </div>
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+index 6a96a7f..13965b1 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+@@ -58,6 +58,9 @@ $listY = $helper->calculateHeight($listX);
+         <li class="item<?php if( ++$_iterator == sizeof($_productCollection) ): ?> last<?php endif; ?>">
+             <?php // Product Image ?>
+             <div class="f-left">
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : //quick view button ?>
++                <a href='<?php echo $this->getUrl('ajax/index/options',array('product_id'=>$_product->getId()));?>' data-fancybox-group="gallery" class='fancybox quick-view' id='fancybox<?php echo $_product->getId()?>'><?php echo $this->__('quick view')?></a>
++                <?php endif; ?>
+                 <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
+                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                     <?php
+@@ -84,7 +87,15 @@ $listY = $helper->calculateHeight($listX);
+                     </div>
+                     <div class="button-container">
+                         <?php if($_product->isSaleable()): ?>
+-                        <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-add-cart"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                        <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++                            <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                                <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart ajax-cart btn-add-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                                <?php } else { ?>
++                                <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart show-options btn-add-cart" data-id="<?php echo $_product->getId(); ?>"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                                <?php }  ?>
++                            <?php else: ?>
++                            <p><a href="<?php echo $this->getAddToCartUrl($_product) ?>" title="<?php echo $this->__('Add to Cart') ?>" class="btn-cart btn-add-cart"><span></span><?php echo $this->__('Add to Cart') ?></a></p>
++                            <?php endif; ?>
+                         <?php else: ?>
+                         <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                         <?php endif; ?>
+@@ -128,7 +139,15 @@ $listY = $helper->calculateHeight($listX);
+                 </a>
+                 <div class="button-container">
+                     <?php if($_product->isSaleable()): ?>
+-                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                    <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++                        <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php } else { ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php }  ?>
++                        <?php else: ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php endif; ?>
+                     <?php else: ?>
+                     <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                     <?php endif; ?>
+@@ -139,6 +158,9 @@ $listY = $helper->calculateHeight($listX);
+             </div>
+ 
+             <div class="hover">
++                <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : //quick view button ?>
++                <a href='<?php echo $this->getUrl('ajax/index/options',array('product_id'=>$_product->getId()));?>' data-fancybox-group="gallery" class='fancybox quick-view' id='fancybox<?php echo $_product->getId()?>'><?php echo $this->__('quick view')?></a>
++                <?php endif; ?>
+                 <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">
+                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                     <?php
+@@ -157,7 +179,19 @@ $listY = $helper->calculateHeight($listX);
+                 <?php if($_product->getRatingSummary()){ echo $this->getReviewsSummaryHtml($_product); } ?>
+                 <div class="button-container">
+                     <?php if($_product->isSaleable()): ?>
+-                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++
++                    <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
++
++                        <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php } else { ?>
++                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                            <?php }  ?>
++
++                        <?php else: ?>
++                        <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><em></em><?php echo $this->__('Add to Cart') ?></span></span></button></p>
++                        <?php endif; ?>
++
+                     <?php else: ?>
+                     <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                     <?php endif; ?>
+diff --git a/app/etc/modules/Excellence_Ajax.xml b/app/etc/modules/Excellence_Ajax.xml
+new file mode 100644
+index 0000000..170bce3
+--- /dev/null
++++ b/app/etc/modules/Excellence_Ajax.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0"?>
++<config>
++    <modules>
++        <Excellence_Ajax>
++            <active>true</active>
++            <codePool>local</codePool>
++        </Excellence_Ajax>
++    </modules>
++</config> 
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/css/animation.css b/skin/frontend/default/shopper/css/animation.css
+index 33f60d3..42ace1e 100644
+--- a/skin/frontend/default/shopper/css/animation.css
++++ b/skin/frontend/default/shopper/css/animation.css
+@@ -23,7 +23,8 @@ a:hover{
+ .opc .step-title,
+ .product-tabs a,
+ .footer-banners a img, .homepage-banners a img,
+-footer .footer-subscribe button.button span{
++footer .footer-subscribe button.button span,
++.quick-view{
+ transition: all 400ms ease-in-out;
+ -webkit-transition: all 400ms ease-in-out;
+ -moz-transition: all 400ms ease-in-out;
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 71c9d90..2c4e627 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -642,6 +642,9 @@ a.product-image {display:block;position:relative;}
+ .ajax_loading {position:absolute;margin-top:21px; display:none; }
+ .products-list .product-shop .ajax_loading {left:-23px; margin:10px 0 0; }
+ .product-shop .ajax_loading {margin:19px 0 0 -21px; }
++.quick-view { display:block; position:absolute; z-index:2; top:14%; left:30%; background:#97d2c9 url('../images/btn_overlay.png') 0 0 repeat-x; height:42px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; line-height:42px; padding:0 16px; font-size:14px; font-weight:300; color:#fff; text-align:center; white-space:nowrap; text-transform:lowercase;}
++.quick-view:hover {background-color:#393431; color:#fff; text-decoration:none;}
++
+ div.alert a{ font-size:12px; color:#8db201; padding-left:5px;}
+ div.alert a:hover{ color:#fff;}
+ div.alert {position:fixed; background:#353535; top:0; left:50%; width:333px; margin-left:-220px; padding:20px 60px; color:#FFF; z-index:10030; font-size:12px; font-weight:bold; color:#ececec; border-radius:0 0 3px 3px; text-align:center;}
+@@ -810,6 +813,9 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ /* View Type: List */
+ .products-list { margin:0; padding:0; }
+ .products-list li.item { border:none; padding:0 0 30px; }
++.products-list li.item .f-left{ position:relative;}
++.products-list li.item .f-left .quick-view{display:none;}
++.products-list li.item .f-left:hover .quick-view{display:block;}
+ .products-list li.item.last {}
+ .products-list .product-image { padding:0; margin:0; position:relative; background:#fff; border:9px solid #fff; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;
+     -webkit-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+@@ -1216,7 +1222,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .product-view .product-options {background: transparent; margin:0 0 0 380px; padding:0;}
+ .col1-layout .product-view .product-shop { float:none; width:auto; overflow:hidden; margin:0;}
+ .product-view .product-shop-info {overflow:hidden; padding:0 2px;}
+-.product-view .product-shop .product-options {margin:0px;}
++.product-view .product-shop .product-options {margin:0px 0 13px;}
+ .product-view .product-shop .price-box {position:relative; float:left;}
+ .product-view .product-shop .price-box .price-label { display:block;}
+ .product-view .product-shop .price-box .price { font-size:48px; line-height:48px; }
+@@ -1233,7 +1239,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .product-view .product-options .qty-holder {display:block; margin-top:5px;}
+ .product-view .product-options dd input.qty {width:40px;}
+ .product-view .product-options-bottom {background: transparent; margin:0 0 0 380px; padding:0;}
+-.product-view .product-shop .product-options-bottom {margin:13px 0; float:left;}
++.product-view .product-shop .product-options-bottom {margin:0; float:left;}
+ .product-view .product-shop .product-options-bottom .price-box {float:none; margin:0 0 15px; }
+ .product-view .product-img-box {width:363px; position:relative; margin: 0 30px 0 0;}
+ .product-view .product-img-box .zoom {width: 210px; background:none; }
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 71df9a4..afc6d11 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -132,7 +132,8 @@ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:
+ .jcarousel-prev-horizontal:hover,
+ .jcarousel-next-horizontal:hover,
+ .product-view .box-up-sell .jcarousel-next-horizontal:hover,
+-.product-view .box-up-sell .jcarousel-prev-horizontal:hover
++.product-view .box-up-sell .jcarousel-prev-horizontal:hover,
++.quick-view
+ {background-color:<?php echo $config['appearance']['color']; ?>}
+ 
+ .footer-info a,
+diff --git a/skin/frontend/default/shopper/css/quick_view.css b/skin/frontend/default/shopper/css/quick_view.css
+new file mode 100644
+index 0000000..a32f218
+--- /dev/null
++++ b/skin/frontend/default/shopper/css/quick_view.css
+@@ -0,0 +1,4 @@
++.ajax-index-options {}
++body.ajax-index-options {border:0;}
++.ajax-index-options .product-view .product-shop { float: none; width: auto; overflow: hidden; margin: 0;}
++.ajax-index-options .product-view .product-img-box {float:left; margin:0 30px 0 0;}
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+new file mode 100644
+index 0000000..2ee6f09
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+@@ -0,0 +1,98 @@
++function setAjaxData(data,iframe){
++    //showMessage(data.message);
++    if (data.status != 'ERROR' && jQuery('.cart-top-container').length) {
++        jQuery('.cart-top-container').replaceWith(data.cart_top);
++    }
++}
++
++function showMessage(message)
++{
++    jQuery('body').append('<div class="alert"></div>');
++    var $alert = jQuery('.alert');
++    $alert.slideDown(400);
++    $alert.html(message).append('<button></button>');
++    jQuery('button').click(function () {
++        $alert.slideUp(400);
++    });
++    $alert.slideDown('400', function () {
++        setTimeout(function () {
++            $alert.slideUp('400', function () {
++                jQuery(this).slideUp(400, function(){ jQuery(this).detach(); })
++            });
++        }, 7000)
++    });
++}
++
++jQuery(function($) {
++
++    $('.btn-cart').live('click', function () {
++        var cart = $('.cart-top');
++        var imgtodrag = $(this).parents('li.item').find('a.product-image img:not(.back_img)').eq(0);
++        if (imgtodrag) {
++            var imgclone = imgtodrag.clone()
++                .offset({ top:imgtodrag.offset().top, left:imgtodrag.offset().left })
++                .css({'opacity':'0.7', 'position':'absolute', 'height':'150px', 'width':'150px', 'z-index':'1000'})
++                .appendTo($('body'))
++                .animate({
++                    'top':cart.offset().top + 10,
++                    'left':cart.offset().left + 30,
++                    'width':55,
++                    'height':55
++                }, 1000, 'easeInOutExpo');
++            imgclone.animate({'width':0, 'height':0});
++        }
++        return false;
++    });
++
++
++    $('.fancybox').live('click', function() {
++        $this = $(this);
++        $.fancybox({
++            hideOnContentClick:true,
++            width:800,
++            autoDimensions:true,
++            type:'iframe',
++            href: $this.attr('href'),
++            showTitle:true,
++            scrolling:'no',
++            onComplete:function () {
++                $('#fancybox-frame').load(function () { // wait for frame to load and then gets it's height
++                    $('#fancybox-content').height($(this).contents().find('body').height() + 30);
++                    $.fancybox.resize();
++                });
++            }
++        });
++        return false;
++    });
++
++    $('.show-options').live('click', function(){
++        $('#fancybox' + $(this).attr('data-id')).trigger('click');
++        return false;
++    });
++    $('.ajax-cart').live('click', function(){
++        setLocationAjax($(this).attr('data-url'), $(this).attr('data-id'));
++        return false;
++    });
++
++    function setLocationAjax(url, id)
++    {
++        url = url.replace("checkout/cart", "ajax/index");
++        url += 'isAjax/1';
++        $('#ajax_loading' + id).show();
++        try {
++            $.ajax({
++                url:url,
++                dataType:'json',
++                success:function (data) {
++                    $('#ajax_loading' + id).hide();
++                    showMessage(data.message);
++                    if (data.status != 'ERROR' && $('.cart-top-container').length) {
++                        $('.cart-top-container').replaceWith(data.cart_top);
++                    }
++                }
++            });
++        } catch (e) {
++        }
++    }
++
++});
+diff --git a/skin/frontend/default/shopper/js/fancybox/blank.gif b/skin/frontend/default/shopper/js/fancybox/blank.gif
+new file mode 100644
+index 0000000000000000000000000000000000000000..35d42e808f0a8017b8d52a06be2f8fec0b466a66
+GIT binary patch
+literal 43
+scmZ?wbhEHbWMp7uXkcLY|NlP&1B2pE7Dgb&paUX6G7L;iE{qJ;0LZEa`2YX_
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_close.png b/skin/frontend/default/shopper/js/fancybox/fancy_close.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..07035307ad435f8f2f8eedf0bce50f7ec8a858c2
+GIT binary patch
+literal 1517
+zcmV<J1rqv+P)<h;3K|Lk000e1NJLTq0015U0015c1^@s6J20-I000HFNkl<ZNXMO5
+zYfO_@7>1To%f)hA(E>uTT$~N#GA0orBqo9-jKM;POccZrXJjTzge4|Sa0ca~7y<+{
+z2m7~>41(Jqf9L`mBM6zAjf4;hkjP@@B~d6Xz385|dB5iCM=Ro&JZZmk-uHdZd2i=@
+zK0a@Md;u9DFE7t8BO^nxckf<*y<V?uYikSa?(PnvcLL3kj3CdtTYgAM4k&<aNl8h;
+zr%s*HT)TEHuBD|#UsqSR`|8!JANTe3?aR!}jH#}!j=6B*LNtCqz!O9|tSjHj0!WZn
+zt|TLe4js~5zkc0t_wHTe)2C0bSgqEHH<HI@v)zC3;>C?SckUFGmX^jwM@NV80+eiP
+zQ*s##s^a3}Ldwd@cHO*r^T5i=%Fj}=Cr_R@78e&C((#usU;YFS>C)2Dw4tG)YO=*P
+zWt;6ZfL46;=u!R1$jGM-hhvcpVyCa+S}Q!T2ALHx;BHe#M~BsHHos=s2iW})#C?}q
+ztqvud-gYjKs<v<69+sb<uOA#7EP;)6GIaa)ZF_8N?5dPdisa;E)AaPTUD!SJzQ9-<
+zldC+D%Q+tEl#~=*YinzP-ELnZ<^KMDt6VN$*^E>G$zHm2X<Z=i?d>hmYPB(Bn>kzw
+z=gS!w6cG`jJ$?H00VK+=!cMnBDn?IFkCkj7KmNq~hrkZvU@n=EP}|7Gxw*M}1_lPI
+zNx@_?IS^|%_ok<(o3gXBH^f+@(X7_g)K~%n0$gMM{{Ab=%gZ*hH99)_Eo>!VJd8_C
+zE)WMoNsBB#u&}W3BMEnPby>y64F-cra9>kX)4DJoA0KZ5fitNn`NTT4wY3%+fA;Lz
+zZ+K4ucJi+Mg!m%<>Ug8kSg^LX_JD-5va;NEM#+V_H)8UHgaj8UJ?LiZVx92t@KxlB
+zb1oz#Bo|{kAO!IDVfOII$VfwRad8C+y?XV^;VEu~g@tQka>%(zhlYl1p7P=0!-vj9
+zYiMYw3l0uW##jWq+eZ-;6r@4F%{+PX<X0p#H#cYZmNZ0eu~^)ihBs2ety{O&IlHd}
+z1_pkFu}Cg09|hvO6EWP6URzH>Gcz;xx78|Q_F7Eb+}ynGO@4TI*h!27r4#SzfR=K~
+zhtpe&%-o-olT$}R&!0cHdm}}wbdd`2lO~)PlarHXnm>2$+(ng2^$EtJ+=vwl#Xg-*
+zSA%x<9|=lJ3CXuACMEY46&1O~{LGm%7HKm<?{=0H8q=5H*g(7!gPDl)@%j1rF%mp`
+z_N<!`%5qOJ6(=0ptWB&#eVq@Kzwv$q$dI~P1LD-g#Kdx(v){9@P23QKx};r66NwH9
+za<$Y;V`F2^+W!R)-b(?u<Z_l1ut%v>8lhZ|+Pv?nF1LcJswy+L%zshO4HzpR4skij
+zxq<8a{QPpl!oq4$R(*n7$-q`gsjcF2;NWZ?##l9wBW)lu_Bpk)RJgGO&Ey+2dDr3J
+z*x2~aJFl#)G^5U)q~qh`_b^ru6q9Xf%arlfse$W(T#z5f?cqE0>k)x`c6QcMUS4jN
+z#$B996B84z1O(|{7{3S{Bb#j7?T~OCi+pq$fP9eGqJ%Evk~i}B@#8tcAnk_QAg)9f
+z!qn81MJO5W0n6>}?Q|$y25QL`+uU$0x?KbSI<(UOBavf=wCW!^J3Ie)^yty-8!yk&
+z($YLG4fjwT{k&5mHL@*_7Xi1c4?x$HT^y5qc2zyPPCG3CUKl!f@Zj&~&!7K?fD>&z
+zDk^G(=74sN=`q$#Wm{gaK5myi7K~vRQ8s=CoB+NC8j<}iKpXzI(SMmt*2r@wST=`s
+zW7t-}X4hPqXy<B<%Whsd89NMo4pab@j0zq*%rdF0vx9AHdcBo?MJTz<LfJ?xkjOhp
+z<&!3z{~LHNmSsa(SNT3)6TTu3DA<UK-4-Z80M98|)=%{P^j_ako))ti-s$-tv=1s~
+TaV>3W00000NkvXXu0mjftFGKG
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_loading.png b/skin/frontend/default/shopper/js/fancybox/fancy_loading.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2503017960b3972499d3aa92f89953935ae40934
+GIT binary patch
+literal 10195
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_nav_left.png b/skin/frontend/default/shopper/js/fancybox/fancy_nav_left.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..ebaa6a4fd34e51575a01da366312c20618985cbc
+GIT binary patch
+literal 1446
+zcmV;X1zGxuP)<h;3K|Lk000e1NJLTq0015U0015c1^@s6J20-I000GTNkl<ZNXM;L
+zYe<_{7}ms?#!KUEvBqoG%-S_LFLRZ)N>R`@usIzf?P{x4#0gFqr~|<XPHerjinPTs
+ztNS;EP3-o^A3Ah%Vq4bMtstVPphH#_YRtu$*gbD}Khc<&wA+D)<ec-K_c`aio%4Bk
+z9Ns(u5#jv#^Iplx$&yp2PI;@<YH4e0tM8pVcl@YNpgEEe<azCDH(DeHB*2jqCr<d6
+zmzOJU-@YBw+}y0LtgJkK>(;IJySuwjr=+Ar78e&sHZ(Lu;P)*wKU%|U#jmpg5~Q6=
+zNl8{#mZGz>Q!_F$qJ8n=#Z9x>Jn_n|ZEtTsSzllOW_Wn`!@Rt_=!l4jAl`tKb-5%L
+zv7js_CMF<1KR>Fcr{|nbr~AR4Y-MG|y0EZdwI6@^^5yrikSZ}TQ5hH*C?{R4Q{?KT
+zKD6U2SFWfB2M0g0TCEGD5GUP%Y0a>J0W!M1fVuVU?d@ix(YV91PjUK7@OzY8E)OJ~
+z&Q30n%8njA8kC)#t?uvd&xMXHQZzI)WQmTB-n1vQM_gQ-{_*3-7UA?*_bJ9=m|W(F
+zT+IHE$H&L3T3T8zSS*%BTHM>)YZi;eI#;9uNVch|X-go#ckf=VQmKq2-ORBYaGo52
+zejy<t%8H7La|o25g_F7>g&!SS;_ltMX3~N9_#ORsfn&tMTp}T$j*yAd)6-A(_4O6g
+z0=-^ug|9bVkxorbSsNQ0x9sP<y}fnI%gfuOYjkw<E9iO$<3XHiVu9G#$HzyBC_Xno
+zKmQ#GcXf4{4<k)VO42VbF4}^LejUk_m6e%jesy*A7xd$SFg~@H;9vM({<c=Dy<jjH
+zo|15CYO3KdQl!ler_T=c9mxd;2X7))Y`zW%2uR163J3taJ(xW>G&EF`laq6qgf=!d
+ztnQGKnVtDqz_Vx1Y=Kr=TU+Vx?;nS;5H`1m#Lv%9fqI)#T3Y%!3C+yRSpE-E!h;77
+zwm7<P`uh65hp|vjEe{F&8>Z1{&Y;%TkkIqz&m9sAKBbnCkzsHry#@vbY{a-wI?zu7
+zloV4Q9NtQWLUAT7Ev=G-*4EZ6|HZd^F*!MDB>C#<>PDGN_5sGi_Yq4ZlG7@css!ck
+z9};wyN<s>`LrygSGPaaLVfqXl2Z+Nkm;ygvo12>(Bf+YwDwC`Hbwy5foiCI>(Z2*F
+z+nZVe;)K}P*aF<M-?H#Fe6Mqd+*uxvjg9GP{wFl_^MHN9WlJaEq*N-^!o)SGI8SH+
+zUKv~NRIZYek^|N$Dk?H^$^0AnT#K;_#IZM>#9Y8tUS3{lK|w(!NULrkdP#x17leSb
+zXU`h&IIwaw4`8eqNV6{>BDOh|vjhZ0E{e&QDDu0Pe|>%Zmb;{dg@s0w$z&rPA0K~+
+zu^J$UblaCq5g(ljxEe?Y`8AmFYt-vOfqZ&;+Eh?bV07kp3Z#jN34<UH(mycX2wWwd
+ztb5-jv3o7@)ujQlL0*RXeFKlY!KJ0889^bPhRPtGL?*(cM~_TG%5V)>Zfk3!OW_7k
+zM!Hz%fopN!Lja&lI}y+lIZjBszTeT&@!Ra|?DQ)q4Us*EN5ey8M=zh0NVTlX;X`2G
+z(+8kuN)-Dfn@v@Ns?$arfE9ks%*_0?uCDGc0&cYN@bK_KngiO{r&oDx0_$@6^x5~=
+zW5Gx^5k=$2z;)mYpdQiR47B2ZEBzOVMD;v(on_N_Z6xdRarMj<?K!!e{c@alPRcF<
+zp8%JELdIntyT~#Lyyh6|aQVEo|B8@ungz0wXdsqPlE61j693omTr|rD@>=Ped`)=n
+zv4Dh?$k=SYcJSdjDa(58`F?t%ZzxBbaRs;9zaA#)un(S!5dZ)H07*qoM6N<$g4RXF
+AD*ylh
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_nav_right.png b/skin/frontend/default/shopper/js/fancybox/fancy_nav_right.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..873294e969db9160f5ddd4e1ab498ff60b080e3f
+GIT binary patch
+literal 1454
+zcmV;f1yTBmP)<h;3K|Lk000e1NJLTq0015U0015c1^@s6J20-I000GbNkl<ZNXMmD
+zZAhC}6t;;mjnT$L7i;{?nyH<^`7u|iRZ0tL1DmU(NS(H|E#d?xOw>Wa6<o3PyNHUT
+zo$lWdHnH2E{?Ji3C;ecpZi0xSLLD-zP&FUMq}_AEc}3I2r0ok2$-VEn&vWm&=bU?A
+zAD_LSeSnB?{P=O-)YMc-LPCO{PN$PLH8sgQJ39lYO`vyVBiQrU*M4Y_7?1$_<Kp51
+z%gV~sZEbBa4Gj&tii(Out*xye_Vn}|NlQzMEGa38yn6L&1b*Ma6F_5ltoU^%K!!AP
+zDUoDnXRB}Cyr~}^9yTm5FW<0Qtz$2po~^B|$E&NW-wh27eVm`49~}`9q2dWhnaiWN
+zhz(^iF)=}B&YX$5ef##Y_4W0ioW+)wmhAKM^LFR{=g*)22oGtKlan<{rBXp$%qjA;
+zQh%CpQBjd@aB%PwyWKudgjnedxYh~}m|(NM6L7b&rKQDcHk)6t?Gvp2EcQK0p-?D^
+z)7{DiQQ3h52UIyZIlBJ-{?p*tB%-@_@7kiHqc@xdoe>`&Z+!IVkxf`V#(j>y7#5eg
+z5*PD+C=wGBwT+F9xi*_^fd=>X_FBba@wz8b0c3ma+O<tVyt}*mv__+eByQH&4!C_B
+zfdL^QA)4~?@?!{;Uxk&r62;za5cZltS67#nI1nFyqWwN_kTh6JBm~rca&cBx*5SUs
+zz7iT>G#c&LYnSBp_4S(*6BG8m#QpsI))yBSw}|WBy?ft)>pk?VIMu|0u-xC@UxO$<
+zHa9o-0~vR8bXeVyB61x;<Vn1=wA4a&&z?Q|4edlAj92X|>@W6T@vgyO$TgWvPslhu
+zJ>BGvFeN3$D2UT9wO!c-2M2E;RvddB6cm(&J}nRg`1!DUaA;_#J})n?kc`&W*6f~w
+z$XoI8@o`6>)z;Ql1O^7iqc4Qr?IQ^Y2vDQmrd_^#`AagIo}RXO6Tw=o)=2K&OZ?8A
+zJDVKcH{^2p2j~ms)bf#Ff5Y^8{ZZ7~8Zw%koV0nHJ||9`FbS!%u(0sL`TfAafI}Du
+zN;}#qfQDkqhr?T=R;!O@W@c89(aOq-SHe5pO)Do4INRL6f8R{+tE;Q)Wir`E=nLN^
+zERjf#VBjT`yZ^}0T`IW~brs!I17PDwDHNtJpz(@u7&_Ci&*x`nXGh4eva-_hHlhTo
+z>wKX6jrLg})!Ef*2q(qH#unh5y~V~`*!#E2<B^dOBia3e2km@dS8zGf2{<g3N)2#v
+z4JyuK8h~5IrYpj#swxY(w)PUeaN&ZPOXk1G=UVjTlE%(-5_199`uh52s#K~=NUI(p
+zQi;IZ2p5o%kzvB+z|PS;fW8tS)470%*ymKvk`NH5QB1x@k>5W2>+0$@y%jAkE;d^%
+z7KiBQ=;#CV)c|?K?OZZNymTtyIv@+;=i$b0QLhID@u{gPOF=<_+1<WVAdQWUZRa#Z
+z|3ZH~aE>^cd)FbceJt|Pr3Z2#UW)pC9hbbpr%#_w3xu>9DucKZSqKjwKC}oa!!=;B
+zxw)ARh3h~maWUsB$KtMw06>R!GGHKatdM5?eS3TRA2TyEQ!m{-s9LkQG(13d^zuqc
+z)WBRWF9N%+J^)=)qIgeo*i|*CI?Xfzc;V-hCr|!<<;s<R2sqJ3!^6V|=^fC_dwPz?
+zCNY=WtIw{>9veooizpgD1ug<#0d<J}2A~Q5o9MqtB&y?g7uhzG$3`-jzo%=iXvfMG
+zyf24%=0tW1_zWlniW!C6cZzM2c+5fO@OZs-{)&)tnkkti8i?hUB=Jd;!vFRBE}CtX
+zJXZQ9UlaRwctFA=GIpEX3I6;}%C^2czMtOc8_LyWJi)8ye+F~v<)btZr2qf`07*qo
+IM6N<$g1U{<%>V!Z
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_e.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_e.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2eda0893649371f8d92b92976d8542cdd1b601ed
+GIT binary patch
+literal 107
+zcmeAS@N?(olHy`uVBq!ia0vp^B0$W@!3HGnP3ltxQbwLGjv*Y^lSRZuw<aVc{9r!v
+zzu||u!2i}q_dR~t3;b_b^^^VS|K?ZB8~^XG_{w!8oq^%4vdDkV`fo3Qx*0rO{an^L
+HB{Ts5hz}+y
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_n.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_n.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..69aa10e233b039077e7dc600177ddb1eb46217e3
+GIT binary patch
+literal 106
+zcmeAS@N?(olHy`uVBq!ia0vp^j6f{H!3HFK_`(+gDML>e#}JO|p{EaWGAM`~zK|Yh
+zF7SQ+m+Ig>B0@o-N8?trihfzZ+Vp1~`{zf0o*#X0$hUAi%N$P)W1wCJ22WQ%mvv4F
+FO#q)zAp-ya
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_ne.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_ne.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..79f6980a3ba5c43de120d963dbba2516b8f27ac7
+GIT binary patch
+literal 347
+zcmV-h0i^zkP)<h;3K|Lk000e1NJLTq000yK000yS1^@s6jfou%0003ZNkl<ZILob+
+zYmUP(2!scm9HHv{Z@20hg4sW&`WCrWD{Ukze&AtXz?PZ%&(H3+n@gIzGf7{0`*}Q6
+zU?$1ez5~p@W$0it0aj-To6dgw9c$1i7D%OG!a>dR9Yb&V8f!h)aDezHAsc|y@|hdQ
+zYJb}?8~~zFbQ)ku!Ey)KSukutuvdZ@MKMX|x|A3tPyx?YVhN^6z!Mi4Mj2f#%<;nh
+z2{>?YAzu|{u^;Oq!;f7Z4tPBpJEmZ+^GZ#$=9nz(K+UmK7}|u&EPi%aRt_C3qOFB_
+zHc`~N>51%{?ijG?xsHt>MwRChgk=x_z0gh3O2xSL)-6?+2LKZL74~Q>MZjWtwukkA
+tvjRC=&j+0R$&bLyT7MhBcTXDISHC&xXU0&5CWHV0002ovPDHLkV1fX+la~Mh
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_nw.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_nw.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..7182cd938ae98e7e28c65a0bc55df576042ff9f5
+GIT binary patch
+literal 324
+zcmV-K0lWT*P)<h;3K|Lk000e1NJLTq000yK000yS1^@s6jfou%0003CNkl<ZILob+
+z0SbdK3`LtX^$4>2-&4CO{qhKP$XKD&mgeXEM77>~`RA}h@U^Z##eQZVtM>a-K?QT4
+z&(8BFf(rD5V61)2I__wHYuRwoaDIqw5Vdr_JSDVr){#J@r;{vbDL|tRyCiirf~4OF
+zX-l=Ecm>@yR)1nSMt~dy90Zb`^`)TQbhf8jR@fA!l6V$musRyB9Y{p$SCW}!$3==V
+zk)fW)Xo{s^ez$t+XhmZj;ts)!kTok<c^04|Sp~$jhS^pDUB$D=oTAxsnTV<p4fKK4
+zNSd2c)Ay-YB9Np_#01msEE@t?H_Zjs10X&l++nv(x=EqHe!2VGMEci7vK?tQ04#6s
+W>vmM>z)zt70000<MNUMnLSTa1AdgxA
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_s.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_s.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d8858bfb78efb8d7268736920efa1eae8873f89c
+GIT binary patch
+literal 111
+zcmeAS@N?(olHy`uVBq!ia0vp^j6f{H!3HFK_`(+gDKk$O#}JO|uBQ(2HW&yTIgq$g
+zagp$^d~T7VKYI4JH)Z!&uXw<ncKMol#jdq^(f#w%3)s9ve=?Ts5l(saxU?N;0)wZk
+KpUXO@geCxTMkF=>
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_se.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_se.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..541e3ffd3e88224b34a4d2097c66a780e6060aeb
+GIT binary patch
+literal 352
+zcmV-m0iXVfP)<h;3K|Lk000e1NJLTq000yK000yS1^@s6jfou%0003eNkl<ZILnPx
+zQEo#q2s6B1q1rim{|imM!P*4&1D)scq(+LOB-pV5#lEiB8-QK&0U!bV)PB|M`vmZ;
+zH30+wt2=z(@9-jd)}axQ0SUnIH@v3N9sqC=f<^lfV$h>{pM9=`y8<_<TSUg>I<ghE
+zvLrB*Cs__s16iX97ZIUy8iUPEkD0_6=WtQ=I#6vcQP-=HgBRh0z@R+sfj}*%Ch|fA
+zaZ<S;u-=(Gic47q0ha_XDu|PlvD!^|NMI{HNTu2|ItwN=Nxn&icM<p5L8LJ$<bLCz
+zC@`e?T@?QtE<G4z#i<8FESgmNO(83Ll3J%+Zo=8rGEE3lX_PM$5|_3bNqtDHf~Ik*
+y(1(B+eif5_o;>vWD02WY@RZ<9dgjNmAB|sYF}Xw>7Sq@O0000<MNUMnLSTa0oRGBu
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_sw.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_sw.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..b451689fa7b57b7432820e4c06d0864c143c79ab
+GIT binary patch
+literal 340
+zcmV-a0jvIrP)<h;3K|Lk000e1NJLTq000yK000yS1^@s6jfou%0003SNkl<ZILob*
+zQEmev3`Cz{H@QL7``>eMf9z;FC21=)67q_`W0*0KnS4AR00W2`RGn3i8UfsEegLO@
+zPhds?2e1Tm)FK3=bymIAx?X=YFo3Mdh7W<X(zEJK)}8{4uq!tx`w9X?=5(B*cqp(p
+zTm}e%&W*2n=vLvZs$Q<TW?CS;3Z)fx5NRq?x}af0)IB@IL(%r>?@I#8s#svp!&PB>
+zwah<EovWVO9S&@jSlX>@Ngd|l0N4SCfzvjtQnd$dZ0yM)N$X+lqdtN!Pt{Wn*_<zW
+zvsH)K(f`E`h=emGB(+1;sh{6~*cFFuSfb|Iq|Q5_2eK@Xw7K;TxND=>`0U}m1^#r1
+mwpaW{;a?9KKt^WrpTAEd?0j1W(3L*`0000<MNUMnLSTYY!jj4W
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_shadow_w.png b/skin/frontend/default/shopper/js/fancybox/fancy_shadow_w.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a4e4a887f18384a204563c0048c9cd1328f7faa
+GIT binary patch
+literal 103
+zcmeAS@N?(olHy`uVBq!ia0vp^B0$W@!3HGnP3ltxQhJ^)jv*Y^lmGnxZ_mu((a~wh
+zq?x9`cF~7N-~dyqv9qD|6t>P{ho=rRL|66mGO)=r*Hk83F#~lnc)I$ztaD0e0sy?&
+B8X5oq
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_title_left.png b/skin/frontend/default/shopper/js/fancybox/fancy_title_left.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..6049223d1ec6af46e100499c01f6489c9e2c6240
+GIT binary patch
+literal 503
+zcmV<T0SNwyP)<h;3K|Lk000e1NJLTq000jF001Be1ONa4XC>+)0005LNkl<ZD9??P
+zO(?^07{|Z%W=v)qQ^LF)MiS+%ykt&Z4;<VmvK^enX*E(xaly@TC*>qcp<H&*;%GUH
+zSSwb<w5iEU9?#$Z?`8Y{SAM_S|MPpE|MPsG?*qtB245A_&_F9kD*mj49tPwhFBPd7
+zWy82^54mI8&w*s9MHa_c?>9&~$uJw{{r<S0=$-bSoRQY>Uub~E?-XJ#Upm4Fe%-Gl
+z!u%tb0N102a|s5;SPlQvJlFCTBbvYaK@wIW6Gjx@?i20AlVDJcHNfh25WRlbF6CIq
+zv9_ZnqOH`}ppaUR0@%ZcM9zpDt2uQM>f+Z#wIMmyuui3DeoYXWE|hQ{D$te=Yhgkq
+zIvyj+$t8T|S1wITzUftNOe(E+Qjn$kDotY;I5}1lRgwi=?K26ke)djLR5W2|!7CVH
+z<stJtbtHwTf&-(z6S*D4ftH{iJ(zHLPj7@AyYVr}OrjkuC`TjuFagg&AlZtdnF_f7
+z26STt(=}_WK40h}`fWwQ-#PrCj9cu)AjUBT4;FuoEIeSZqL_<p<T3{^j8XX-7-3}<
+t?VP0<?MnN_ON4w@(#E6u{|YKB@F!Z~63BzUt+@aI002ovPDHLkV1h7a;{N~u
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_title_main.png b/skin/frontend/default/shopper/js/fancybox/fancy_title_main.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8044271f29b5d4e4471570e75cdce90bf9a1497c
+GIT binary patch
+literal 96
+zcmeAS@N?(olHy`uVBq!ia0vp^j6kfw!2%>J-`tuAq|`lK978y+CnqGNCkUke_%Gig
+ukvFM-ftpWh!il7Wg7kz7Y?7xB@G*olNlgoj4E_Yv!r<xZ=d#Wzp$Pzd&l|D;
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_title_over.png b/skin/frontend/default/shopper/js/fancybox/fancy_title_over.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d9f458f4bb8770466e44ba97dd8fe1f2936090db
+GIT binary patch
+literal 70
+zcmeAS@N?(olHy`uVBq!ia0vp^j3CUx1|;Q0k92}1TpU9<t|uoXBt-BqFsxu$a&+Mg
+Q1)v0jr>mdKI;Vst0Ha3^zyJUM
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancy_title_right.png b/skin/frontend/default/shopper/js/fancybox/fancy_title_right.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..e36d9db2a7c6e570aec993d3665cbc13620115e2
+GIT binary patch
+literal 506
+zcmV<W0R{evP)<h;3K|Lk000e1NJLTq000jF001Be1ONa4XC>+)0005ONkl<ZD9?RU
+zODKd<7(HgjV~o6q62@bJB+9EiGFF}o7IqXF3oEfwNGZhzJIh%qD^Ut%GYd^D$zq6U
+ziYfBQsF6pmbIm{cXa0ZOZ+Xu5-FwbG9}o`{j4&XMrE}7e3Ja2uK$<~Ac{_XA_D(OC
+zAq~l-7^5gcIS(7i;T$tBQxlqe4*%Zk7YPCPeh)G^BZA<O)#|%?mowZBWbq{`f+tj#
+zi}fc-I2uE?LQuo9=I@30e3@(H6=v#)i-O_V2?%kwk9_J#4E0CAwyTeCA*StAVF~qn
+zB5RBNM@z7=KS2j}_=WHtq6}6#Y0$t`UOI4tYUFXeQ3GdO3h@y{0}AP(DHhy}5`LCR
+zclfg(ttdqX&Cz?>xjQB-g>5=x46nGBwseihc$zfz<QToW!e;p;!C=c2+BLQ$UaUOI
+zP%JpnkNPN6!*Ot(U<h`UBUky7Cf~4sHz4~?Z^xV%MJH-d@b{tNC?1?)hF~}9P|QGu
+z<8b-p@~*ln*D#4ebfA`ct?Do>vTFh(=tCRj6cJ4M&ASrCAq-HbokPnRBAHVa2(-|l
+wYU(UxfYLN;K<jOEC|g+~&7S?gg8wh@4{Jmc$jZ#sod5s;07*qoM6N<$f@3$_C;$Ke
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancybox-x.png b/skin/frontend/default/shopper/js/fancybox/fancybox-x.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..c2130f8698f682d68b1550bffedecfe19eaa1a81
+GIT binary patch
+literal 203
+zcmeAS@N?(olHy`uVBq!ia0vp^j6m$c!3HGFo#yKTDajJoh?3y^w370~qErUQl>DSr
+z1<%~X^wgl##FWaylc_d9MY*0Xjv*Ddw)7kFH5l+P-xcE$W)3=fYI&uMKVzWNT*W|n
+zhqlRY)q0r(8Mg&Fu_zpISivgz+b7g)c6G&O{~njE??Y{u-MM!p^=9_W+X-j8mhfK?
+zj`H2Yy;kp%)!V-M3;EVThyB(Z@o88wpMja-vy^g)SgE!<&|(HpS3j3^P6<r_$?-(w
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancybox-y.png b/skin/frontend/default/shopper/js/fancybox/fancybox-y.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..7ef399b9908976fc36f760fad7876a4d9c38e006
+GIT binary patch
+literal 176
+zcmeAS@N?(olHy`uVBq!ia0vp^8bHj*!3HGP#J-sfq$EpRBT9nv(@M${i&7aJQ}UBi
+z6+Ckj(^G>|6H_V+Po~-c6$N>^IEGZ*^681?Yf#{6Zf~e!I`r4y-J+3m*Ue*gH=cNZ
+zzpU%p61aCO%jt%FH<vH6>UKW&bEWLcUAGzK?;SYE)E{9#W9O8@uj{O@89qzNU(dkI
+YVCW(7-@(*!CeU;SPgg&ebxsLQ07`N|KL7v#
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/fancybox.png b/skin/frontend/default/shopper/js/fancybox/fancybox.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..65e14f68fd83b87f75c22c0c074e7b20bf20a133
+GIT binary patch
+literal 15287
+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
+ZMt7F5hocMxav&E)U0Fw|QQ>vO{{ZOG+C=~W
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.easing-1.3.pack.js b/skin/frontend/default/shopper/js/fancybox/jquery.easing-1.3.pack.js
+new file mode 100644
+index 0000000..9028179
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.easing-1.3.pack.js
+@@ -0,0 +1,72 @@
++/*
++ * jQuery Easing v1.3 - http://gsgd.co.uk/sandbox/jquery/easing/
++ *
++ * Uses the built in easing capabilities added In jQuery 1.1
++ * to offer multiple easing options
++ *
++ * TERMS OF USE - jQuery Easing
++ * 
++ * Open source under the BSD License. 
++ * 
++ * Copyright © 2008 George McGinley Smith
++ * All rights reserved.
++ * 
++ * Redistribution and use in source and binary forms, with or without modification, 
++ * are permitted provided that the following conditions are met:
++ * 
++ * Redistributions of source code must retain the above copyright notice, this list of 
++ * conditions and the following disclaimer.
++ * Redistributions in binary form must reproduce the above copyright notice, this list 
++ * of conditions and the following disclaimer in the documentation and/or other materials 
++ * provided with the distribution.
++ * 
++ * Neither the name of the author nor the names of contributors may be used to endorse 
++ * or promote products derived from this software without specific prior written permission.
++ * 
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
++ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
++ *  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
++ * OF THE POSSIBILITY OF SUCH DAMAGE. 
++ *
++*/
++
++// t: current time, b: begInnIng value, c: change In value, d: duration
++eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('h.i[\'1a\']=h.i[\'z\'];h.O(h.i,{y:\'D\',z:9(x,t,b,c,d){6 h.i[h.i.y](x,t,b,c,d)},17:9(x,t,b,c,d){6 c*(t/=d)*t+b},D:9(x,t,b,c,d){6-c*(t/=d)*(t-2)+b},13:9(x,t,b,c,d){e((t/=d/2)<1)6 c/2*t*t+b;6-c/2*((--t)*(t-2)-1)+b},X:9(x,t,b,c,d){6 c*(t/=d)*t*t+b},U:9(x,t,b,c,d){6 c*((t=t/d-1)*t*t+1)+b},R:9(x,t,b,c,d){e((t/=d/2)<1)6 c/2*t*t*t+b;6 c/2*((t-=2)*t*t+2)+b},N:9(x,t,b,c,d){6 c*(t/=d)*t*t*t+b},M:9(x,t,b,c,d){6-c*((t=t/d-1)*t*t*t-1)+b},L:9(x,t,b,c,d){e((t/=d/2)<1)6 c/2*t*t*t*t+b;6-c/2*((t-=2)*t*t*t-2)+b},K:9(x,t,b,c,d){6 c*(t/=d)*t*t*t*t+b},J:9(x,t,b,c,d){6 c*((t=t/d-1)*t*t*t*t+1)+b},I:9(x,t,b,c,d){e((t/=d/2)<1)6 c/2*t*t*t*t*t+b;6 c/2*((t-=2)*t*t*t*t+2)+b},G:9(x,t,b,c,d){6-c*8.C(t/d*(8.g/2))+c+b},15:9(x,t,b,c,d){6 c*8.n(t/d*(8.g/2))+b},12:9(x,t,b,c,d){6-c/2*(8.C(8.g*t/d)-1)+b},Z:9(x,t,b,c,d){6(t==0)?b:c*8.j(2,10*(t/d-1))+b},Y:9(x,t,b,c,d){6(t==d)?b+c:c*(-8.j(2,-10*t/d)+1)+b},W:9(x,t,b,c,d){e(t==0)6 b;e(t==d)6 b+c;e((t/=d/2)<1)6 c/2*8.j(2,10*(t-1))+b;6 c/2*(-8.j(2,-10*--t)+2)+b},V:9(x,t,b,c,d){6-c*(8.o(1-(t/=d)*t)-1)+b},S:9(x,t,b,c,d){6 c*8.o(1-(t=t/d-1)*t)+b},Q:9(x,t,b,c,d){e((t/=d/2)<1)6-c/2*(8.o(1-t*t)-1)+b;6 c/2*(8.o(1-(t-=2)*t)+1)+b},P:9(x,t,b,c,d){f s=1.l;f p=0;f a=c;e(t==0)6 b;e((t/=d)==1)6 b+c;e(!p)p=d*.3;e(a<8.w(c)){a=c;f s=p/4}m f s=p/(2*8.g)*8.r(c/a);6-(a*8.j(2,10*(t-=1))*8.n((t*d-s)*(2*8.g)/p))+b},H:9(x,t,b,c,d){f s=1.l;f p=0;f a=c;e(t==0)6 b;e((t/=d)==1)6 b+c;e(!p)p=d*.3;e(a<8.w(c)){a=c;f s=p/4}m f s=p/(2*8.g)*8.r(c/a);6 a*8.j(2,-10*t)*8.n((t*d-s)*(2*8.g)/p)+c+b},T:9(x,t,b,c,d){f s=1.l;f p=0;f a=c;e(t==0)6 b;e((t/=d/2)==2)6 b+c;e(!p)p=d*(.3*1.5);e(a<8.w(c)){a=c;f s=p/4}m f s=p/(2*8.g)*8.r(c/a);e(t<1)6-.5*(a*8.j(2,10*(t-=1))*8.n((t*d-s)*(2*8.g)/p))+b;6 a*8.j(2,-10*(t-=1))*8.n((t*d-s)*(2*8.g)/p)*.5+c+b},F:9(x,t,b,c,d,s){e(s==u)s=1.l;6 c*(t/=d)*t*((s+1)*t-s)+b},E:9(x,t,b,c,d,s){e(s==u)s=1.l;6 c*((t=t/d-1)*t*((s+1)*t+s)+1)+b},16:9(x,t,b,c,d,s){e(s==u)s=1.l;e((t/=d/2)<1)6 c/2*(t*t*(((s*=(1.B))+1)*t-s))+b;6 c/2*((t-=2)*t*(((s*=(1.B))+1)*t+s)+2)+b},A:9(x,t,b,c,d){6 c-h.i.v(x,d-t,0,c,d)+b},v:9(x,t,b,c,d){e((t/=d)<(1/2.k)){6 c*(7.q*t*t)+b}m e(t<(2/2.k)){6 c*(7.q*(t-=(1.5/2.k))*t+.k)+b}m e(t<(2.5/2.k)){6 c*(7.q*(t-=(2.14/2.k))*t+.11)+b}m{6 c*(7.q*(t-=(2.18/2.k))*t+.19)+b}},1b:9(x,t,b,c,d){e(t<d/2)6 h.i.A(x,t*2,0,c,d)*.5+b;6 h.i.v(x,t*2-d,0,c,d)*.5+c*.5+b}});',62,74,'||||||return||Math|function|||||if|var|PI|jQuery|easing|pow|75|70158|else|sin|sqrt||5625|asin|||undefined|easeOutBounce|abs||def|swing|easeInBounce|525|cos|easeOutQuad|easeOutBack|easeInBack|easeInSine|easeOutElastic|easeInOutQuint|easeOutQuint|easeInQuint|easeInOutQuart|easeOutQuart|easeInQuart|extend|easeInElastic|easeInOutCirc|easeInOutCubic|easeOutCirc|easeInOutElastic|easeOutCubic|easeInCirc|easeInOutExpo|easeInCubic|easeOutExpo|easeInExpo||9375|easeInOutSine|easeInOutQuad|25|easeOutSine|easeInOutBack|easeInQuad|625|984375|jswing|easeInOutBounce'.split('|'),0,{}))
++
++/*
++ *
++ * TERMS OF USE - EASING EQUATIONS
++ * 
++ * Open source under the BSD License. 
++ * 
++ * Copyright © 2001 Robert Penner
++ * All rights reserved.
++ * 
++ * Redistribution and use in source and binary forms, with or without modification, 
++ * are permitted provided that the following conditions are met:
++ * 
++ * Redistributions of source code must retain the above copyright notice, this list of 
++ * conditions and the following disclaimer.
++ * Redistributions in binary form must reproduce the above copyright notice, this list 
++ * of conditions and the following disclaimer in the documentation and/or other materials 
++ * provided with the distribution.
++ * 
++ * Neither the name of the author nor the names of contributors may be used to endorse 
++ * or promote products derived from this software without specific prior written permission.
++ * 
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
++ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
++ *  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
++ * OF THE POSSIBILITY OF SUCH DAMAGE. 
++ *
++ */
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+new file mode 100644
+index 0000000..c42d7b0
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+@@ -0,0 +1,358 @@
++/*
++ * FancyBox - jQuery Plugin
++ * Simple and fancy lightbox alternative
++ *
++ * Examples and documentation at: http://fancybox.net
++ * 
++ * Copyright (c) 2008 - 2010 Janis Skarnelis
++ * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated.
++ * 
++ * Version: 1.3.4 (11/11/2010)
++ * Requires: jQuery v1.3+
++ *
++ * Dual licensed under the MIT and GPL licenses:
++ *   http://www.opensource.org/licenses/mit-license.php
++ *   http://www.gnu.org/licenses/gpl.html
++ */
++#fancybox-loading {
++	position: fixed;
++	top: 50%;
++	left: 50%;
++	width: 40px;
++	height: 40px;
++	margin-top: -20px;
++	margin-left: -20px;
++	cursor: pointer;
++	overflow: hidden;
++	z-index: 11040;
++	display: none;
++}
++
++#fancybox-loading div {
++	position: absolute;
++	top: 0;
++	left: 0;
++	width: 40px;
++	height: 480px;
++	background-image: url('fancybox.png');
++}
++
++#fancybox-overlay {
++	position: absolute;
++	top: 0;
++	left: 0;
++	width: 100%;
++	z-index: 11000;
++	display: none;
++}
++
++#fancybox-tmp {
++	padding: 0;
++	margin: 0;
++	border: 0;
++	overflow: auto;
++	display: none;
++}
++
++#fancybox-wrap {
++	position: absolute;
++	top: 0;
++	left: 0;
++	padding: 20px;
++	z-index: 11010;
++	outline: none;
++	display: none;
++}
++
++#fancybox-outer {
++	position: relative;
++	width: 100%;
++	height: 100%;
++	background: #fff;
++}
++
++#fancybox-content {
++	width: 0;
++	height: 0;
++	padding: 0;
++	outline: none;
++	position: relative;
++	overflow: hidden;
++	z-index: 11020;
++	border: 0px solid #fff;
++}
++
++#fancybox-hide-sel-frame {
++	position: absolute;
++	top: 0;
++	left: 0;
++	width: 100%;
++	height: 100%;
++	background: transparent;
++	z-index: 11010;
++}
++
++#fancybox-close {
++	position: absolute;
++	top: -15px;
++	right: -15px;
++	width: 30px;
++	height: 30px;
++	background: transparent url('fancybox.png') -40px 0px;
++	cursor: pointer;
++	z-index: 11030;
++	display: none;
++}
++
++#fancybox-error {
++	color: #444;
++	font: normal 12px/20px Arial;
++	padding: 14px;
++	margin: 0;
++}
++
++#fancybox-img {
++	width: 100%;
++	height: 100%;
++	padding: 0;
++	margin: 0;
++	border: none;
++	outline: none;
++	line-height: 0;
++	vertical-align: top;
++}
++
++#fancybox-frame {
++	width: 100%;
++	height: 100%;
++	border: none;
++	display: block;
++}
++
++#fancybox-left, #fancybox-right {
++	position: absolute;
++	bottom: 0px;
++	height: 100%;
++	width: 35%;
++	cursor: pointer;
++	outline: none;
++	background: transparent url('blank.gif');
++	z-index: 11020;
++	display: none;
++}
++
++#fancybox-left {
++	left: 0px;
++}
++
++#fancybox-right {
++	right: 0px;
++}
++
++#fancybox-left-ico, #fancybox-right-ico {
++	position: absolute;
++	top: 50%;
++	left: -9999px;
++	width: 30px;
++	height: 30px;
++	margin-top: -15px;
++	cursor: pointer;
++	z-index: 11020;
++	display: block;
++}
++
++#fancybox-left-ico {
++	background-image: url('fancybox.png');
++	background-position: -40px -30px;
++}
++
++#fancybox-right-ico {
++	background-image: url('fancybox.png');
++	background-position: -40px -60px;
++}
++
++#fancybox-left:hover, #fancybox-right:hover {
++	visibility: visible; /* IE6 */
++}
++
++#fancybox-left:hover span {
++	left: 20px;
++}
++
++#fancybox-right:hover span {
++	left: auto;
++	right: 20px;
++}
++
++.fancybox-bg {
++	position: absolute;
++	padding: 0;
++	margin: 0;
++	border: 0;
++	width: 20px;
++	height: 20px;
++	z-index: 10010;
++}
++
++#fancybox-bg-n {
++	top: -20px;
++	left: 0;
++	width: 100%;
++	background-image: url('fancybox-x.png');
++}
++
++#fancybox-bg-ne {
++	top: -20px;
++	right: -20px;
++	background-image: url('fancybox.png');
++	background-position: -40px -162px;
++}
++
++#fancybox-bg-e {
++	top: 0;
++	right: -20px;
++	height: 100%;
++	background-image: url('fancybox-y.png');
++	background-position: -20px 0px;
++}
++
++#fancybox-bg-se {
++	bottom: -20px;
++	right: -20px;
++	background-image: url('fancybox.png');
++	background-position: -40px -182px; 
++}
++
++#fancybox-bg-s {
++	bottom: -20px;
++	left: 0;
++	width: 100%;
++	background-image: url('fancybox-x.png');
++	background-position: 0px -20px;
++}
++
++#fancybox-bg-sw {
++	bottom: -20px;
++	left: -20px;
++	background-image: url('fancybox.png');
++	background-position: -40px -142px;
++}
++
++#fancybox-bg-w {
++	top: 0;
++	left: -20px;
++	height: 100%;
++	background-image: url('fancybox-y.png');
++}
++
++#fancybox-bg-nw {
++	top: -20px;
++	left: -20px;
++	background-image: url('fancybox.png');
++	background-position: -40px -122px;
++}
++
++#fancybox-title {
++	font-family: Helvetica;
++	font-size: 12px;
++	z-index: 11020;
++}
++
++.fancybox-title-inside {
++	padding-bottom: 10px;
++	text-align: center;
++	color: #333;
++	background: #fff;
++	position: relative;
++}
++
++.fancybox-title-outside {
++	padding-top: 10px;
++	color: #fff;
++}
++
++.fancybox-title-over {
++	position: absolute;
++	bottom: 0;
++	left: 0;
++	color: #FFF;
++	text-align: left;
++}
++
++#fancybox-title-over {
++	padding: 10px;
++	background-image: url('fancy_title_over.png');
++	display: block;
++}
++
++.fancybox-title-float {
++	position: absolute;
++	left: 0;
++	bottom: -20px;
++	height: 32px;
++}
++
++#fancybox-title-float-wrap {
++	border: none;
++	border-collapse: collapse;
++	width: auto;
++}
++
++#fancybox-title-float-wrap td {
++	border: none;
++	white-space: nowrap;
++}
++
++#fancybox-title-float-left {
++	padding: 0 0 0 15px;
++	background: url('fancybox.png') -40px -90px no-repeat;
++}
++
++#fancybox-title-float-main {
++	color: #FFF;
++	line-height: 29px;
++	font-weight: bold;
++	padding: 0 0 3px 0;
++	background: url('fancybox-x.png') 0px -40px;
++}
++
++#fancybox-title-float-right {
++	padding: 0 0 0 15px;
++	background: url('fancybox.png') -55px -90px no-repeat;
++}
++
++/* IE6 */
++
++.fancybox-ie6 #fancybox-close { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_close.png', sizingMethod='scale'); }
++
++.fancybox-ie6 #fancybox-left-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_left.png', sizingMethod='scale'); }
++.fancybox-ie6 #fancybox-right-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_right.png', sizingMethod='scale'); }
++
++.fancybox-ie6 #fancybox-title-over { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }
++.fancybox-ie6 #fancybox-title-float-left { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_left.png', sizingMethod='scale'); }
++.fancybox-ie6 #fancybox-title-float-main { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_main.png', sizingMethod='scale'); }
++.fancybox-ie6 #fancybox-title-float-right { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_right.png', sizingMethod='scale'); }
++
++.fancybox-ie6 #fancybox-bg-w, .fancybox-ie6 #fancybox-bg-e, .fancybox-ie6 #fancybox-left, .fancybox-ie6 #fancybox-right, #fancybox-hide-sel-frame {
++	height: expression(this.parentNode.clientHeight + "px");
++}
++
++#fancybox-loading.fancybox-ie6 {
++	position: absolute; margin-top: 0;
++	top: expression( (-20 + (document.documentElement.clientHeight ? document.documentElement.clientHeight/2 : document.body.clientHeight/2 ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop )) + 'px');
++}
++
++#fancybox-loading.fancybox-ie6 div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_loading.png', sizingMethod='scale'); }
++
++/* IE6, IE7, IE8 */
++
++.fancybox-ie .fancybox-bg { background: transparent !important; }
++
++.fancybox-ie #fancybox-bg-n { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_n.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-ne { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-e { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_e.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-se { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_se.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-s { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_s.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-sw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-w { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_w.png', sizingMethod='scale'); }
++.fancybox-ie #fancybox-bg-nw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.js b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.js
+new file mode 100644
+index 0000000..f6e6696
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.js
+@@ -0,0 +1,1156 @@
++/*
++ * FancyBox - jQuery Plugin
++ * Simple and fancy lightbox alternative
++ *
++ * Examples and documentation at: http://fancybox.net
++ *
++ * Copyright (c) 2008 - 2010 Janis Skarnelis
++ * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated.
++ *
++ * Version: 1.3.4 (11/11/2010)
++ * Requires: jQuery v1.3+
++ *
++ * Dual licensed under the MIT and GPL licenses:
++ *   http://www.opensource.org/licenses/mit-license.php
++ *   http://www.gnu.org/licenses/gpl.html
++ */
++
++;(function($) {
++	var tmp, loading, overlay, wrap, outer, content, close, title, nav_left, nav_right,
++
++		selectedIndex = 0, selectedOpts = {}, selectedArray = [], currentIndex = 0, currentOpts = {}, currentArray = [],
++
++		ajaxLoader = null, imgPreloader = new Image(), imgRegExp = /\.(jpg|gif|png|bmp|jpeg)(.*)?$/i, swfRegExp = /[^\.]\.(swf)\s*$/i,
++
++		loadingTimer, loadingFrame = 1,
++
++		titleHeight = 0, titleStr = '', start_pos, final_pos, busy = false, fx = $.extend($('<div/>')[0], { prop: 0 }),
++
++		isIE6 = $.browser.msie && $.browser.version < 7 && !window.XMLHttpRequest,
++
++		/*
++		 * Private methods 
++		 */
++
++		_abort = function() {
++			loading.hide();
++
++			imgPreloader.onerror = imgPreloader.onload = null;
++
++			if (ajaxLoader) {
++				ajaxLoader.abort();
++			}
++
++			tmp.empty();
++		},
++
++		_error = function() {
++			if (false === selectedOpts.onError(selectedArray, selectedIndex, selectedOpts)) {
++				loading.hide();
++				busy = false;
++				return;
++			}
++
++			selectedOpts.titleShow = false;
++
++			selectedOpts.width = 'auto';
++			selectedOpts.height = 'auto';
++
++			tmp.html( '<p id="fancybox-error">The requested content cannot be loaded.<br />Please try again later.</p>' );
++
++			_process_inline();
++		},
++
++		_start = function() {
++			var obj = selectedArray[ selectedIndex ],
++				href, 
++				type, 
++				title,
++				str,
++				emb,
++				ret;
++
++			_abort();
++
++			selectedOpts = $.extend({}, $.fn.fancybox.defaults, (typeof $(obj).data('fancybox') == 'undefined' ? selectedOpts : $(obj).data('fancybox')));
++
++			ret = selectedOpts.onStart(selectedArray, selectedIndex, selectedOpts);
++
++			if (ret === false) {
++				busy = false;
++				return;
++			} else if (typeof ret == 'object') {
++				selectedOpts = $.extend(selectedOpts, ret);
++			}
++
++			title = selectedOpts.title || (obj.nodeName ? $(obj).attr('title') : obj.title) || '';
++
++			if (obj.nodeName && !selectedOpts.orig) {
++				selectedOpts.orig = $(obj).children("img:first").length ? $(obj).children("img:first") : $(obj);
++			}
++
++			if (title === '' && selectedOpts.orig && selectedOpts.titleFromAlt) {
++				title = selectedOpts.orig.attr('alt');
++			}
++
++			href = selectedOpts.href || (obj.nodeName ? $(obj).attr('href') : obj.href) || null;
++
++			if ((/^(?:javascript)/i).test(href) || href == '#') {
++				href = null;
++			}
++
++			if (selectedOpts.type) {
++				type = selectedOpts.type;
++
++				if (!href) {
++					href = selectedOpts.content;
++				}
++
++			} else if (selectedOpts.content) {
++				type = 'html';
++
++			} else if (href) {
++				if (href.match(imgRegExp)) {
++					type = 'image';
++
++				} else if (href.match(swfRegExp)) {
++					type = 'swf';
++
++				} else if ($(obj).hasClass("iframe")) {
++					type = 'iframe';
++
++				} else if (href.indexOf("#") === 0) {
++					type = 'inline';
++
++				} else {
++					type = 'ajax';
++				}
++			}
++
++			if (!type) {
++				_error();
++				return;
++			}
++
++			if (type == 'inline') {
++				obj	= href.substr(href.indexOf("#"));
++				type = $(obj).length > 0 ? 'inline' : 'ajax';
++			}
++
++			selectedOpts.type = type;
++			selectedOpts.href = href;
++			selectedOpts.title = title;
++
++			if (selectedOpts.autoDimensions) {
++				if (selectedOpts.type == 'html' || selectedOpts.type == 'inline' || selectedOpts.type == 'ajax') {
++					selectedOpts.width = 'auto';
++					selectedOpts.height = 'auto';
++				} else {
++					selectedOpts.autoDimensions = false;	
++				}
++			}
++
++			if (selectedOpts.modal) {
++				selectedOpts.overlayShow = true;
++				selectedOpts.hideOnOverlayClick = false;
++				selectedOpts.hideOnContentClick = false;
++				selectedOpts.enableEscapeButton = false;
++				selectedOpts.showCloseButton = false;
++			}
++
++			selectedOpts.padding = parseInt(selectedOpts.padding, 10);
++			selectedOpts.margin = parseInt(selectedOpts.margin, 10);
++
++			tmp.css('padding', (selectedOpts.padding + selectedOpts.margin));
++
++			$('.fancybox-inline-tmp').unbind('fancybox-cancel').bind('fancybox-change', function() {
++				$(this).replaceWith(content.children());				
++			});
++
++			switch (type) {
++				case 'html' :
++					tmp.html( selectedOpts.content );
++					_process_inline();
++				break;
++
++				case 'inline' :
++					if ( $(obj).parent().is('#fancybox-content') === true) {
++						busy = false;
++						return;
++					}
++
++					$('<div class="fancybox-inline-tmp" />')
++						.hide()
++						.insertBefore( $(obj) )
++						.bind('fancybox-cleanup', function() {
++							$(this).replaceWith(content.children());
++						}).bind('fancybox-cancel', function() {
++							$(this).replaceWith(tmp.children());
++						});
++
++					$(obj).appendTo(tmp);
++
++					_process_inline();
++				break;
++
++				case 'image':
++					busy = false;
++
++					$.fancybox.showActivity();
++
++					imgPreloader = new Image();
++
++					imgPreloader.onerror = function() {
++						_error();
++					};
++
++					imgPreloader.onload = function() {
++						busy = true;
++
++						imgPreloader.onerror = imgPreloader.onload = null;
++
++						_process_image();
++					};
++
++					imgPreloader.src = href;
++				break;
++
++				case 'swf':
++					selectedOpts.scrolling = 'no';
++
++					str = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + selectedOpts.width + '" height="' + selectedOpts.height + '"><param name="movie" value="' + href + '"></param>';
++					emb = '';
++
++					$.each(selectedOpts.swf, function(name, val) {
++						str += '<param name="' + name + '" value="' + val + '"></param>';
++						emb += ' ' + name + '="' + val + '"';
++					});
++
++					str += '<embed src="' + href + '" type="application/x-shockwave-flash" width="' + selectedOpts.width + '" height="' + selectedOpts.height + '"' + emb + '></embed></object>';
++
++					tmp.html(str);
++
++					_process_inline();
++				break;
++
++				case 'ajax':
++					busy = false;
++
++					$.fancybox.showActivity();
++
++					selectedOpts.ajax.win = selectedOpts.ajax.success;
++
++					ajaxLoader = $.ajax($.extend({}, selectedOpts.ajax, {
++						url	: href,
++						data : selectedOpts.ajax.data || {},
++						error : function(XMLHttpRequest, textStatus, errorThrown) {
++							if ( XMLHttpRequest.status > 0 ) {
++								_error();
++							}
++						},
++						success : function(data, textStatus, XMLHttpRequest) {
++							var o = typeof XMLHttpRequest == 'object' ? XMLHttpRequest : ajaxLoader;
++							if (o.status == 200) {
++								if ( typeof selectedOpts.ajax.win == 'function' ) {
++									ret = selectedOpts.ajax.win(href, data, textStatus, XMLHttpRequest);
++
++									if (ret === false) {
++										loading.hide();
++										return;
++									} else if (typeof ret == 'string' || typeof ret == 'object') {
++										data = ret;
++									}
++								}
++
++								tmp.html( data );
++								_process_inline();
++							}
++						}
++					}));
++
++				break;
++
++				case 'iframe':
++					_show();
++				break;
++			}
++		},
++
++		_process_inline = function() {
++			var
++				w = selectedOpts.width,
++				h = selectedOpts.height;
++
++			if (w.toString().indexOf('%') > -1) {
++				w = parseInt( ($(window).width() - (selectedOpts.margin * 2)) * parseFloat(w) / 100, 10) + 'px';
++
++			} else {
++				w = w == 'auto' ? 'auto' : w + 'px';	
++			}
++
++			if (h.toString().indexOf('%') > -1) {
++				h = parseInt( ($(window).height() - (selectedOpts.margin * 2)) * parseFloat(h) / 100, 10) + 'px';
++
++			} else {
++				h = h == 'auto' ? 'auto' : h + 'px';	
++			}
++
++			tmp.wrapInner('<div style="width:' + w + ';height:' + h + ';overflow: ' + (selectedOpts.scrolling == 'auto' ? 'auto' : (selectedOpts.scrolling == 'yes' ? 'scroll' : 'hidden')) + ';position:relative;"></div>');
++
++			selectedOpts.width = tmp.width();
++			selectedOpts.height = tmp.height();
++
++			_show();
++		},
++
++		_process_image = function() {
++			selectedOpts.width = imgPreloader.width;
++			selectedOpts.height = imgPreloader.height;
++
++			$("<img />").attr({
++				'id' : 'fancybox-img',
++				'src' : imgPreloader.src,
++				'alt' : selectedOpts.title
++			}).appendTo( tmp );
++
++			_show();
++		},
++
++		_show = function() {
++			var pos, equal;
++
++			loading.hide();
++
++			if (wrap.is(":visible") && false === currentOpts.onCleanup(currentArray, currentIndex, currentOpts)) {
++				$.event.trigger('fancybox-cancel');
++
++				busy = false;
++				return;
++			}
++
++			busy = true;
++
++			$(content.add( overlay )).unbind();
++
++			$(window).unbind("resize.fb scroll.fb");
++			$(document).unbind('keydown.fb');
++
++			if (wrap.is(":visible") && currentOpts.titlePosition !== 'outside') {
++				wrap.css('height', wrap.height());
++			}
++
++			currentArray = selectedArray;
++			currentIndex = selectedIndex;
++			currentOpts = selectedOpts;
++
++			if (currentOpts.overlayShow) {
++				overlay.css({
++					'background-color' : currentOpts.overlayColor,
++					'opacity' : currentOpts.overlayOpacity,
++					'cursor' : currentOpts.hideOnOverlayClick ? 'pointer' : 'auto',
++					'height' : $(document).height()
++				});
++
++				if (!overlay.is(':visible')) {
++					if (isIE6) {
++						$('select:not(#fancybox-tmp select)').filter(function() {
++							return this.style.visibility !== 'hidden';
++						}).css({'visibility' : 'hidden'}).one('fancybox-cleanup', function() {
++							this.style.visibility = 'inherit';
++						});
++					}
++
++					overlay.show();
++				}
++			} else {
++				overlay.hide();
++			}
++
++			final_pos = _get_zoom_to();
++
++			_process_title();
++
++			if (wrap.is(":visible")) {
++				$( close.add( nav_left ).add( nav_right ) ).hide();
++
++				pos = wrap.position(),
++
++				start_pos = {
++					top	 : pos.top,
++					left : pos.left,
++					width : wrap.width(),
++					height : wrap.height()
++				};
++
++				equal = (start_pos.width == final_pos.width && start_pos.height == final_pos.height);
++
++				content.fadeTo(currentOpts.changeFade, 0.3, function() {
++					var finish_resizing = function() {
++						content.html( tmp.contents() ).fadeTo(currentOpts.changeFade, 1, _finish);
++					};
++
++					$.event.trigger('fancybox-change');
++
++					content
++						.empty()
++						.removeAttr('filter')
++						.css({
++							'border-width' : currentOpts.padding,
++							'width'	: final_pos.width - currentOpts.padding * 2,
++							'height' : selectedOpts.autoDimensions ? 'auto' : final_pos.height - titleHeight - currentOpts.padding * 2
++						});
++
++					if (equal) {
++						finish_resizing();
++
++					} else {
++						fx.prop = 0;
++
++						$(fx).animate({prop: 1}, {
++							 duration : currentOpts.changeSpeed,
++							 easing : currentOpts.easingChange,
++							 step : _draw,
++							 complete : finish_resizing
++						});
++					}
++				});
++
++				return;
++			}
++
++			wrap.removeAttr("style");
++
++			content.css('border-width', currentOpts.padding);
++
++			if (currentOpts.transitionIn == 'elastic') {
++				start_pos = _get_zoom_from();
++
++				content.html( tmp.contents() );
++
++				wrap.show();
++
++				if (currentOpts.opacity) {
++					final_pos.opacity = 0;
++				}
++
++				fx.prop = 0;
++
++				$(fx).animate({prop: 1}, {
++					 duration : currentOpts.speedIn,
++					 easing : currentOpts.easingIn,
++					 step : _draw,
++					 complete : _finish
++				});
++
++				return;
++			}
++
++			if (currentOpts.titlePosition == 'inside' && titleHeight > 0) {	
++				title.show();	
++			}
++
++			content
++				.css({
++					'width' : final_pos.width - currentOpts.padding * 2,
++					'height' : selectedOpts.autoDimensions ? 'auto' : final_pos.height - titleHeight - currentOpts.padding * 2
++				})
++				.html( tmp.contents() );
++
++			wrap
++				.css(final_pos)
++				.fadeIn( currentOpts.transitionIn == 'none' ? 0 : currentOpts.speedIn, _finish );
++		},
++
++		_format_title = function(title) {
++			if (title && title.length) {
++				if (currentOpts.titlePosition == 'float') {
++					return '<table id="fancybox-title-float-wrap" cellpadding="0" cellspacing="0"><tr><td id="fancybox-title-float-left"></td><td id="fancybox-title-float-main">' + title + '</td><td id="fancybox-title-float-right"></td></tr></table>';
++				}
++
++				return '<div id="fancybox-title-' + currentOpts.titlePosition + '">' + title + '</div>';
++			}
++
++			return false;
++		},
++
++		_process_title = function() {
++			titleStr = currentOpts.title || '';
++			titleHeight = 0;
++
++			title
++				.empty()
++				.removeAttr('style')
++				.removeClass();
++
++			if (currentOpts.titleShow === false) {
++				title.hide();
++				return;
++			}
++
++			titleStr = $.isFunction(currentOpts.titleFormat) ? currentOpts.titleFormat(titleStr, currentArray, currentIndex, currentOpts) : _format_title(titleStr);
++
++			if (!titleStr || titleStr === '') {
++				title.hide();
++				return;
++			}
++
++			title
++				.addClass('fancybox-title-' + currentOpts.titlePosition)
++				.html( titleStr )
++				.appendTo( 'body' )
++				.show();
++
++			switch (currentOpts.titlePosition) {
++				case 'inside':
++					title
++						.css({
++							'width' : final_pos.width - (currentOpts.padding * 2),
++							'marginLeft' : currentOpts.padding,
++							'marginRight' : currentOpts.padding
++						});
++
++					titleHeight = title.outerHeight(true);
++
++					title.appendTo( outer );
++
++					final_pos.height += titleHeight;
++				break;
++
++				case 'over':
++					title
++						.css({
++							'marginLeft' : currentOpts.padding,
++							'width'	: final_pos.width - (currentOpts.padding * 2),
++							'bottom' : currentOpts.padding
++						})
++						.appendTo( outer );
++				break;
++
++				case 'float':
++					title
++						.css('left', parseInt((title.width() - final_pos.width - 40)/ 2, 10) * -1)
++						.appendTo( wrap );
++				break;
++
++				default:
++					title
++						.css({
++							'width' : final_pos.width - (currentOpts.padding * 2),
++							'paddingLeft' : currentOpts.padding,
++							'paddingRight' : currentOpts.padding
++						})
++						.appendTo( wrap );
++				break;
++			}
++
++			title.hide();
++		},
++
++		_set_navigation = function() {
++			if (currentOpts.enableEscapeButton || currentOpts.enableKeyboardNav) {
++				$(document).bind('keydown.fb', function(e) {
++					if (e.keyCode == 27 && currentOpts.enableEscapeButton) {
++						e.preventDefault();
++						$.fancybox.close();
++
++					} else if ((e.keyCode == 37 || e.keyCode == 39) && currentOpts.enableKeyboardNav && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
++						e.preventDefault();
++						$.fancybox[ e.keyCode == 37 ? 'prev' : 'next']();
++					}
++				});
++			}
++
++			if (!currentOpts.showNavArrows) { 
++				nav_left.hide();
++				nav_right.hide();
++				return;
++			}
++
++			if ((currentOpts.cyclic && currentArray.length > 1) || currentIndex !== 0) {
++				nav_left.show();
++			}
++
++			if ((currentOpts.cyclic && currentArray.length > 1) || currentIndex != (currentArray.length -1)) {
++				nav_right.show();
++			}
++		},
++
++		_finish = function () {
++			if (!$.support.opacity) {
++				content.get(0).style.removeAttribute('filter');
++				wrap.get(0).style.removeAttribute('filter');
++			}
++
++			if (selectedOpts.autoDimensions) {
++				content.css('height', 'auto');
++			}
++
++			wrap.css('height', 'auto');
++
++			if (titleStr && titleStr.length) {
++				title.show();
++			}
++
++			if (currentOpts.showCloseButton) {
++				close.show();
++			}
++
++			_set_navigation();
++	
++			if (currentOpts.hideOnContentClick)	{
++				content.bind('click', $.fancybox.close);
++			}
++
++			if (currentOpts.hideOnOverlayClick)	{
++				overlay.bind('click', $.fancybox.close);
++			}
++
++			$(window).bind("resize.fb", $.fancybox.resize);
++
++			if (currentOpts.centerOnScroll) {
++				$(window).bind("scroll.fb", $.fancybox.center);
++			}
++
++			if (currentOpts.type == 'iframe') {
++				$('<iframe id="fancybox-frame" name="fancybox-frame' + new Date().getTime() + '" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + ' scrolling="' + selectedOpts.scrolling + '" src="' + currentOpts.href + '"></iframe>').appendTo(content);
++			}
++
++			wrap.show();
++
++			busy = false;
++
++			$.fancybox.center();
++
++			currentOpts.onComplete(currentArray, currentIndex, currentOpts);
++
++			_preload_images();
++		},
++
++		_preload_images = function() {
++			var href, 
++				objNext;
++
++			if ((currentArray.length -1) > currentIndex) {
++				href = currentArray[ currentIndex + 1 ].href;
++
++				if (typeof href !== 'undefined' && href.match(imgRegExp)) {
++					objNext = new Image();
++					objNext.src = href;
++				}
++			}
++
++			if (currentIndex > 0) {
++				href = currentArray[ currentIndex - 1 ].href;
++
++				if (typeof href !== 'undefined' && href.match(imgRegExp)) {
++					objNext = new Image();
++					objNext.src = href;
++				}
++			}
++		},
++
++		_draw = function(pos) {
++			var dim = {
++				width : parseInt(start_pos.width + (final_pos.width - start_pos.width) * pos, 10),
++				height : parseInt(start_pos.height + (final_pos.height - start_pos.height) * pos, 10),
++
++				top : parseInt(start_pos.top + (final_pos.top - start_pos.top) * pos, 10),
++				left : parseInt(start_pos.left + (final_pos.left - start_pos.left) * pos, 10)
++			};
++
++			if (typeof final_pos.opacity !== 'undefined') {
++				dim.opacity = pos < 0.5 ? 0.5 : pos;
++			}
++
++			wrap.css(dim);
++
++			content.css({
++				'width' : dim.width - currentOpts.padding * 2,
++				'height' : dim.height - (titleHeight * pos) - currentOpts.padding * 2
++			});
++		},
++
++		_get_viewport = function() {
++			return [
++				$(window).width() - (currentOpts.margin * 2),
++				$(window).height() - (currentOpts.margin * 2),
++				$(document).scrollLeft() + currentOpts.margin,
++				$(document).scrollTop() + currentOpts.margin
++			];
++		},
++
++		_get_zoom_to = function () {
++			var view = _get_viewport(),
++				to = {},
++				resize = currentOpts.autoScale,
++				double_padding = currentOpts.padding * 2,
++				ratio;
++
++			if (currentOpts.width.toString().indexOf('%') > -1) {
++				to.width = parseInt((view[0] * parseFloat(currentOpts.width)) / 100, 10);
++			} else {
++				to.width = currentOpts.width + double_padding;
++			}
++
++			if (currentOpts.height.toString().indexOf('%') > -1) {
++				to.height = parseInt((view[1] * parseFloat(currentOpts.height)) / 100, 10);
++			} else {
++				to.height = currentOpts.height + double_padding;
++			}
++
++			if (resize && (to.width > view[0] || to.height > view[1])) {
++				if (selectedOpts.type == 'image' || selectedOpts.type == 'swf') {
++					ratio = (currentOpts.width ) / (currentOpts.height );
++
++					if ((to.width ) > view[0]) {
++						to.width = view[0];
++						to.height = parseInt(((to.width - double_padding) / ratio) + double_padding, 10);
++					}
++
++					if ((to.height) > view[1]) {
++						to.height = view[1];
++						to.width = parseInt(((to.height - double_padding) * ratio) + double_padding, 10);
++					}
++
++				} else {
++					to.width = Math.min(to.width, view[0]);
++					to.height = Math.min(to.height, view[1]);
++				}
++			}
++
++			to.top = parseInt(Math.max(view[3] - 20, view[3] + ((view[1] - to.height - 40) * 0.5)), 10);
++			to.left = parseInt(Math.max(view[2] - 20, view[2] + ((view[0] - to.width - 40) * 0.5)), 10);
++
++			return to;
++		},
++
++		_get_obj_pos = function(obj) {
++			var pos = obj.offset();
++
++			pos.top += parseInt( obj.css('paddingTop'), 10 ) || 0;
++			pos.left += parseInt( obj.css('paddingLeft'), 10 ) || 0;
++
++			pos.top += parseInt( obj.css('border-top-width'), 10 ) || 0;
++			pos.left += parseInt( obj.css('border-left-width'), 10 ) || 0;
++
++			pos.width = obj.width();
++			pos.height = obj.height();
++
++			return pos;
++		},
++
++		_get_zoom_from = function() {
++			var orig = selectedOpts.orig ? $(selectedOpts.orig) : false,
++				from = {},
++				pos,
++				view;
++
++			if (orig && orig.length) {
++				pos = _get_obj_pos(orig);
++
++				from = {
++					width : pos.width + (currentOpts.padding * 2),
++					height : pos.height + (currentOpts.padding * 2),
++					top	: pos.top - currentOpts.padding - 20,
++					left : pos.left - currentOpts.padding - 20
++				};
++
++			} else {
++				view = _get_viewport();
++
++				from = {
++					width : currentOpts.padding * 2,
++					height : currentOpts.padding * 2,
++					top	: parseInt(view[3] + view[1] * 0.5, 10),
++					left : parseInt(view[2] + view[0] * 0.5, 10)
++				};
++			}
++
++			return from;
++		},
++
++		_animate_loading = function() {
++			if (!loading.is(':visible')){
++				clearInterval(loadingTimer);
++				return;
++			}
++
++			$('div', loading).css('top', (loadingFrame * -40) + 'px');
++
++			loadingFrame = (loadingFrame + 1) % 12;
++		};
++
++	/*
++	 * Public methods 
++	 */
++
++	$.fn.fancybox = function(options) {
++		if (!$(this).length) {
++			return this;
++		}
++
++		$(this)
++			.data('fancybox', $.extend({}, options, ($.metadata ? $(this).metadata() : {})))
++			.unbind('click.fb')
++			.bind('click.fb', function(e) {
++				e.preventDefault();
++
++				if (busy) {
++					return;
++				}
++
++				busy = true;
++
++				$(this).blur();
++
++				selectedArray = [];
++				selectedIndex = 0;
++
++				var rel = $(this).attr('rel') || '';
++
++				if (!rel || rel == '' || rel === 'nofollow') {
++					selectedArray.push(this);
++
++				} else {
++					selectedArray = $("a[rel=" + rel + "], area[rel=" + rel + "]");
++					selectedIndex = selectedArray.index( this );
++				}
++
++				_start();
++
++				return;
++			});
++
++		return this;
++	};
++
++	$.fancybox = function(obj) {
++		var opts;
++
++		if (busy) {
++			return;
++		}
++
++		busy = true;
++		opts = typeof arguments[1] !== 'undefined' ? arguments[1] : {};
++
++		selectedArray = [];
++		selectedIndex = parseInt(opts.index, 10) || 0;
++
++		if ($.isArray(obj)) {
++			for (var i = 0, j = obj.length; i < j; i++) {
++				if (typeof obj[i] == 'object') {
++					$(obj[i]).data('fancybox', $.extend({}, opts, obj[i]));
++				} else {
++					obj[i] = $({}).data('fancybox', $.extend({content : obj[i]}, opts));
++				}
++			}
++
++			selectedArray = jQuery.merge(selectedArray, obj);
++
++		} else {
++			if (typeof obj == 'object') {
++				$(obj).data('fancybox', $.extend({}, opts, obj));
++			} else {
++				obj = $({}).data('fancybox', $.extend({content : obj}, opts));
++			}
++
++			selectedArray.push(obj);
++		}
++
++		if (selectedIndex > selectedArray.length || selectedIndex < 0) {
++			selectedIndex = 0;
++		}
++
++		_start();
++	};
++
++	$.fancybox.showActivity = function() {
++		clearInterval(loadingTimer);
++
++		loading.show();
++		loadingTimer = setInterval(_animate_loading, 66);
++	};
++
++	$.fancybox.hideActivity = function() {
++		loading.hide();
++	};
++
++	$.fancybox.next = function() {
++		return $.fancybox.pos( currentIndex + 1);
++	};
++
++	$.fancybox.prev = function() {
++		return $.fancybox.pos( currentIndex - 1);
++	};
++
++	$.fancybox.pos = function(pos) {
++		if (busy) {
++			return;
++		}
++
++		pos = parseInt(pos);
++
++		selectedArray = currentArray;
++
++		if (pos > -1 && pos < currentArray.length) {
++			selectedIndex = pos;
++			_start();
++
++		} else if (currentOpts.cyclic && currentArray.length > 1) {
++			selectedIndex = pos >= currentArray.length ? 0 : currentArray.length - 1;
++			_start();
++		}
++
++		return;
++	};
++
++	$.fancybox.cancel = function() {
++		if (busy) {
++			return;
++		}
++
++		busy = true;
++
++		$.event.trigger('fancybox-cancel');
++
++		_abort();
++
++		selectedOpts.onCancel(selectedArray, selectedIndex, selectedOpts);
++
++		busy = false;
++	};
++
++	// Note: within an iframe use - parent.$.fancybox.close();
++	$.fancybox.close = function() {
++		if (busy || wrap.is(':hidden')) {
++			return;
++		}
++
++		busy = true;
++
++		if (currentOpts && false === currentOpts.onCleanup(currentArray, currentIndex, currentOpts)) {
++			busy = false;
++			return;
++		}
++
++		_abort();
++
++		$(close.add( nav_left ).add( nav_right )).hide();
++
++		$(content.add( overlay )).unbind();
++
++		$(window).unbind("resize.fb scroll.fb");
++		$(document).unbind('keydown.fb');
++
++		content.find('iframe').attr('src', isIE6 && /^https/i.test(window.location.href || '') ? 'javascript:void(false)' : 'about:blank');
++
++		if (currentOpts.titlePosition !== 'inside') {
++			title.empty();
++		}
++
++		wrap.stop();
++
++		function _cleanup() {
++			overlay.fadeOut('fast');
++
++			title.empty().hide();
++			wrap.hide();
++
++			$.event.trigger('fancybox-cleanup');
++
++			content.empty();
++
++			currentOpts.onClosed(currentArray, currentIndex, currentOpts);
++
++			currentArray = selectedOpts	= [];
++			currentIndex = selectedIndex = 0;
++			currentOpts = selectedOpts	= {};
++
++			busy = false;
++		}
++
++		if (currentOpts.transitionOut == 'elastic') {
++			start_pos = _get_zoom_from();
++
++			var pos = wrap.position();
++
++			final_pos = {
++				top	 : pos.top ,
++				left : pos.left,
++				width :	wrap.width(),
++				height : wrap.height()
++			};
++
++			if (currentOpts.opacity) {
++				final_pos.opacity = 1;
++			}
++
++			title.empty().hide();
++
++			fx.prop = 1;
++
++			$(fx).animate({ prop: 0 }, {
++				 duration : currentOpts.speedOut,
++				 easing : currentOpts.easingOut,
++				 step : _draw,
++				 complete : _cleanup
++			});
++
++		} else {
++			wrap.fadeOut( currentOpts.transitionOut == 'none' ? 0 : currentOpts.speedOut, _cleanup);
++		}
++	};
++
++	$.fancybox.resize = function() {
++		if (overlay.is(':visible')) {
++			overlay.css('height', $(document).height());
++		}
++
++		$.fancybox.center(true);
++	};
++
++	$.fancybox.center = function() {
++		var view, align;
++
++		if (busy) {
++			return;	
++		}
++
++		align = arguments[0] === true ? 1 : 0;
++		view = _get_viewport();
++
++		if (!align && (wrap.width() > view[0] || wrap.height() > view[1])) {
++			return;	
++		}
++
++		wrap
++			.stop()
++			.animate({
++				'top' : parseInt(Math.max(view[3] - 20, view[3] + ((view[1] - content.height() - 40) * 0.5) - currentOpts.padding)),
++				'left' : parseInt(Math.max(view[2] - 20, view[2] + ((view[0] - content.width() - 40) * 0.5) - currentOpts.padding))
++			}, typeof arguments[0] == 'number' ? arguments[0] : 200);
++	};
++
++	$.fancybox.init = function() {
++		if ($("#fancybox-wrap").length) {
++			return;
++		}
++
++		$('body').append(
++			tmp	= $('<div id="fancybox-tmp"></div>'),
++			loading	= $('<div id="fancybox-loading"><div></div></div>'),
++			overlay	= $('<div id="fancybox-overlay"></div>'),
++			wrap = $('<div id="fancybox-wrap"></div>')
++		);
++
++		outer = $('<div id="fancybox-outer"></div>')
++			.append('<div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div>')
++			.appendTo( wrap );
++
++		outer.append(
++			content = $('<div id="fancybox-content"></div>'),
++			close = $('<a id="fancybox-close"></a>'),
++			title = $('<div id="fancybox-title"></div>'),
++
++			nav_left = $('<a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a>'),
++			nav_right = $('<a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a>')
++		);
++
++		close.click($.fancybox.close);
++		loading.click($.fancybox.cancel);
++
++		nav_left.click(function(e) {
++			e.preventDefault();
++			$.fancybox.prev();
++		});
++
++		nav_right.click(function(e) {
++			e.preventDefault();
++			$.fancybox.next();
++		});
++
++		if ($.fn.mousewheel) {
++			wrap.bind('mousewheel.fb', function(e, delta) {
++				if (busy) {
++					e.preventDefault();
++
++				} else if ($(e.target).get(0).clientHeight == 0 || $(e.target).get(0).scrollHeight === $(e.target).get(0).clientHeight) {
++					e.preventDefault();
++					$.fancybox[ delta > 0 ? 'prev' : 'next']();
++				}
++			});
++		}
++
++		if (!$.support.opacity) {
++			wrap.addClass('fancybox-ie');
++		}
++
++		if (isIE6) {
++			loading.addClass('fancybox-ie6');
++			wrap.addClass('fancybox-ie6');
++
++			$('<iframe id="fancybox-hide-sel-frame" src="' + (/^https/i.test(window.location.href || '') ? 'javascript:void(false)' : 'about:blank' ) + '" scrolling="no" border="0" frameborder="0" tabindex="-1"></iframe>').prependTo(outer);
++		}
++	};
++
++	$.fn.fancybox.defaults = {
++		padding : 10,
++		margin : 40,
++		opacity : false,
++		modal : false,
++		cyclic : false,
++		scrolling : 'auto',	// 'auto', 'yes' or 'no'
++
++		width : 560,
++		height : 340,
++
++		autoScale : true,
++		autoDimensions : true,
++		centerOnScroll : false,
++
++		ajax : {},
++		swf : { wmode: 'transparent' },
++
++		hideOnOverlayClick : true,
++		hideOnContentClick : false,
++
++		overlayShow : true,
++		overlayOpacity : 0.7,
++		overlayColor : '#777',
++
++		titleShow : true,
++		titlePosition : 'float', // 'float', 'outside', 'inside' or 'over'
++		titleFormat : null,
++		titleFromAlt : false,
++
++		transitionIn : 'fade', // 'elastic', 'fade' or 'none'
++		transitionOut : 'fade', // 'elastic', 'fade' or 'none'
++
++		speedIn : 300,
++		speedOut : 300,
++
++		changeSpeed : 300,
++		changeFade : 'fast',
++
++		easingIn : 'swing',
++		easingOut : 'swing',
++
++		showCloseButton	 : true,
++		showNavArrows : true,
++		enableEscapeButton : true,
++		enableKeyboardNav : true,
++
++		onStart : function(){},
++		onCancel : function(){},
++		onComplete : function(){},
++		onCleanup : function(){},
++		onClosed : function(){},
++		onError : function(){}
++	};
++
++	$(document).ready(function() {
++		$.fancybox.init();
++	});
++
++})(jQuery);
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.pack.js b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.pack.js
+new file mode 100644
+index 0000000..1373ed0
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.pack.js
+@@ -0,0 +1,46 @@
++/*
++ * FancyBox - jQuery Plugin
++ * Simple and fancy lightbox alternative
++ *
++ * Examples and documentation at: http://fancybox.net
++ * 
++ * Copyright (c) 2008 - 2010 Janis Skarnelis
++ * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated.
++ * 
++ * Version: 1.3.4 (11/11/2010)
++ * Requires: jQuery v1.3+
++ *
++ * Dual licensed under the MIT and GPL licenses:
++ *   http://www.opensource.org/licenses/mit-license.php
++ *   http://www.gnu.org/licenses/gpl.html
++ */
++
++;(function(b){var m,t,u,f,D,j,E,n,z,A,q=0,e={},o=[],p=0,d={},l=[],G=null,v=new Image,J=/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i,W=/[^\.]\.(swf)\s*$/i,K,L=1,y=0,s="",r,i,h=false,B=b.extend(b("<div/>")[0],{prop:0}),M=b.browser.msie&&b.browser.version<7&&!window.XMLHttpRequest,N=function(){t.hide();v.onerror=v.onload=null;G&&G.abort();m.empty()},O=function(){if(false===e.onError(o,q,e)){t.hide();h=false}else{e.titleShow=false;e.width="auto";e.height="auto";m.html('<p id="fancybox-error">The requested content cannot be loaded.<br />Please try again later.</p>');
++F()}},I=function(){var a=o[q],c,g,k,C,P,w;N();e=b.extend({},b.fn.fancybox.defaults,typeof b(a).data("fancybox")=="undefined"?e:b(a).data("fancybox"));w=e.onStart(o,q,e);if(w===false)h=false;else{if(typeof w=="object")e=b.extend(e,w);k=e.title||(a.nodeName?b(a).attr("title"):a.title)||"";if(a.nodeName&&!e.orig)e.orig=b(a).children("img:first").length?b(a).children("img:first"):b(a);if(k===""&&e.orig&&e.titleFromAlt)k=e.orig.attr("alt");c=e.href||(a.nodeName?b(a).attr("href"):a.href)||null;if(/^(?:javascript)/i.test(c)||
++c=="#")c=null;if(e.type){g=e.type;if(!c)c=e.content}else if(e.content)g="html";else if(c)g=c.match(J)?"image":c.match(W)?"swf":b(a).hasClass("iframe")?"iframe":c.indexOf("#")===0?"inline":"ajax";if(g){if(g=="inline"){a=c.substr(c.indexOf("#"));g=b(a).length>0?"inline":"ajax"}e.type=g;e.href=c;e.title=k;if(e.autoDimensions)if(e.type=="html"||e.type=="inline"||e.type=="ajax"){e.width="auto";e.height="auto"}else e.autoDimensions=false;if(e.modal){e.overlayShow=true;e.hideOnOverlayClick=false;e.hideOnContentClick=
++false;e.enableEscapeButton=false;e.showCloseButton=false}e.padding=parseInt(e.padding,10);e.margin=parseInt(e.margin,10);m.css("padding",e.padding+e.margin);b(".fancybox-inline-tmp").unbind("fancybox-cancel").bind("fancybox-change",function(){b(this).replaceWith(j.children())});switch(g){case "html":m.html(e.content);F();break;case "inline":if(b(a).parent().is("#fancybox-content")===true){h=false;break}b('<div class="fancybox-inline-tmp" />').hide().insertBefore(b(a)).bind("fancybox-cleanup",function(){b(this).replaceWith(j.children())}).bind("fancybox-cancel",
++function(){b(this).replaceWith(m.children())});b(a).appendTo(m);F();break;case "image":h=false;b.fancybox.showActivity();v=new Image;v.onerror=function(){O()};v.onload=function(){h=true;v.onerror=v.onload=null;e.width=v.width;e.height=v.height;b("<img />").attr({id:"fancybox-img",src:v.src,alt:e.title}).appendTo(m);Q()};v.src=c;break;case "swf":e.scrolling="no";C='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+e.width+'" height="'+e.height+'"><param name="movie" value="'+c+
++'"></param>';P="";b.each(e.swf,function(x,H){C+='<param name="'+x+'" value="'+H+'"></param>';P+=" "+x+'="'+H+'"'});C+='<embed src="'+c+'" type="application/x-shockwave-flash" width="'+e.width+'" height="'+e.height+'"'+P+"></embed></object>";m.html(C);F();break;case "ajax":h=false;b.fancybox.showActivity();e.ajax.win=e.ajax.success;G=b.ajax(b.extend({},e.ajax,{url:c,data:e.ajax.data||{},error:function(x){x.status>0&&O()},success:function(x,H,R){if((typeof R=="object"?R:G).status==200){if(typeof e.ajax.win==
++"function"){w=e.ajax.win(c,x,H,R);if(w===false){t.hide();return}else if(typeof w=="string"||typeof w=="object")x=w}m.html(x);F()}}}));break;case "iframe":Q()}}else O()}},F=function(){var a=e.width,c=e.height;a=a.toString().indexOf("%")>-1?parseInt((b(window).width()-e.margin*2)*parseFloat(a)/100,10)+"px":a=="auto"?"auto":a+"px";c=c.toString().indexOf("%")>-1?parseInt((b(window).height()-e.margin*2)*parseFloat(c)/100,10)+"px":c=="auto"?"auto":c+"px";m.wrapInner('<div style="width:'+a+";height:"+c+
++";overflow: "+(e.scrolling=="auto"?"auto":e.scrolling=="yes"?"scroll":"hidden")+';position:relative;"></div>');e.width=m.width();e.height=m.height();Q()},Q=function(){var a,c;t.hide();if(f.is(":visible")&&false===d.onCleanup(l,p,d)){b.event.trigger("fancybox-cancel");h=false}else{h=true;b(j.add(u)).unbind();b(window).unbind("resize.fb scroll.fb");b(document).unbind("keydown.fb");f.is(":visible")&&d.titlePosition!=="outside"&&f.css("height",f.height());l=o;p=q;d=e;if(d.overlayShow){u.css({"background-color":d.overlayColor,
++opacity:d.overlayOpacity,cursor:d.hideOnOverlayClick?"pointer":"auto",height:b(document).height()});if(!u.is(":visible")){M&&b("select:not(#fancybox-tmp select)").filter(function(){return this.style.visibility!=="hidden"}).css({visibility:"hidden"}).one("fancybox-cleanup",function(){this.style.visibility="inherit"});u.show()}}else u.hide();i=X();s=d.title||"";y=0;n.empty().removeAttr("style").removeClass();if(d.titleShow!==false){if(b.isFunction(d.titleFormat))a=d.titleFormat(s,l,p,d);else a=s&&s.length?
++d.titlePosition=="float"?'<table id="fancybox-title-float-wrap" cellpadding="0" cellspacing="0"><tr><td id="fancybox-title-float-left"></td><td id="fancybox-title-float-main">'+s+'</td><td id="fancybox-title-float-right"></td></tr></table>':'<div id="fancybox-title-'+d.titlePosition+'">'+s+"</div>":false;s=a;if(!(!s||s==="")){n.addClass("fancybox-title-"+d.titlePosition).html(s).appendTo("body").show();switch(d.titlePosition){case "inside":n.css({width:i.width-d.padding*2,marginLeft:d.padding,marginRight:d.padding});
++y=n.outerHeight(true);n.appendTo(D);i.height+=y;break;case "over":n.css({marginLeft:d.padding,width:i.width-d.padding*2,bottom:d.padding}).appendTo(D);break;case "float":n.css("left",parseInt((n.width()-i.width-40)/2,10)*-1).appendTo(f);break;default:n.css({width:i.width-d.padding*2,paddingLeft:d.padding,paddingRight:d.padding}).appendTo(f)}}}n.hide();if(f.is(":visible")){b(E.add(z).add(A)).hide();a=f.position();r={top:a.top,left:a.left,width:f.width(),height:f.height()};c=r.width==i.width&&r.height==
++i.height;j.fadeTo(d.changeFade,0.3,function(){var g=function(){j.html(m.contents()).fadeTo(d.changeFade,1,S)};b.event.trigger("fancybox-change");j.empty().removeAttr("filter").css({"border-width":d.padding,width:i.width-d.padding*2,height:e.autoDimensions?"auto":i.height-y-d.padding*2});if(c)g();else{B.prop=0;b(B).animate({prop:1},{duration:d.changeSpeed,easing:d.easingChange,step:T,complete:g})}})}else{f.removeAttr("style");j.css("border-width",d.padding);if(d.transitionIn=="elastic"){r=V();j.html(m.contents());
++f.show();if(d.opacity)i.opacity=0;B.prop=0;b(B).animate({prop:1},{duration:d.speedIn,easing:d.easingIn,step:T,complete:S})}else{d.titlePosition=="inside"&&y>0&&n.show();j.css({width:i.width-d.padding*2,height:e.autoDimensions?"auto":i.height-y-d.padding*2}).html(m.contents());f.css(i).fadeIn(d.transitionIn=="none"?0:d.speedIn,S)}}}},Y=function(){if(d.enableEscapeButton||d.enableKeyboardNav)b(document).bind("keydown.fb",function(a){if(a.keyCode==27&&d.enableEscapeButton){a.preventDefault();b.fancybox.close()}else if((a.keyCode==
++37||a.keyCode==39)&&d.enableKeyboardNav&&a.target.tagName!=="INPUT"&&a.target.tagName!=="TEXTAREA"&&a.target.tagName!=="SELECT"){a.preventDefault();b.fancybox[a.keyCode==37?"prev":"next"]()}});if(d.showNavArrows){if(d.cyclic&&l.length>1||p!==0)z.show();if(d.cyclic&&l.length>1||p!=l.length-1)A.show()}else{z.hide();A.hide()}},S=function(){if(!b.support.opacity){j.get(0).style.removeAttribute("filter");f.get(0).style.removeAttribute("filter")}e.autoDimensions&&j.css("height","auto");f.css("height","auto");
++s&&s.length&&n.show();d.showCloseButton&&E.show();Y();d.hideOnContentClick&&j.bind("click",b.fancybox.close);d.hideOnOverlayClick&&u.bind("click",b.fancybox.close);b(window).bind("resize.fb",b.fancybox.resize);d.centerOnScroll&&b(window).bind("scroll.fb",b.fancybox.center);if(d.type=="iframe")b('<iframe id="fancybox-frame" name="fancybox-frame'+(new Date).getTime()+'" frameborder="0" hspace="0" '+(b.browser.msie?'allowtransparency="true""':"")+' scrolling="'+e.scrolling+'" src="'+d.href+'"></iframe>').appendTo(j);
++f.show();h=false;b.fancybox.center();d.onComplete(l,p,d);var a,c;if(l.length-1>p){a=l[p+1].href;if(typeof a!=="undefined"&&a.match(J)){c=new Image;c.src=a}}if(p>0){a=l[p-1].href;if(typeof a!=="undefined"&&a.match(J)){c=new Image;c.src=a}}},T=function(a){var c={width:parseInt(r.width+(i.width-r.width)*a,10),height:parseInt(r.height+(i.height-r.height)*a,10),top:parseInt(r.top+(i.top-r.top)*a,10),left:parseInt(r.left+(i.left-r.left)*a,10)};if(typeof i.opacity!=="undefined")c.opacity=a<0.5?0.5:a;f.css(c);
++j.css({width:c.width-d.padding*2,height:c.height-y*a-d.padding*2})},U=function(){return[b(window).width()-d.margin*2,b(window).height()-d.margin*2,b(document).scrollLeft()+d.margin,b(document).scrollTop()+d.margin]},X=function(){var a=U(),c={},g=d.autoScale,k=d.padding*2;c.width=d.width.toString().indexOf("%")>-1?parseInt(a[0]*parseFloat(d.width)/100,10):d.width+k;c.height=d.height.toString().indexOf("%")>-1?parseInt(a[1]*parseFloat(d.height)/100,10):d.height+k;if(g&&(c.width>a[0]||c.height>a[1]))if(e.type==
++"image"||e.type=="swf"){g=d.width/d.height;if(c.width>a[0]){c.width=a[0];c.height=parseInt((c.width-k)/g+k,10)}if(c.height>a[1]){c.height=a[1];c.width=parseInt((c.height-k)*g+k,10)}}else{c.width=Math.min(c.width,a[0]);c.height=Math.min(c.height,a[1])}c.top=parseInt(Math.max(a[3]-20,a[3]+(a[1]-c.height-40)*0.5),10);c.left=parseInt(Math.max(a[2]-20,a[2]+(a[0]-c.width-40)*0.5),10);return c},V=function(){var a=e.orig?b(e.orig):false,c={};if(a&&a.length){c=a.offset();c.top+=parseInt(a.css("paddingTop"),
++10)||0;c.left+=parseInt(a.css("paddingLeft"),10)||0;c.top+=parseInt(a.css("border-top-width"),10)||0;c.left+=parseInt(a.css("border-left-width"),10)||0;c.width=a.width();c.height=a.height();c={width:c.width+d.padding*2,height:c.height+d.padding*2,top:c.top-d.padding-20,left:c.left-d.padding-20}}else{a=U();c={width:d.padding*2,height:d.padding*2,top:parseInt(a[3]+a[1]*0.5,10),left:parseInt(a[2]+a[0]*0.5,10)}}return c},Z=function(){if(t.is(":visible")){b("div",t).css("top",L*-40+"px");L=(L+1)%12}else clearInterval(K)};
++b.fn.fancybox=function(a){if(!b(this).length)return this;b(this).data("fancybox",b.extend({},a,b.metadata?b(this).metadata():{})).unbind("click.fb").bind("click.fb",function(c){c.preventDefault();if(!h){h=true;b(this).blur();o=[];q=0;c=b(this).attr("rel")||"";if(!c||c==""||c==="nofollow")o.push(this);else{o=b("a[rel="+c+"], area[rel="+c+"]");q=o.index(this)}I()}});return this};b.fancybox=function(a,c){var g;if(!h){h=true;g=typeof c!=="undefined"?c:{};o=[];q=parseInt(g.index,10)||0;if(b.isArray(a)){for(var k=
++0,C=a.length;k<C;k++)if(typeof a[k]=="object")b(a[k]).data("fancybox",b.extend({},g,a[k]));else a[k]=b({}).data("fancybox",b.extend({content:a[k]},g));o=jQuery.merge(o,a)}else{if(typeof a=="object")b(a).data("fancybox",b.extend({},g,a));else a=b({}).data("fancybox",b.extend({content:a},g));o.push(a)}if(q>o.length||q<0)q=0;I()}};b.fancybox.showActivity=function(){clearInterval(K);t.show();K=setInterval(Z,66)};b.fancybox.hideActivity=function(){t.hide()};b.fancybox.next=function(){return b.fancybox.pos(p+
++1)};b.fancybox.prev=function(){return b.fancybox.pos(p-1)};b.fancybox.pos=function(a){if(!h){a=parseInt(a);o=l;if(a>-1&&a<l.length){q=a;I()}else if(d.cyclic&&l.length>1){q=a>=l.length?0:l.length-1;I()}}};b.fancybox.cancel=function(){if(!h){h=true;b.event.trigger("fancybox-cancel");N();e.onCancel(o,q,e);h=false}};b.fancybox.close=function(){function a(){u.fadeOut("fast");n.empty().hide();f.hide();b.event.trigger("fancybox-cleanup");j.empty();d.onClosed(l,p,d);l=e=[];p=q=0;d=e={};h=false}if(!(h||f.is(":hidden"))){h=
++true;if(d&&false===d.onCleanup(l,p,d))h=false;else{N();b(E.add(z).add(A)).hide();b(j.add(u)).unbind();b(window).unbind("resize.fb scroll.fb");b(document).unbind("keydown.fb");j.find("iframe").attr("src",M&&/^https/i.test(window.location.href||"")?"javascript:void(false)":"about:blank");d.titlePosition!=="inside"&&n.empty();f.stop();if(d.transitionOut=="elastic"){r=V();var c=f.position();i={top:c.top,left:c.left,width:f.width(),height:f.height()};if(d.opacity)i.opacity=1;n.empty().hide();B.prop=1;
++b(B).animate({prop:0},{duration:d.speedOut,easing:d.easingOut,step:T,complete:a})}else f.fadeOut(d.transitionOut=="none"?0:d.speedOut,a)}}};b.fancybox.resize=function(){u.is(":visible")&&u.css("height",b(document).height());b.fancybox.center(true)};b.fancybox.center=function(a){var c,g;if(!h){g=a===true?1:0;c=U();!g&&(f.width()>c[0]||f.height()>c[1])||f.stop().animate({top:parseInt(Math.max(c[3]-20,c[3]+(c[1]-j.height()-40)*0.5-d.padding)),left:parseInt(Math.max(c[2]-20,c[2]+(c[0]-j.width()-40)*0.5-
++d.padding))},typeof a=="number"?a:200)}};b.fancybox.init=function(){if(!b("#fancybox-wrap").length){b("body").append(m=b('<div id="fancybox-tmp"></div>'),t=b('<div id="fancybox-loading"><div></div></div>'),u=b('<div id="fancybox-overlay"></div>'),f=b('<div id="fancybox-wrap"></div>'));D=b('<div id="fancybox-outer"></div>').append('<div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div>').appendTo(f);
++D.append(j=b('<div id="fancybox-content"></div>'),E=b('<a id="fancybox-close"></a>'),n=b('<div id="fancybox-title"></div>'),z=b('<a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a>'),A=b('<a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a>'));E.click(b.fancybox.close);t.click(b.fancybox.cancel);z.click(function(a){a.preventDefault();b.fancybox.prev()});A.click(function(a){a.preventDefault();b.fancybox.next()});
++b.fn.mousewheel&&f.bind("mousewheel.fb",function(a,c){if(h)a.preventDefault();else if(b(a.target).get(0).clientHeight==0||b(a.target).get(0).scrollHeight===b(a.target).get(0).clientHeight){a.preventDefault();b.fancybox[c>0?"prev":"next"]()}});b.support.opacity||f.addClass("fancybox-ie");if(M){t.addClass("fancybox-ie6");f.addClass("fancybox-ie6");b('<iframe id="fancybox-hide-sel-frame" src="'+(/^https/i.test(window.location.href||"")?"javascript:void(false)":"about:blank")+'" scrolling="no" border="0" frameborder="0" tabindex="-1"></iframe>').prependTo(D)}}};
++b.fn.fancybox.defaults={padding:10,margin:40,opacity:false,modal:false,cyclic:false,scrolling:"auto",width:560,height:340,autoScale:true,autoDimensions:true,centerOnScroll:false,ajax:{},swf:{wmode:"transparent"},hideOnOverlayClick:true,hideOnContentClick:false,overlayShow:true,overlayOpacity:0.7,overlayColor:"#777",titleShow:true,titlePosition:"float",titleFormat:null,titleFromAlt:false,transitionIn:"fade",transitionOut:"fade",speedIn:300,speedOut:300,changeSpeed:300,changeFade:"fast",easingIn:"swing",
++easingOut:"swing",showCloseButton:true,showNavArrows:true,enableEscapeButton:true,enableKeyboardNav:true,onStart:function(){},onCancel:function(){},onComplete:function(){},onCleanup:function(){},onClosed:function(){},onError:function(){}};b(document).ready(function(){b.fancybox.init()})})(jQuery);
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.mousewheel-3.0.4.pack.js b/skin/frontend/default/shopper/js/fancybox/jquery.mousewheel-3.0.4.pack.js
+new file mode 100644
+index 0000000..cb66588
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.mousewheel-3.0.4.pack.js
+@@ -0,0 +1,14 @@
++/*! Copyright (c) 2010 Brandon Aaron (http://brandonaaron.net)
++* Licensed under the MIT License (LICENSE.txt).
++*
++* Thanks to: http://adomas.org/javascript-mouse-wheel/ for some pointers.
++* Thanks to: Mathias Bank(http://www.mathias-bank.de) for a scope bug fix.
++* Thanks to: Seamus Leahy for adding deltaX and deltaY
++*
++* Version: 3.0.4
++*
++* Requires: 1.2.2+
++*/
++
++(function(d){function g(a){var b=a||window.event,i=[].slice.call(arguments,1),c=0,h=0,e=0;a=d.event.fix(b);a.type="mousewheel";if(a.wheelDelta)c=a.wheelDelta/120;if(a.detail)c=-a.detail/3;e=c;if(b.axis!==undefined&&b.axis===b.HORIZONTAL_AXIS){e=0;h=-1*c}if(b.wheelDeltaY!==undefined)e=b.wheelDeltaY/120;if(b.wheelDeltaX!==undefined)h=-1*b.wheelDeltaX/120;i.unshift(a,c,h,e);return d.event.handle.apply(this,i)}var f=["DOMMouseScroll","mousewheel"];d.event.special.mousewheel={setup:function(){if(this.addEventListener)for(var a=
++f.length;a;)this.addEventListener(f[--a],g,false);else this.onmousewheel=g},teardown:function(){if(this.removeEventListener)for(var a=f.length;a;)this.removeEventListener(f[--a],g,false);else this.onmousewheel=null}};d.fn.extend({mousewheel:function(a){return a?this.bind("mousewheel",a):this.trigger("mousewheel")},unmousewheel:function(a){return this.unbind("mousewheel",a)}})})(jQuery);
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

@@ -1,0 +1,32 @@
+From 4d084302666d7f8fe3da3bc5267cc81de1902793 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 29 Oct 2012 17:15:18 +0200
+Subject: [PATCH 07/11] fix login page for mobile devices
+
+---
+ skin/frontend/default/shopper/css/mobile.css |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/skin/frontend/default/shopper/css/mobile.css b/skin/frontend/default/shopper/css/mobile.css
+index 79d0b76..6fcbf8a 100644
+--- a/skin/frontend/default/shopper/css/mobile.css
++++ b/skin/frontend/default/shopper/css/mobile.css
+@@ -100,6 +100,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
+     .block-viewed .block-content li,
+     .block-tags .block-content li,
+     .block-bestsellers .block-content li,
++    .block-login .block-content li,
+     .block-slider .flex-control-nav li,
+     .block-poll .block-content li{background:none;}
+ 
+@@ -119,6 +120,7 @@ only screen and (min-device-pixel-ratio: 1.5) and (max-width: 959px){
+     .block-viewed .block-content li,
+     .block-tags .block-content li,
+     .block-bestsellers .block-content li,
++    .block-login .block-content li,
+     .block-slider .flex-control-nav li,
+     .block-poll .block-content li{background:none;}
+ 
+-- 
+1.7.10.msysgit.1
+

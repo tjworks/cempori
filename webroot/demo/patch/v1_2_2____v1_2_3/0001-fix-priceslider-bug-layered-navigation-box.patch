@@ -1,0 +1,33 @@
+From 031745923d416dd7bfeb18d5f33cf168c0fdc8de Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 26 Oct 2012 19:03:03 +0300
+Subject: [PATCH 01/11] fix priceslider bug - layered navigation box
+
+---
+ .../shopper/template/queldorei/priceslider/slider_layered_nav.phtml |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index 9cf3db9..76a88f8 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -47,6 +47,7 @@ var Queldorei_Priceslider = {
+ <?php endif; ?>
+ 
+ <?php
++$stateHtml = $this->getStateHtml();
+ $filtersHtml = '';
+ foreach ($_filters as $_filter) {
+     if ( $_filter->getType() == 'catalog/layer_filter_price' ) continue;
+@@ -57,7 +58,7 @@ foreach ($_filters as $_filter) {
+ }
+ ?>
+ 
+-<?php if ( !empty($filtersHtml) ): ?>
++<?php if ( !empty($filtersHtml) || !empty($stateHtml) ): ?>
+ <div class="block block-layered-nav">
+     <div class="block-title">
+         <strong><span><?php echo $this->__('Shop By') ?></span></strong>
+-- 
+1.7.10.msysgit.1
+

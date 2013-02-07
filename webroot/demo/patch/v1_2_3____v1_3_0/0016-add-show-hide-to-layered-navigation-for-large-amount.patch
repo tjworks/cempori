@@ -1,0 +1,68 @@
+From c8acffb0462cdddb5a789bcb6c230c8eafe5a302 Mon Sep 17 00:00:00 2001
+From: altairus <mail@queldorei.com>
+Date: Mon, 12 Nov 2012 22:14:13 +0200
+Subject: [PATCH 16/25] add show/hide to layered navigation for large amount
+ of options
+
+---
+ .../template/queldorei/priceslider/slider_layered_nav.phtml      |    2 +-
+ skin/frontend/default/shopper/css/local.css                      |    2 +-
+ skin/frontend/default/shopper/js/script.js                       |    6 ++++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index c975589..ea615b6 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -53,7 +53,7 @@ foreach ($_filters as $_filter) {
+     if ( $_filter->getType() == 'catalog/layer_filter_price' ) continue;
+     if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue;
+     if ($_filter->getItemsCount()) {
+-        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'<a href="#" class="shopby_more">'.$this->__('show more...').'</a></dd>';
++        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'<a href="#" class="shopby_more">'.$this->__('more...').'</a></dd>';
+     }
+ }
+ ?>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 679dcbc..dc408e2 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1173,7 +1173,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .block-layered-nav .block-content dd li {margin:0 0 0 3px; padding:0 0 0 13px; line-height:20px; background: url("../images/arrow_item.gif") 0 8px no-repeat  }
+ .block-layered-nav .block-content dd li:last-child {border:0; }
+ .block-layered-nav .block-content dd li a:hover {color:#999; }
+-.block-layered-nav .shopby_more {display:none}
++.block-layered-nav .shopby_more {display:none; text-align:right;}
+ 
+ .block-layered-price {}
+ .block-layered-price .ui-slider-horizontal { height:6px; border:1px solid #e6e6e6; background:#fefefe; margin:0 0 10px; border-radius:0; -webkit-border-radius:0; -moz-border-radius:0;
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 8b1ce7c..5f21953 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -584,7 +584,7 @@ jQuery(function($){
+     }
+ 
+     $(window).load(function(){
+-        setTimeout(function(){ if ($('.col-left').length) $('.col-left').masonry({itemSelector : '.block', isResizable:true}); }, 600);
++        setTimeout(function(){ if ($('.col-left').length) $('.col-left').masonry({itemSelector : '.block', isResizable:true, isAnimated:true}); }, 600);
+     });
+ 
+     if ( Shopper.anystretch_bg != '' ) {
+@@ -634,10 +634,12 @@ jQuery(function($){
+             if ( $('li', this).length > 5 ) {
+                 var that = this;
+                 $('li:gt(4)', this).hide();
++                $('.col-left').masonry('reload');
+                 $(this).next()
+-                    .show()
++                    .css('display', 'block')
+                     .click(function(){
+                         $('li:gt(4)', that).toggle();
++                        $('.col-left').masonry('reload');
+                         return false;
+                     });
+             }
+-- 
+1.7.10.msysgit.1
+

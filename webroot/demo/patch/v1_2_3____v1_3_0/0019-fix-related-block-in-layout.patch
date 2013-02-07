@@ -1,0 +1,28 @@
+From 91e6226f78603ad4cb37ba983fc0218196ebf892 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 12:29:23 +0200
+Subject: [PATCH 19/25] fix related block in layout
+
+---
+ app/design/frontend/default/shopper/layout/local.xml |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index 76daf0e..3beb96d 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -195,10 +195,7 @@
+                     <action method="setColumnCount"><columns>4</columns></action>
+                     <action method="setItemLimit"><type>upsell</type><limit>44</limit></action>
+                 </block>
+-        </reference>
+-
+-		<reference name="content">
+-            <block type="catalog/product_list_related" name="content.product.related" as="content_related" template="catalog/product/list/related_content.phtml"/>
++                <block type="catalog/product_list_related" name="content.product.related" as="content_related" template="catalog/product/list/related_content.phtml"/>
+         </reference>
+ 
+ 		<reference name="product.info.additional">
+-- 
+1.7.10.msysgit.1
+

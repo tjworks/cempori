@@ -1,0 +1,777 @@
+From 70be423560e40afcd43f0c782fe264e0c2400a46 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Sat, 13 Oct 2012 23:41:44 +0300
+Subject: [PATCH 21/24] add ajax wishlist and compare feature
+
+---
+ .../Excellence/AjaxWishlist/Block/AjaxWishlist.php |   17 +++
+ .../local/Excellence/AjaxWishlist/Helper/Data.php  |    6 +
+ .../AjaxWishlist/controllers/IndexController.php   |  142 ++++++++++++++++++++
+ .../local/Excellence/AjaxWishlist/etc/config.xml   |   72 ++++++++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    9 ++
+ .../default/shopper/layout/ajaxwishlist.xml        |   39 ++++++
+ .../template/catalog/product/compare/sidebar.phtml |   82 ++++++-----
+ .../shopper/template/catalog/product/list.phtml    |   15 ++-
+ .../template/catalog/product/view/addto.phtml      |   10 +-
+ .../queldorei/priceslider/slider_content.phtml     |   14 +-
+ app/etc/modules/Excellence_AjaxWishlist.xml        |    9 ++
+ skin/frontend/default/shopper/css/local.css        |   11 +-
+ .../default/shopper/images/ajax-loader.gif         |  Bin 0 -> 1079 bytes
+ .../default/shopper/images/remove-popup.png        |  Bin 0 -> 3057 bytes
+ .../shopper/js/ajaxwishlist/ajaxwishlist.js        |   70 ++++++++++
+ 16 files changed, 448 insertions(+), 49 deletions(-)
+ create mode 100644 app/code/local/Excellence/AjaxWishlist/Block/AjaxWishlist.php
+ create mode 100644 app/code/local/Excellence/AjaxWishlist/Helper/Data.php
+ create mode 100644 app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
+ create mode 100644 app/code/local/Excellence/AjaxWishlist/etc/config.xml
+ create mode 100644 app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+ create mode 100644 app/etc/modules/Excellence_AjaxWishlist.xml
+ create mode 100644 skin/frontend/default/shopper/images/ajax-loader.gif
+ create mode 100644 skin/frontend/default/shopper/images/remove-popup.png
+ create mode 100644 skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
+
+diff --git a/app/code/local/Excellence/AjaxWishlist/Block/AjaxWishlist.php b/app/code/local/Excellence/AjaxWishlist/Block/AjaxWishlist.php
+new file mode 100644
+index 0000000..ecd5730
+--- /dev/null
++++ b/app/code/local/Excellence/AjaxWishlist/Block/AjaxWishlist.php
+@@ -0,0 +1,17 @@
++<?php
++class Excellence_AjaxWishlist_Block_AjaxWishlist extends Mage_Core_Block_Template
++{
++	public function _prepareLayout()
++    {
++		return parent::_prepareLayout();
++    }
++    
++     public function getAjaxWishlist()     
++     { 
++        if (!$this->hasData('ajaxwishlist')) {
++            $this->setData('ajaxwishlist', Mage::registry('ajaxwishlist'));
++        }
++        return $this->getData('ajaxwishlist');
++        
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/AjaxWishlist/Helper/Data.php b/app/code/local/Excellence/AjaxWishlist/Helper/Data.php
+new file mode 100644
+index 0000000..74b2977
+--- /dev/null
++++ b/app/code/local/Excellence/AjaxWishlist/Helper/Data.php
+@@ -0,0 +1,6 @@
++<?php
++
++class Excellence_AjaxWishlist_Helper_Data extends Mage_Core_Helper_Abstract
++{
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php b/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
+new file mode 100644
+index 0000000..2781bef
+--- /dev/null
++++ b/app/code/local/Excellence/AjaxWishlist/controllers/IndexController.php
+@@ -0,0 +1,142 @@
++<?php
++class Excellence_AjaxWishlist_IndexController extends Mage_Core_Controller_Front_Action
++{
++
++	public function compareAction(){
++		$response = array();
++
++		if ($productId = (int) $this->getRequest()->getParam('product')) {
++			$product = Mage::getModel('catalog/product')
++			->setStoreId(Mage::app()->getStore()->getId())
++			->load($productId);
++
++			if ($product->getId()/* && !$product->isSuper()*/) {
++				Mage::getSingleton('catalog/product_compare_list')->addProduct($product);
++				$response['status'] = 'SUCCESS';
++				$response['message'] = $this->__('The product %s has been added to comparison list.', Mage::helper('core')->escapeHtml($product->getName()));
++				Mage::register('referrer_url', $this->_getRefererUrl());
++				Mage::helper('catalog/product_compare')->calculate();
++				Mage::dispatchEvent('catalog_product_compare_add_product', array('product'=>$product));
++				$this->loadLayout();
++				$sidebar_block = $this->getLayout()->getBlock('catalog.compare.sidebar');
++				$sidebar_block->setTemplate('catalog/product/compare/sidebar.phtml');
++				$sidebar = $sidebar_block->toHtml();
++				$response['sidebar'] = $sidebar;
++			}
++		}
++        $this->getResponse()->setHeader('Content-type', 'application/json');
++        $this->getResponse()->setBody( (string) $this->getRequest()->getParam('callback') . '(' . Mage::helper('core')->jsonEncode($response) . ')' );
++		return;
++	}
++
++
++
++	protected function _getWishlist()
++	{
++		$wishlist = Mage::registry('wishlist');
++		if ($wishlist) {
++			return $wishlist;
++		}
++
++		try {
++			$wishlist = Mage::getModel('wishlist/wishlist')
++			->loadByCustomer(Mage::getSingleton('customer/session')->getCustomer(), true);
++			Mage::register('wishlist', $wishlist);
++		} catch (Mage_Core_Exception $e) {
++			Mage::getSingleton('wishlist/session')->addError($e->getMessage());
++		} catch (Exception $e) {
++			Mage::getSingleton('wishlist/session')->addException($e,
++			Mage::helper('wishlist')->__('Cannot create wishlist.')
++			);
++			return false;
++		}
++
++		return $wishlist;
++	}
++	public function addAction()
++	{
++
++		$response = array();
++		if (!Mage::getStoreConfigFlag('wishlist/general/active')) {
++			$response['status'] = 'ERROR';
++			$response['message'] = $this->__('Wishlist Has Been Disabled By Admin');
++		}
++		if(!Mage::getSingleton('customer/session')->isLoggedIn()){
++			$response['status'] = 'ERROR';
++			$response['message'] = $this->__('Please Login First');
++		}
++
++		if(empty($response)){
++			$session = Mage::getSingleton('customer/session');
++			$wishlist = $this->_getWishlist();
++			if (!$wishlist) {
++				$response['status'] = 'ERROR';
++				$response['message'] = $this->__('Unable to Create Wishlist');
++			}else{
++
++				$productId = (int) $this->getRequest()->getParam('product');
++				if (!$productId) {
++					$response['status'] = 'ERROR';
++					$response['message'] = $this->__('Product Not Found');
++				}else{
++
++					$product = Mage::getModel('catalog/product')->load($productId);
++					if (!$product->getId() || !$product->isVisibleInCatalog()) {
++						$response['status'] = 'ERROR';
++						$response['message'] = $this->__('Cannot specify product.');
++					}else{
++
++						try {
++							$requestParams = $this->getRequest()->getParams();
++							$buyRequest = new Varien_Object($requestParams);
++
++							$result = $wishlist->addNewItem($product, $buyRequest);
++							if (is_string($result)) {
++								Mage::throwException($result);
++							}
++							$wishlist->save();
++
++							Mage::dispatchEvent(
++                				'wishlist_add_product',
++							array(
++			                    'wishlist'  => $wishlist,
++			                    'product'   => $product,
++			                    'item'      => $result
++							)
++							);
++
++							Mage::helper('wishlist')->calculate();
++
++							$message = $this->__('%1$s has been added to your wishlist.', $product->getName());
++							$response['status'] = 'SUCCESS';
++							$response['message'] = $message;
++
++							Mage::unregister('wishlist');
++
++							$this->loadLayout();
++							$toplink = $this->getLayout()->getBlock('top.links')->toHtml();
++							$sidebar_block = $this->getLayout()->getBlock('wishlist_sidebar');
++							$sidebar = $sidebar_block->toHtml();
++							$response['toplink'] = $toplink;
++							$response['sidebar'] = $sidebar;
++						}
++						catch (Mage_Core_Exception $e) {
++							$response['status'] = 'ERROR';
++							$response['message'] = $this->__('An error occurred while adding item to wishlist: %s', $e->getMessage());
++						}
++						catch (Exception $e) {
++							mage::log($e->getMessage());
++							$response['status'] = 'ERROR';
++							$response['message'] = $this->__('An error occurred while adding item to wishlist.');
++						}
++					}
++				}
++			}
++
++		}
++
++        $this->getResponse()->setHeader('Content-type', 'application/json');
++        $this->getResponse()->setBody( (string) $this->getRequest()->getParam('callback') . '(' . Mage::helper('core')->jsonEncode($response) . ')' );
++		return;
++	}
++}
+\ No newline at end of file
+diff --git a/app/code/local/Excellence/AjaxWishlist/etc/config.xml b/app/code/local/Excellence/AjaxWishlist/etc/config.xml
+new file mode 100644
+index 0000000..e2d479c
+--- /dev/null
++++ b/app/code/local/Excellence/AjaxWishlist/etc/config.xml
+@@ -0,0 +1,72 @@
++<?xml version="1.0"?>
++<config>
++    <modules>
++        <Excellence_AjaxWishlist>
++            <version>0.1.0</version>
++        </Excellence_AjaxWishlist>
++    </modules>
++    <frontend>
++        <routers>
++            <ajaxwishlist>
++                <use>standard</use>
++                <args>
++                    <module>Excellence_AjaxWishlist</module>
++                    <frontName>ajaxwishlist</frontName>
++                </args>
++            </ajaxwishlist>
++        </routers>
++        <layout>
++            <updates>
++                <ajaxwishlist>
++                    <file>ajaxwishlist.xml</file>
++                </ajaxwishlist>
++            </updates>
++        </layout>
++    </frontend>
++    <global>
++        <models>
++            <ajaxwishlist>
++                <class>Excellence_AjaxWishlist_Model</class>
++                <resourceModel>ajaxwishlist_mysql4</resourceModel>
++            </ajaxwishlist>
++            <ajaxwishlist_mysql4>
++                <class>Excellence_AjaxWishlist_Model_Mysql4</class>
++                <entities>
++                    <ajaxwishlist>
++                        <table>ajaxwishlist</table>
++                    </ajaxwishlist>
++                </entities>
++            </ajaxwishlist_mysql4>
++        </models>
++        <resources>
++            <ajaxwishlist_setup>
++                <setup>
++                    <module>Excellence_AjaxWishlist</module>
++                </setup>
++                <connection>
++                    <use>core_setup</use>
++                </connection>
++            </ajaxwishlist_setup>
++            <ajaxwishlist_write>
++                <connection>
++                    <use>core_write</use>
++                </connection>
++            </ajaxwishlist_write>
++            <ajaxwishlist_read>
++                <connection>
++                    <use>core_read</use>
++                </connection>
++            </ajaxwishlist_read>
++        </resources>
++        <blocks>
++            <ajaxwishlist>
++                <class>Excellence_AjaxWishlist_Block</class>
++            </ajaxwishlist>
++        </blocks>
++        <helpers>
++            <ajaxwishlist>
++                <class>Excellence_AjaxWishlist_Helper</class>
++            </ajaxwishlist>
++        </helpers>
++    </global>
++</config>
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 55d9c50..0014496 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -242,6 +242,7 @@
+             </images>
+             <ajax>
+                 <priceslider>1</priceslider>
++                <wishlist>1</wishlist>
+             </ajax>
+             <blocks>
+                 <block_left_nav>1</block_left_nav>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 395b266..bae8120 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -746,6 +746,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </priceslider>
++                        <wishlist translate="label">
++                            <label>Enable Ajax wishlist and compare</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>70</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </wishlist>
+                     </fields>
+                 </ajax>
+ 				<labels translate="label">
+diff --git a/app/design/frontend/default/shopper/layout/ajaxwishlist.xml b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+new file mode 100644
+index 0000000..1ed3027
+--- /dev/null
++++ b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+@@ -0,0 +1,39 @@
++<?xml version="1.0"?>
++<layout version="0.1.0">
++
++    <catalog_product_view>
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </catalog_product_view>
++
++    <catalog_category_default>
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </catalog_category_default>
++
++    <catalog_category_layered>
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </catalog_category_layered>
++
++    <catalogsearch_advanced_result translate="label">
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </catalogsearch_advanced_result>
++
++    <catalogsearch_result_index translate="label">
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </catalogsearch_result_index>
++
++</layout> 
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/compare/sidebar.phtml b/app/design/frontend/default/shopper/template/catalog/product/compare/sidebar.phtml
+index f2a46da..af45875 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/compare/sidebar.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/compare/sidebar.phtml
+@@ -1,33 +1,27 @@
+ <?php
+-ob_start();
+-/**
+- * Magento
+- *
+- * NOTICE OF LICENSE
+- *
+- * This source file is subject to the Academic Free License (AFL 3.0)
+- * that is bundled with this package in the file LICENSE_AFL.txt.
+- * It is also available through the world-wide-web at this URL:
+- * http://opensource.org/licenses/afl-3.0.php
+- * If you did not receive a copy of the license and are unable to
+- * obtain it through the world-wide-web, please send an email
+- * to license@magentocommerce.com so we can send you a copy immediately.
+- *
+- * DISCLAIMER
+- *
+- * Do not edit or add to this file if you wish to upgrade Magento to newer
+- * versions in the future. If you wish to customize Magento for your
+- * needs please refer to http://www.magentocommerce.com for more information.
+- *
+- * @category    design
+- * @package     base_default
+- * @copyright   Copyright (c) 2012 Magento Inc. (http://www.magentocommerce.com)
+- * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+- */
+ /* @var $this Mage_Catalog_Block_Product_Compare_Sidebar */
+-?>
+-<?php 
+ $_helper = $this->helper('catalog/product_compare');
++$deleteAllUrl = $_helper->getClearListUrl();
++
++$refererUrl = Mage::registry('referrer_url');
++if (empty($refererUrl)) {
++    $refererUrl = Mage::getBaseUrl();
++}
++$params = $this->getRequest()->getParams();
++if(!empty($params['isAjax'])){
++    $deleteAllUrl = $this->getUrl(
++        'catalog/product_compare/clear',
++        array(
++            Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => $this->helper('core/url')->getEncodedUrl($refererUrl)
++        )
++    );
++}
++
++if(empty($params['isAjax'])){
++    ob_start();
++}
++?>
++<?php
+ $_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
+ ?>
+ <div class="block block-list block-compare">
+@@ -42,9 +36,21 @@ $_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
+     <?php if($_helper->getItemCount() > 0): ?>
+         <ol id="compare-items">
+         <?php foreach($_items as $_index => $_item): ?>
++        <?php
++            $deleteUrl = $_helper->getRemoveUrl($_item);
++            if(!empty($params['isAjax'])){
++                $deleteUrl = $this->getUrl(
++                    'catalog/product_compare/remove',
++                    array(
++                        'product'=>$_item->getId(),
++                        Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => $this->helper('core/url')->getEncodedUrl($refererUrl)
++                    )
++                );
++            }
++        ?>
+             <li class="item">
+                 <input type="hidden" class="compare-item-id" value="<?php echo $_item->getId() ?>" />
+-                <a href="<?php echo $_helper->getRemoveUrl($_item) ?>" title="<?php echo $this->__('Remove This Item') ?>" class="btn-remove" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the compare products?') ?>');"><?php echo $this->__('Remove This Item') ?></a>
++                <a href="<?php echo $deleteUrl ?>" title="<?php echo $this->__('Remove This Item') ?>" class="btn-remove" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the compare products?') ?>');"><?php echo $this->__('Remove This Item') ?></a>
+                 <p class="product-name"><a href="<?php echo $this->getProductUrl($_item) ?>"><?php echo $this->helper('catalog/output')->productAttribute($_item, $_item->getName(), 'name') ?></a></p>
+             </li>
+         <?php endforeach; ?>
+@@ -53,7 +59,7 @@ $_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
+         <div class="actions">
+             <button type="button" title="<?php echo $this->__('Compare') ?>" class="button" onclick="popWin('<?php echo $_helper->getListUrl() ?>','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')"><span><span><?php echo $this->__('Compare') ?></span></span></button>
+             <div class="f-right">
+-                <a href="<?php echo $_helper->getClearListUrl() ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove all products from your comparison?') ?>');"><?php echo $this->__('Clear All') ?></a>
++                <a href="<?php echo $deleteAllUrl; ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove all products from your comparison?') ?>');"><?php echo $this->__('Clear All') ?></a>
+             </div>
+         </div>
+     <?php else: ?>
+@@ -62,11 +68,13 @@ $_items = $_helper->getItemCount() > 0 ? $_helper->getItemCollection() : null;
+     </div>
+ </div>
+ <?php
+-$queldorei_blocks = Mage::registry('queldorei_blocks');
+-if ( !$queldorei_blocks ) {
+-    $queldorei_blocks = array();
+-} else {
+-    Mage::unregister('queldorei_blocks');
+-}
+-$queldorei_blocks['block_compare'] = ob_get_clean();
+-Mage::register('queldorei_blocks', $queldorei_blocks);
+\ No newline at end of file
++if(empty($params['isAjax'])){
++    $queldorei_blocks = Mage::registry('queldorei_blocks');
++    if ( !$queldorei_blocks ) {
++        $queldorei_blocks = array();
++    } else {
++        Mage::unregister('queldorei_blocks');
++    }
++    $queldorei_blocks['block_compare'] = ob_get_clean();
++    Mage::register('queldorei_blocks', $queldorei_blocks);
++}
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list.phtml b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+index 5ab747e..e21a562 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+@@ -89,14 +89,18 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+                         <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                         <?php endif; ?>
+                     </div>
++
++                    <span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+                     <ul class="add-to-links">
+                         <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-                        <li><span></span><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a></li>
++                        <li><span></span><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Wishlist') ?></a></li>
+                         <?php endif; ?>
+                         <?php if ($_compareUrl=$this->getAddToCompareUrl($_product)) : ?>
+-                        <li><span></span><a href="<?php echo $_compareUrl ?>" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
++                        <li><span></span><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Compare') ?></a></li>
+                         <?php endif; ?>
+                     </ul>
++
+                 </div>
+             </div>
+         </li>
+@@ -160,12 +164,14 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+                     <?php endif; ?>
+                 </div>
+ 
++                <span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+                 <ul class="add-to-links">
+                     <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-                    <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
++                    <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
+                     <?php endif; ?>
+                     <?php if ($_compareUrl=$this->getAddToCompareUrl($_product)) : ?>
+-                    <li><a href="<?php echo $_compareUrl ?>" class="link-compare"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
++                    <li><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
+                     <?php endif; ?>
+                 </ul>
+ 
+@@ -174,7 +180,6 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+         </li>
+         <?php endforeach ?>
+     </ul>
+-    <script type="text/javascript">decorateGeneric($$('ul.products-grid'), ['odd','even','first','last'])</script>
+     <?php endif; ?>
+ 
+     <div class="toolbar-bottom">
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml b/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
+index f9d7b22..08f2877 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
+@@ -28,13 +28,19 @@
+ <?php $_product = $this->getProduct(); ?>
+ <?php $_wishlistSubmitUrl = $this->helper('wishlist')->getAddUrl($_product); ?>
+ 
++<span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+ <ul class="add-to-links">
+ <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-    <li class="wishlist"><span class="icon"></span><a href="<?php echo $_wishlistSubmitUrl ?>" onclick="productAddToCartForm.submitLight(this, '<?php echo $_wishlistSubmitUrl ?>'); return false;" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a></li>
++    <?php if (Mage::getStoreConfig('shoppersettings/ajax/wishlist')) : ?>
++        <li class="wishlist"><span class="icon"></span><a href="<?php echo $_wishlistSubmitUrl ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Wishlist') ?></a></li>
++    <?php else: ?>
++        <li class="wishlist"><span class="icon"></span><a href="<?php echo $_wishlistSubmitUrl ?>" onclick="productAddToCartForm.submitLight(this, '<?php echo $_wishlistSubmitUrl ?>'); return false;" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a></li>
++    <?php endif; ?>
+ <?php endif; ?>
+ <?php $_compareUrl = $this->helper('catalog/product_compare')->getAddUrl($_product); ?>
+ <?php if($_compareUrl) : ?>
+-    <li class="compare"><span class="icon"></span><a href="<?php echo $_compareUrl ?>" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
++    <li class="compare"><span class="icon"></span><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Compare') ?></a></li>
+ <?php endif; ?>
+ <?php if ($this->canEmailToFriend()): ?>
+     <li class="email-friend"><span class="icon"></span><a href="<?php echo $this->helper('catalog/product')->getEmailToFriendUrl($_product) ?>"><?php echo $this->__('Email to a Friend') ?></a></li>
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+index 2466b0a..6a96a7f 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+@@ -89,14 +89,18 @@ $listY = $helper->calculateHeight($listX);
+                         <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                         <?php endif; ?>
+                     </div>
++
++                    <span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+                     <ul class="add-to-links">
+                         <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-                        <li><span></span><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a></li>
++                        <li><span></span><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Wishlist') ?></a></li>
+                         <?php endif; ?>
+                         <?php if ($_compareUrl=$this->getAddToCompareUrl($_product)) : ?>
+-                        <li><span></span><a href="<?php echo $_compareUrl ?>" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
++                        <li><span></span><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><?php echo $this->__('Add to Compare') ?></a></li>
+                         <?php endif; ?>
+                     </ul>
++
+                 </div>
+             </div>
+         </li>
+@@ -159,12 +163,14 @@ $listY = $helper->calculateHeight($listX);
+                     <?php endif; ?>
+                 </div>
+ 
++                <span class="ajax_loading" id='ajax_loading<?php echo $_product->getId()?>'><img src='<?php echo $this->getSkinUrl('images/ajax-loader.gif')?>'/></span>
++
+                 <ul class="add-to-links">
+                     <?php if ($this->helper('wishlist')->isAllow()) : ?>
+-                    <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
++                    <li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Wishlist') ?></a></li>
+                     <?php endif; ?>
+                     <?php if ($_compareUrl=$this->getAddToCompareUrl($_product)) : ?>
+-                    <li><a href="<?php echo $_compareUrl ?>" class="link-compare"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
++                    <li><a href="<?php echo $_compareUrl ?>" class="link-compare" data-id="<?php echo $_product->getId(); ?>"><span>+</span><?php echo $this->__('Add to Compare') ?></a></li>
+                     <?php endif; ?>
+                 </ul>
+ 
+diff --git a/app/etc/modules/Excellence_AjaxWishlist.xml b/app/etc/modules/Excellence_AjaxWishlist.xml
+new file mode 100644
+index 0000000..eef2679
+--- /dev/null
++++ b/app/etc/modules/Excellence_AjaxWishlist.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0"?>
++<config>
++    <modules>
++        <Excellence_AjaxWishlist>
++            <active>true</active>
++            <codePool>local</codePool>
++        </Excellence_AjaxWishlist>
++    </modules>
++</config> 
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 4c86ac4..71c9d90 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -639,6 +639,15 @@ a.product-image {display:block;position:relative;}
+ .note-msg { border-color:#f3f3f3; background-color:#f3f3f3; background-image:url(../images/i_msg-note.gif); color:#888; }
+ .notice-msg { border-color:#f3f3f3; background-color:#f3f3f3; background-image:url(../images/i_msg-notice.gif); color:#888; }
+ 
++.ajax_loading {position:absolute;margin-top:21px; display:none; }
++.products-list .product-shop .ajax_loading {left:-23px; margin:10px 0 0; }
++.product-shop .ajax_loading {margin:19px 0 0 -21px; }
++div.alert a{ font-size:12px; color:#8db201; padding-left:5px;}
++div.alert a:hover{ color:#fff;}
++div.alert {position:fixed; background:#353535; top:0; left:50%; width:333px; margin-left:-220px; padding:20px 60px; color:#FFF; z-index:10030; font-size:12px; font-weight:bold; color:#ececec; border-radius:0 0 3px 3px; text-align:center;}
++div.alert button{background:url(../images/remove-popup.png) 0 0 no-repeat; width:9px; height:9px; position:absolute; right:20px; top:45%; border:none; z-index:9999;}
++div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
++
+ /*********** < BANNERS */
+ .homepage-banners {margin:-13px 0px 68px !important;}
+ .homepage-banners a{ position:relative; overflow:hidden; display:block; padding:11px; background:#fff; -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px;
+@@ -807,7 +816,7 @@ a.product-image {display:block;position:relative;}
+     -moz-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+     box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);}
+ .products-list .product-image .back_img { position:absolute; z-index:1; display:none;}
+-.products-list .product-shop { margin-left:300px; }
++.products-list .product-shop { position:relative; margin-left:300px; }
+ .products-list .product-name { margin:8px 0 5px; padding:0 0 13px; border-bottom:1px solid; border-bottom-color:#e3e3e3; border-bottom-color:rgba(227,227,227,0.61); }
+ .products-list .product-name a { font-family:"Myriad Pro",serif; font-size:16px; color:#000; color:rgba(0,0,0,0.67); }
+ .products-list .product-name a:hover { text-decoration:none; color:#000;}
+diff --git a/skin/frontend/default/shopper/images/ajax-loader.gif b/skin/frontend/default/shopper/images/ajax-loader.gif
+new file mode 100644
+index 0000000000000000000000000000000000000000..de471ce66c8f8b43c866324e157880f8bc765e02
+GIT binary patch
+literal 1079
+zcmZ?wbhEHb6krfw_{_lY|Ns9vU~ul-x#P!=-??+=$&)9qU%&qN@#EF2SHFJ!dgRCv
+z1|*>PpWDwhB-q(8z|~04fSC~}rT9<ExhOTUBsE2$JhLQ2Au%hlA}2pFMK3ciEuTU0
+zCkrPRP?ZkI5Rjz|EZPDmJXi0v@IScw{~ZUBV~q(9Bj$yB&03+bZ_U$nAA7cM;`+Qm
+z!QEL$s(%Ux0sS!(d5%z`|4yRFNe5ExH$=F9PLqt=M4lGWzNa(8v@;j2QaF`YyWJ#b
+z^Ja0?W5Rh3C;HM(=2&S8V)KO=k||3R+5=UX9a|4X%zLTTv7~d=?K{^D^fu~6>$q3n
+zO>tew&yZDRa$!Y@S0^yIF#{CID4C^TqZC^&!;E6k-dQ&1{8}lV<;)-2jBdSFW47#`
+z1vIJ`t5L{)gBT?kmRz|^`|7L}S{*99_jCT;vIy5ToB7wlqaU~5kYZS7nL_(UfrqBk
+z(zDj8X?3K$2`jK(z145C(S#4nG^P4aV2xolq_Ej0;4GAuT$!{|vttSOYJI8o;oR@$
+zJ^Oz^L6r$xSRh*s)EXo~qSeR&uoa}AU5JbTK#mcJDN5wV2$E5AwtyYvL~c4k^4lFJ
+R9?wLX4uT2S8kB9p007g-d{Y1b
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/images/remove-popup.png b/skin/frontend/default/shopper/images/remove-popup.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..219c7fd7e9b2487e1c1c5488ae49f326db9f85ab
+GIT binary patch
+literal 3057
+zcmeHJO=uHA7+n-gjTVX)v3eP|H|_o>v00L~>87>;Q$rGM6a=@slXPizXS+LXHWfid
+z4+RfBSg0t}f(Jp+-UNHFpgnjL4+RmVUMfQIU{79jlBTH&LUZsSWMFr8_IvZbZ{EDa
+zH=P_BXz?BMQ54k@AB?5Qyq`RWnw!Xb`ugS|nc8uG7N=1T7gYyRQ5}sy5I5C4OhHvI
+zjlY3miaKz_$YgOgaaPul$*N@x>zOv$O;O<<&sMcDh`|WV8&-t=y7ZC;h904Z0|`E1
+zD{#~poN{1#YAB;kjcFmB?&<c0J(&=g5Uap53zjQ;5xT-Flkf6xjs_J79*fXhMP(C7
+zpdbeVKP$2#qwzrr1SD1ph(Xcc2}GXn;`q~?#4|#dEQqqu1*(JY_JOdY=j2rEOf?-@
+zMd(qCZJFbW#UfjjSmfk6AruO6yvT_nLlBHxvasqgmfKOL*y4ymS91&-8^{7>PIUxL
+z;0R5VIM_amY1hatx2hLWj`LKT6Ih=66|8GDtUcirDrM*z2Mf@I7Iq0<_ziE5B8=Qo
+z^p_O1@J=Ekw5&K##mLDZRM^%txlII=v>yx`mX3;UrLx)v7*jEf&>}C03?E>4e?|z%
+z0YUbQr+7)``5HQbbR$>VHJaS7u3~jJcwLio$T3wSv1;1|LsQGjbCZ@{)wOouN-?#S
+zte^sNNL{3U>5oucQIZbI83ht^Qv-b<-me6OP%y}dtUz;Rw{TUv5T|lAtCl_R??)p^
+zT^cv!YRFZW0(F5K?rO+YmjZQx8}9nQ<nrw_yU-#XZjrRIi=SYWw87)?STy6kzmvSt
+zvJ9G^Tr+;mFW#R!x_)amc6iU-RPS8-i_7ow$GvaV$ED}qTBmQ}?JV#`@2xzZNpC!y
+z{Jt?WJ+QjAIp4H;er00s`oYE0qYra!8RhD;^y}Nw-jn%-R_8*;<b!=DS}(Tsz3Nz|
+YmcCr-{Txc2D>vcs{-M~@zAHC>0)FZ~dH?_b
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js b/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
+new file mode 100644
+index 0000000..18b007d
+--- /dev/null
++++ b/skin/frontend/default/shopper/js/ajaxwishlist/ajaxwishlist.js
+@@ -0,0 +1,70 @@
++jQuery(function ($) {
++
++    $('.add-to-links .link-wishlist').live('click', function () {
++        ajaxWishlist($(this).attr('href'), $(this).attr('data-id'));
++        return false;
++    });
++    $('.add-to-links .link-compare').live('click', function () {
++        ajaxCompare($(this).attr('href'), $(this).attr('data-id'));
++        return false;
++    });
++
++    function showMessage(message)
++    {
++        $('body').append('<div class="alert"></div>');
++        $('.alert').slideDown(400);
++        $('.alert').html(message).append('<button></button>');
++        $('button').click(function () {
++            $('.alert').slideUp(400);
++        });
++        $('.alert').slideDown('400', function () {
++            setTimeout(function () {
++                $('.alert').slideUp('400', function () {
++                    $(this).slideUp(400, function(){ $(this).detach(); })
++                });
++            }, 7000)
++        });
++    }
++
++    function ajaxCompare(url, id)
++    {
++        url = url.replace("catalog/product_compare/add", "ajaxwishlist/index/compare");
++        url += 'isAjax/1/';
++        $('#ajax_loading' + id).show();
++        $.ajax({
++            url:url,
++            dataType:'jsonp',
++            success:function (data) {
++                $('#ajax_loading' + id).hide();
++                showMessage(data.message);
++                if (data.status != 'ERROR' && $('.block-compare').length) {
++                    $('.block-compare').replaceWith(data.sidebar);
++                    $('.col-left').masonry('reload');
++                }
++            }
++        });
++    }
++
++    function ajaxWishlist(url, id) {
++        url = url.replace("wishlist/index", "ajaxwishlist/index");
++        url += 'isAjax/1/';
++        $('#ajax_loading' + id).show();
++        $.ajax({
++            url:url,
++            dataType:'jsonp',
++            success:function (data) {
++                $('#ajax_loading' + id).hide();
++                showMessage(data.message);
++                if (data.status != 'ERROR') {
++                    if ($('.block-wishlist').length) {
++                        $('.block-wishlist').replaceWith(data.sidebar);
++                        $('.col-left').masonry('reload');
++                    } else {
++                        $('.header-container .links').replaceWith(data.toplink);
++                    }
++                }
++            }
++        });
++    }
++
++});
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

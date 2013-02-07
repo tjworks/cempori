@@ -1,0 +1,25 @@
+From e25a99c675e46aac4a583a774cd6563ff4068e5f Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Sat, 6 Oct 2012 02:20:57 +0300
+Subject: [PATCH 6/6] update theme version
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 4359df7..42af45f 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -17,7 +17,7 @@
+ 			<groups>
+ 				<appearance translate="label">
+ 					<label>Appearance</label>
+-                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.0]]></comment>
++                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.1]]></comment>
+ 					<frontend_type>text</frontend_type>
+ 					<sort_order>10</sort_order>
+ 					<show_in_default>1</show_in_default>					
+-- 
+1.7.10.msysgit.1
+

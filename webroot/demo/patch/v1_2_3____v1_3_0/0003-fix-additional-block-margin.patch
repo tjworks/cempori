@@ -1,0 +1,27 @@
+From 210e2e8a9104af5b3f587e6252c4d59c83d0d9fb Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 6 Nov 2012 13:38:14 +0200
+Subject: [PATCH 03/25] fix additional block margin
+
+---
+ skin/frontend/default/shopper/css/local.css |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index a1fafd5..2ad83e4 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1320,9 +1320,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .product-view .after-tabs-block { margin:0 0 30px;}
+ 
+ .product-view .product-additional { float:right; width:270px; margin:0 3px 0 27px;}
+-.product-view .product-additional .block { margin:0;}
+-
+-.product-view .product-additional .block {margin:0; padding:0; width:270px; }
++.product-view .product-additional .block {margin:0 0 20px; padding:0; width:270px; }
+ .product-view .product-additional .block .block-title {border:0; padding:24px 35px 27px; margin:0; color:#000; color:rgba(0,0,0,0.75); text-align:center;}
+ .product-view .product-additional .block .block-title:after {content:''; float:left; width:120px; height:1px; background:#e8e8e8; margin:14px 0 0 39px;}
+ .product-view .product-additional .block .block-title strong {font-size:24px; font-weight:400; font-family:"Myriad Pro", serif; text-transform:uppercase; letter-spacing:-1.2px; line-height:21px;}
+-- 
+1.7.10.msysgit.1
+

@@ -1,0 +1,136 @@
+From 2323b8e2c7531d367ca9b57d8c4d3976d0d3c863 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 23 Nov 2012 12:24:42 +0200
+Subject: [PATCH 05/17] fix ajax cart for ssl mode
+
+---
+ .../Ajax/controllers/IndexController.php           |   32 ++++++++++++--------
+ .../template/ajax/catalog/product/quick_view.phtml |    2 +-
+ .../shopper/template/catalog/product/view.phtml    |    2 +-
+ .../default/shopper/js/ajaxcart/ajaxcart.js        |    2 +-
+ 4 files changed, 22 insertions(+), 16 deletions(-)
+
+diff --git a/app/code/local/Excellence/Ajax/controllers/IndexController.php b/app/code/local/Excellence/Ajax/controllers/IndexController.php
+index 11928c7..463d423 100644
+--- a/app/code/local/Excellence/Ajax/controllers/IndexController.php
++++ b/app/code/local/Excellence/Ajax/controllers/IndexController.php
+@@ -71,7 +71,7 @@ class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
+                 $response['message'] = $this->__('Cannot add the item to shopping cart.');
+                 Mage::logException($e);
+             }
+-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
++            $this->_sendJson($response);
+             return;
+         } else {
+             return parent::addAction();
+@@ -108,15 +108,12 @@ class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
+     /**
+      * send json respond
+      *
+-     * @param string $status
+-     * @param string $message
++     * @param array $response - response data
+      */
+-    private function _sendJson( $status, $message )
++    private function _sendJson( $response )
+     {
+-        $response = array();
+-        $response['status'] = $status;
+-        $response['message'] = $this->__($message);
+-        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
++        $this->getResponse()->setHeader('Content-type', 'application/json');
++        $this->getResponse()->setBody( (string) $this->getRequest()->getParam('callback') . '(' . Mage::helper('core')->jsonEncode($response) . ')' );
+     }
+ 
+     /**
+@@ -133,7 +130,7 @@ class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
+         }
+ 
+         if ($params['isAjax'] == 1) {
+-            $response = array();
++            $response = array('params' => $params);
+ 
+             try {
+                 if (isset($params['qty'])) {
+@@ -145,18 +142,27 @@ class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
+ 
+                 $quoteItem = $cart->getQuote()->getItemById($id);
+                 if (!$quoteItem) {
+-                    $this->_sendJson('ERROR', 'Quote item is not found.');
++                    $this->_sendJson(array(
++                        'status' => 'ERROR',
++                        'message' => $this->__('Quote item is not found.'),
++                    ));
+                     return;
+                 }
+ 
+                 $item = $cart->updateItem($id, new Varien_Object($params));
+                 if (is_string($item)) {
+-                    $this->_sendJson('ERROR', $item);
++                    $this->_sendJson(array(
++                        'status' => 'ERROR',
++                        'message' => $item,
++                    ));
+                     return;
+                 }
+                 if ($item->getHasError()) {
+                     Mage::throwException($item->getMessage());
+-                    $this->_sendJson('ERROR', $item->getMessage());
++                    $this->_sendJson(array(
++                        'status' => 'ERROR',
++                        'message' => $item->getMessage(),
++                    ));
+                     return;
+                 }
+ 
+@@ -200,7 +206,7 @@ class Excellence_Ajax_IndexController extends Mage_Checkout_CartController
+                 $response['message'] = $this->__('Cannot update the item.');
+                 Mage::logException($e);
+             }
+-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
++            $this->_sendJson($response);
+             return;
+         } else {
+             return parent::updateItemOptionsAction();
+diff --git a/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml b/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
+index 9693bf9..8cdde5c 100644
+--- a/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
++++ b/app/design/frontend/default/shopper/template/ajax/catalog/product/quick_view.phtml
+@@ -120,7 +120,7 @@ $product_img_box_width += 18;
+                     try {
+                         jQuery.ajax({
+                             url:url,
+-                            dataType:'json',
++                            dataType:'jsonp',
+                             type:'post',
+                             data:data,
+                             success:function (data) {
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/view.phtml b/app/design/frontend/default/shopper/template/catalog/product/view.phtml
+index 74456d6..06f77bc 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/view.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/view.phtml
+@@ -241,7 +241,7 @@ echo '<div class="product-category-title">'.$_category->getName().'</div>';
+                 try {
+                     jQuery.ajax({
+                         url:url,
+-                        dataType:'json',
++                        dataType:'jsonp',
+                         type:'post',
+                         data:data,
+                         success:function (data) {
+diff --git a/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+index 3b74672..bfc7127 100644
+--- a/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
++++ b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+@@ -90,7 +90,7 @@ jQuery(function($) {
+         try {
+             $.ajax({
+                 url:url,
+-                dataType:'json',
++                dataType:'jsonp',
+                 success:function (data) {
+                     $('#ajax_loading' + id).css('display', 'none');
+                     showMessage(data.message);
+-- 
+1.7.10.msysgit.1
+

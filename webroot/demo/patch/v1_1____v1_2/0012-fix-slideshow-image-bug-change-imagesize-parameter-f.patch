@@ -1,0 +1,26 @@
+From f782be293cfc0bc0c04c02a6807ca276173c3ada Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Wed, 10 Oct 2012 19:06:09 +0300
+Subject: [PATCH 12/24] fix slideshow image bug - change imagesize parameter
+ from image url to file system path
+
+---
+ .../frontend/default/shopper/template/queldorei/slideshow.phtml      |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml b/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
+index 49129b9..0d489f6 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
+@@ -32,7 +32,7 @@ if ( $config['enabled'] ) {
+                     $style = $content = '';
+                     $attr = 'data-img-height="0"';
+                     if ( !empty($s['image']) ) {
+-                        $imgSize = @getimagesize(Mage::getBaseUrl('media') . $s['image']);
++                        $imgSize = getimagesize(Mage::getBaseDir('media') .'/'. $s['image']);
+                         if ($imgSize) {
+                             $style = "background:url('". Mage::getBaseUrl('media') . $s['image'] . "') 50% 0 no-repeat;";
+                             $attr = 'data-img-height="'.$imgSize[1].'"';
+-- 
+1.7.10.msysgit.1
+

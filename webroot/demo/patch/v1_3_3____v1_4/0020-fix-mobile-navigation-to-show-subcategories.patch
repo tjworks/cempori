@@ -1,0 +1,225 @@
+From 25852609b2534887167c50520187860b25471eba Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 28 Dec 2012 17:39:38 +0200
+Subject: [PATCH 20/34] fix mobile navigation to show subcategories
+
+---
+ .../shopper/template/page/html/header.phtml        |    4 +-
+ skin/frontend/default/shopper/css/animation.css    |    3 +-
+ skin/frontend/default/shopper/css/local.css        |    9 ++-
+ skin/frontend/default/shopper/css/responsive.css   |   63 +++++++++++---------
+ skin/frontend/default/shopper/js/script.js         |   23 +++++---
+ 5 files changed, 61 insertions(+), 41 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/page/html/header.phtml b/app/design/frontend/default/shopper/template/page/html/header.phtml
+index 0438ebd..3f2d675 100644
+--- a/app/design/frontend/default/shopper/template/page/html/header.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/header.phtml
+@@ -60,6 +60,7 @@ if ( $config['design']['below_logo'] ) {
+ 			        <?php else:?>
+                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
+ 			        <?php endif?>
++	                <div class="mobile-nav"><?php echo $this->getChildHtml('topMenu'); ?></div>
+                     <div class="top-dropdowns">
+ 				        <?php echo $this->getChildHtml('cartTop') ?>
+ 				        <?php echo $this->getChildHtml('compareTop') ?>
+@@ -91,7 +92,8 @@ if ( $config['design']['below_logo'] ) {
+                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
+                     <?php endif; ?>
+                     <!-- NAVIGATION -->
+-                    <?php
++                    <div class="mobile-nav"><?php echo $this->getChildHtml('topMenu'); ?></div>
++	                <?php
+                         if ( !$config['navigation']['use_wide_navigation'] && $config['navigation']['use_navigation'] ) {
+                             echo $this->getChildHtml('topShopperMenu');
+                         } else {
+diff --git a/skin/frontend/default/shopper/css/animation.css b/skin/frontend/default/shopper/css/animation.css
+index c1b2b88..6b0debb 100644
+--- a/skin/frontend/default/shopper/css/animation.css
++++ b/skin/frontend/default/shopper/css/animation.css
+@@ -96,7 +96,8 @@ transition: background 200ms ease-in-out;
+     -o-transform: rotate(180deg);
+     transform: rotate(180deg);
+ }
+-.products-grid .add-to-links li a span {
++.products-grid .add-to-links li a span,
++.mobile-nav li.parent > a em{
+     transition: all 400ms ease-in-out;
+     -webkit-transition: all 400ms ease-in-out;
+     -moz-transition: all 400ms ease-in-out;
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index f5c07c6..33bb1f3 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -339,7 +339,7 @@ header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 46px;}
+ .cart-top > a {display:block; background:#97d2c9 url('../images/icon_cart.png') 50% 50% no-repeat; width:38px; height:38px; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; }
+ .cart-top > a:hover {background-color:#322c29; text-decoration:none; }
+ .cart-top > a span {padding:0 0 0 48px; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:38px; text-transform:uppercase; white-space:nowrap;}
+-.cart-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:1002; right:-40px; top:48px;
++.cart-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:10020; right:-40px; top:48px;
+     -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+     -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px; }
+ .cart-top-container .details-border{background:#97d2c9; height:4px; width:254px; padding:0 16px; margin:-16px 0 16px -16px; border-top-left-radius:2px; border-top-right-radius:2px; -moz-border-top-left-radius:2px; -moz-border-top-right-radius:2px; -webkit-border-top-left-radius:2px; -webkit-border-top-right-radius:2px; }
+@@ -384,7 +384,7 @@ header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 46px;}
+ .search-top-container{float:right; position:relative; margin:0px 0 0 4px;}
+ .search-top {display:block; overflow:hidden; background:#97d2c9 url('../images/icon_search.png') 50% 50% no-repeat; width:38px; height:38px; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; cursor:pointer; }
+ .search-top:hover {background-color:#322c29; }
+-.search-form{display:none; background:#fff; width:240px; padding:8px; position:absolute; z-index:1003; right:-60px; top:47px;
++.search-form{display:none; background:#fff; width:240px; padding:8px; position:absolute; z-index:10030; right:-60px; top:47px;
+     -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+     -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px; }
+ .search-form-border{background:#97d2c9; height:4px; width:240px; padding:0 8px; margin:-8px 0 8px -8px; border-top-left-radius:2px; border-top-right-radius:2px; -moz-border-top-left-radius:2px; -moz-border-top-right-radius:2px; -webkit-border-top-left-radius:2px; -webkit-border-top-right-radius:2px; }
+@@ -416,7 +416,7 @@ header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 46px;}
+ .compare-top-container {float:right; position:relative; margin:0px 0 0 4px;}
+ .compare-top {display:block; overflow:hidden; background:#97d2c9 url('../images/icon_compare.png') 50% 50% no-repeat; width:38px; height:38px; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; cursor:pointer; }
+ .compare-top:hover {background-color:#322c29; }
+-.compare-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:1002; right:-40px; top:48px;
++.compare-top-container .details { display:none; background:#fff; width:254px; padding:16px; line-height:150%; color:#7b7b7b; position:absolute; z-index:10020; right:-40px; top:48px;
+     -webkit-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); -moz-box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15); box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+     -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px; }
+ .compare-top-container .details-border{background:#97d2c9; height:4px; width:254px; padding:0 16px; margin:-16px 0 16px -16px; border-top-left-radius:2px; border-top-right-radius:2px; -moz-border-top-left-radius:2px; -moz-border-top-right-radius:2px; -webkit-border-top-left-radius:2px; -webkit-border-top-right-radius:2px; }
+@@ -489,6 +489,9 @@ footer .copyright{border-top:1px dotted #e0e0e0; margin:40px 0 0; padding:20px 0
+ footer address{ margin-left:10px; }
+ 
+ /********** < Navigation */
++.mobile-nav {display:none;}
++.mobile-nav li.parent em {float:right; display:block; width:36px; text-align:center; font-style:normal; font-weight:700; }
++.mobile-nav li.parent em:hover {cursor:pointer; background:#fff; color:#000 !important; }
+ .nav-container {position:relative; z-index:10010; display:inline-block; vertical-align:middle;}
+ #navigation_select{display:none; min-width:100%}
+ nav .nav-top-title, .nav-container .nav-top-title{ cursor:pointer; font-family:'Myriad Pro', sans-serif; font-size:16px; text-align:left; width:220px; margin:0 auto 3px; padding:0 10px; line-height:36px; background:#eee; color:#000; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; display:none;  }
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 9e88426..50dd0e3 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -156,7 +156,6 @@
+ 
+     header a.logo { float:none; display:block; margin:20px 10px 10px; text-align:center; }
+     header h1.logo { float:none; display:block; }
+-    nav.queldorei, .nav-container {display:block; }
+     .top-dropdowns {width:240px; margin:8px auto 0; position:relative;}
+     .cart-top-container {display:none; }
+     .cart-top-title{display:block; float:left; width:110px; }
+@@ -173,19 +172,27 @@
+     footer address{ margin:15px 0 0;}
+     .footer-info .grid_3 {width:356px; margin-bottom:30px; }
+ 
+-    nav .nav-top-title, .nav-container .nav-top-title{display:block; }
+-    #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+-    #queldoreiNav>li, #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
+-    #queldoreiNav>li>a, #nav>li>a { float:none; padding:0; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
+-    #queldoreiNav>li>a>span, #nav>li>a>span{padding:0px 10px; border:none;}
+-    #queldoreiNav>li:hover, #nav>li:hover,
+-    #queldoreiNav>li.over, #nav>li.over,
+-    #queldoreiNav>li.active, #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
+-    #queldoreiNav>li>a:hover>span, #nav>li>a:hover>span,
+-    #queldoreiNav>li.over>a>span, #nav>li.over>a>span,
+-    #queldoreiNav>li.active>a>span, #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
+-    #queldoreiNav>li ul, #nav>li ul { display:none !important;}
+-    #queldoreiNav>li.custom-block, #nav>li.custom-block { display:none !important;}
++    nav.queldorei, .nav-container {display:none; }
++    .mobile-nav, .mobile-nav  .nav-container, .mobile-nav  .nav-container .nav-top-title {display:block; }
++    .mobile-nav #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    .mobile-nav #nav li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    .mobile-nav #nav li a { float:none; padding:0; }
++    .mobile-nav #nav li a span{padding:0px 10px; border:none;}
++    .mobile-nav #nav li:hover,
++    .mobile-nav #nav li.over,
++    .mobile-nav #nav li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    .mobile-nav #nav>li>a:hover>span,
++    .mobile-nav #nav>li.over>a>span,
++    .mobile-nav #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    .mobile-nav #nav>li>a:hover>em,
++    .mobile-nav #nav>li.over>a>em,
++    .mobile-nav #nav>li.active>a>em{color:#fff; }
++    .mobile-nav #nav li.custom-block { display:none !important;}
++    .mobile-nav #nav ul { display:none; position:static; margin:0; padding:5px 0 10px 5px; -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none; }
++    .mobile-nav #nav ul li {width:auto; }
++    /*.mobile-nav #nav ul li a:hover {background:#fefefe; }
++    .mobile-nav #nav ul li a:hover>span {color:#000;}*/
++
+ 
+     .homepage-banners {width:600px !important;}
+     .homepage-banners .grid_6{width:270px !important; margin:0 15px;}
+@@ -373,7 +380,6 @@
+ 
+     header a.logo { float:none; display:block; margin:20px 10px 10px; text-align:center; }
+     header h1.logo { float:none; display:block; }
+-    nav.queldorei, .nav-container {display:block; }
+     .top-dropdowns {width:240px; margin:8px auto 0; position:relative;}
+     .cart-top-container {display:none; }
+     .cart-top-title{display:block; float:left; width:110px; }
+@@ -385,19 +391,20 @@
+     .search-field #search {width:224px}
+     .search-field #search_mini_form .form-search button {margin-left:216px}
+ 
+-    nav .nav-top-title, .nav-container .nav-top-title{display:block; }
+-    #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+-    #queldoreiNav>li, #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
+-    #queldoreiNav>li>a, #nav>li>a { float:none; padding:0; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
+-    #queldoreiNav>li>a>span, #nav>li>a>span{padding:0px 10px; border:none;}
+-    #queldoreiNav>li:hover, #nav>li:hover,
+-    #queldoreiNav>li.over, #nav>li.over,
+-    #queldoreiNav>li.active, #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
+-    #queldoreiNav>li>a:hover>span, #nav>li>a:hover>span,
+-    #queldoreiNav>li.over>a>span, #nav>li.over>a>span,
+-    #queldoreiNav>li.active>a>span, #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
+-    #queldoreiNav>li ul, #nav>li ul { display:none !important;}
+-    #queldoreiNav>li.custom-block, #nav>li.custom-block { display:none !important;}
++    nav.queldorei, .nav-container {display:none; }
++    .mobile-nav, .mobile-nav  .nav-container, .mobile-nav  .nav-container .nav-top-title {display:block; }
++    .mobile-nav #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    .mobile-nav #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    .mobile-nav #nav>li>a { float:none; padding:0; }
++    .mobile-nav #nav>li>a>span{padding:0px 10px; border:none;}
++    .mobile-nav #nav>li:hover,
++    .mobile-nav #nav>li.over,
++    .mobile-nav #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    .mobile-nav #nav>li>a:hover>span,
++    .mobile-nav #nav>li.over>a>span,
++    .mobile-nav #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    /*.mobile-nav #nav>li ul { display:none !important;}*/
++    .mobile-nav #nav>li.custom-block { display:none !important;}
+ 
+     .homepage-banners a .content{margin:14px;}
+     .homepage-banners a .content .border{margin:5px 10px; }
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 013fbd6..7a7184e 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -652,17 +652,24 @@ jQuery(function($){
+     $('.product-tabs-accordion h2.active').next().slideToggle();
+ 
+     //mobile navigation
+-    $('nav .nav-top-title, .nav-container .nav-top-title').click(function(){
+-        $(this).toggleClass('active').next().toggle();
++    $('.mobile-nav li.parent > a').prepend('<em>+</em>');
++    $('.mobile-nav li.parent > a em').click(function(){
++        if ( $(this).text() == '+') {
++            $(this).parent().parent().addClass('over');
++            $(this).parent().next().show();
++            $(this).text('-');
++        } else {
++            $(this).parent().parent().removeClass('over');
++            $(this).parent().next().hide();
++            $(this).text('+');
++        }
+         $(".header-wrapper").height($("header").height());
+         return false;
+     });
+-
+-    $(window).resize(function(){
+-        if ( mobile ) return;
+-        if ( $('#nav').css('display') == 'none' || $('#queldoreiNav').css('display') == 'none' ) {
+-            $('#nav, #queldoreiNav').show();
+-        }
++    $('.mobile-nav .nav-container .nav-top-title').click(function(){
++        $(this).toggleClass('over').next().toggle();
++        $(".header-wrapper").height($("header").height());
++        return false;
+     });
+ 
+     //show more in layered nav
+-- 
+1.7.9.msysgit.0
+

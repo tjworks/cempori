@@ -1,0 +1,74 @@
+From 1f42ae3a9bb6a0ad2d093aba42070ecfac2ec5dc Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 12:56:57 +0200
+Subject: [PATCH 20/25] add support of diff products in row to featured
+ products block
+
+---
+ .../Queldorei/ShopperSettings/Block/Product/List.php |   14 ++++++++++++++
+ .../template/catalog/product/featured_products.phtml |   18 +++++++++++++++++-
+ 2 files changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Block/Product/List.php b/app/code/local/Queldorei/ShopperSettings/Block/Product/List.php
+index 8df43cb..6c5e5d6 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Block/Product/List.php
++++ b/app/code/local/Queldorei/ShopperSettings/Block/Product/List.php
+@@ -24,4 +24,18 @@ class Queldorei_ShopperSettings_Block_Product_List extends Mage_Catalog_Block_Pr
+         return $title;
+     }
+ 
++    /**
++     * Returns the identifier for the currently rendered CMS page.
++     * If current page is not from CMS, null is returned.
++     * @return String | Null
++     */
++    public function getCurrentCmsPage() {
++        $dataCurrentPage = $this->getHelper('cms/page')->getPage()->getData();
++        if ($dataCurrentPage) {
++            $identifierCurrentPage = $dataCurrentPage['identifier'];
++            return $identifierCurrentPage;
++        }
++        return;
++    }
++
+ }
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml b/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
+index 46c0148..ad73582 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/featured_products.phtml
+@@ -10,6 +10,22 @@ $_productCollection=$this->getLoadedProductCollection();
+ $_helper = $this->helper('catalog/output');
+ $helper = $this->helper('shoppersettings/image');
+ 
++$cms_id = $this->getCurrentCmsPage();
++if ( !$cms_id ) {
++    $pageLayout = $this->getLayout()->getBlock('root')->getTemplate();
++    if ( strpos($pageLayout, '2columns') ) {
++        $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
++    } else {
++        $grid_class = 'one_column_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_1col');
++    }
++} else {
++    if ( $cms_id == 'shopper_home' ) {
++        $grid_class = 'one_column_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_1col');
++    } else {
++        $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
++    }
++}
++
+ $imgX = 252;
+ $imgY = $helper->calculateHeight($imgX);
+ ?>
+@@ -17,7 +33,7 @@ $imgY = $helper->calculateHeight($imgX);
+ <div class="category-products">
+     <h2><?php echo $this->__($this->getBlockTitle());?></h2>
+     <?php $_collectionSize = $_productCollection->count(); ?>
+-    <ul class="products-grid">
++    <ul class="products-grid <?php echo $grid_class; ?>">
+     <?php foreach ($_productCollection as $_product): ?>
+         <li class="item">
+ 
+-- 
+1.7.10.msysgit.1
+

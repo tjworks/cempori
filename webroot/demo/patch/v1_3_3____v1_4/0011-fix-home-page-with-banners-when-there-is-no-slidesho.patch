@@ -1,0 +1,27 @@
+From 748e531087d2e2e9a11ccae77dd6cad04330c66b Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 20 Dec 2012 17:21:52 +0200
+Subject: [PATCH 11/34] fix home page with banners when there is no slideshow
+
+---
+ skin/frontend/default/shopper/js/script.js |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index c2d169e..21b3d58 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -538,6 +538,10 @@ jQuery(function($){
+ 
+             $flexslider.flexslider(vars);
+         });
++    } else {
++        if ( $('.col-main .homepage-banners').length ) {
++            $('.col-main .homepage-banners').css('padding-top','40px');
++        }
+     }
+ 
+     if ( $(".block-slideshow .block-slider").length ) {
+-- 
+1.7.9.msysgit.0
+

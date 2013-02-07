@@ -1,0 +1,100 @@
+From 4805a46b8550aa5aad54bc13c6dbf7cb44851006 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 18:14:38 +0200
+Subject: [PATCH 1/2] fix related / upsell height bug
+
+---
+ .../catalog/product/list/related_content.phtml        |   16 ++++++++++------
+ .../template/catalog/product/list/upsell.phtml        |   16 ++++++++++------
+ .../template/catalog/product/list/upsell2.phtml       |   17 ++++++++++-------
+ 3 files changed, 30 insertions(+), 19 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list/related_content.phtml b/app/design/frontend/default/shopper/template/catalog/product/list/related_content.phtml
+index 8d637f4..d26b302 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list/related_content.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list/related_content.phtml
+@@ -98,13 +98,17 @@ $time = time() + rand(0,1000);
+         });
+ 
+         //line up carousel items
+-        var height = 0;
+-        $('li.item', '#related-products-list').each(function(i,v){
+-            if ( $(this).height() > height ) {
+-                height = $(this).height();
+-            }
++        $(window).load(function(){
++            var height = 0;
++            $('li.item', '#related-products-list').each(function(i,v){
++                $(this).css('height', 'auto');
++                if ( $(this).height() > height ) {
++                    height = $(this).height();
++                }
++            });
++            $('li.item', '#related-products-list').height(height);
+         });
+-        $('li.item', '#related-products-list').height(height);
++
+         $('div.main').after($('<div class="slider-container" />'));
+ 
+         function carouselResize ()
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list/upsell.phtml b/app/design/frontend/default/shopper/template/catalog/product/list/upsell.phtml
+index ce4467b..955a77f 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list/upsell.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list/upsell.phtml
+@@ -105,13 +105,17 @@ $imgY = $helper->calculateHeight($imgX);
+ 	    });
+ 
+         //line up carousel items
+-        var height = 0;
+-        $('li.item', '#upsell-products-list').each(function(i,v){
+-            if ( $(this).actual('height') > height ) {
+-                height = $(this).actual('height');
+-            }
++        $(window).load(function(){
++            var height = 0;
++            $('li.item', '#upsell-products-list').each(function(i,v){
++                $(this).css('height', 'auto');
++                if ( $(this).actual('height') > height ) {
++                    height = $(this).actual('height');
++                }
++            });
++            $('li.item', '#upsell-products-list').height(height);
+         });
+-        $('li.item', '#upsell-products-list').height(height);
++
+ 
+ 	});
+ 	<?php else: ?>
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list/upsell2.phtml b/app/design/frontend/default/shopper/template/catalog/product/list/upsell2.phtml
+index a0657c1..e6ff837 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list/upsell2.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list/upsell2.phtml
+@@ -145,15 +145,18 @@ function addUpsellToProduct(){
+ 		    buttonNextHTML: null,
+ 		    buttonPrevHTML: null
+ 	    });
+-
++        
+         //line up carousel items
+-        var height = 0;
+-        $('li.item', '#upsell2-products-list').each(function(i,v){
+-            if ( $(this).actual('height') > height ) {
+-                height = $(this).actual('height');
+-            }
++        $(window).load(function(){
++            var height = 0;
++            $('li.item', '#upsell2-products-list').each(function(i,v){
++                $(this).css('height', 'auto');
++                if ( $(this).actual('height') > height ) {
++                    height = $(this).actual('height');
++                }
++            });
++            $('li.item', '#upsell2-products-list').height(height);
+         });
+-        $('li.item', '#upsell2-products-list').height(height);
+ 
+ 	});
+ 	<?php else: ?>
+-- 
+1.7.10.msysgit.1
+

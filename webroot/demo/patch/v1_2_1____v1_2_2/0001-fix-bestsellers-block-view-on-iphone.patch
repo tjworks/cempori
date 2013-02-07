@@ -1,0 +1,32 @@
+From 7a118ef6115910225f168b5d206091c874a26139 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Fri, 19 Oct 2012 13:45:13 +0300
+Subject: [PATCH 1/4] fix bestsellers block view on iphone
+
+---
+ skin/frontend/default/shopper/css/mobile.css |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/skin/frontend/default/shopper/css/mobile.css b/skin/frontend/default/shopper/css/mobile.css
+index 1fe4e5a..79d0b76 100644
+--- a/skin/frontend/default/shopper/css/mobile.css
++++ b/skin/frontend/default/shopper/css/mobile.css
+@@ -99,6 +99,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
+     .block-slider .slides > li,
+     .block-viewed .block-content li,
+     .block-tags .block-content li,
++    .block-bestsellers .block-content li,
+     .block-slider .flex-control-nav li,
+     .block-poll .block-content li{background:none;}
+ 
+@@ -117,6 +118,7 @@ only screen and (min-device-pixel-ratio: 1.5) and (max-width: 959px){
+     .block-slider .slides > li,
+     .block-viewed .block-content li,
+     .block-tags .block-content li,
++    .block-bestsellers .block-content li,
+     .block-slider .flex-control-nav li,
+     .block-poll .block-content li{background:none;}
+ 
+-- 
+1.7.10.msysgit.1
+

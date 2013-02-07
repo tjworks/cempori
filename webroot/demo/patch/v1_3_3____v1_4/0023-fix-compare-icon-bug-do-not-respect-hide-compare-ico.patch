@@ -1,0 +1,25 @@
+From 73980b2770eac012070a2c926adc89c68d00a322 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 3 Jan 2013 15:37:30 +0200
+Subject: [PATCH 23/34] fix compare icon bug ( do not respect hide compare
+ icon option on mobile devices )
+
+---
+ skin/frontend/default/shopper/css/options.css.php |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 4a46162..c3da8da 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -295,5 +295,5 @@ button.invert span, button.btn-continue span, .cart-shipping button span, .cart-
+ #mobile-nav > li > a:hover, #mobile-nav > li.active > a, #mobile-nav > li.over > a {color:#373230}
+ 
+ <?php if ( isset($config['design']['top_compare']) && $config['design']['top_compare'] == 0 ) : ?>
+-.compare-top-container {display:none}
++.compare-top-title, .compare-top-container {display:none !important}
+ <?php endif; ?>
+\ No newline at end of file
+-- 
+1.7.9.msysgit.0
+

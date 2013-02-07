@@ -1,0 +1,106 @@
+From bd6e587996c31dc231a47d01ddedc4e3eac14252 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 26 Oct 2012 23:46:11 +0300
+Subject: [PATCH 03/11] add option to enable/disable quick view button
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/config.xml      |    1 +
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml      |   10 ++++++++++
+ .../frontend/default/shopper/template/page/html/head.phtml   |    1 +
+ skin/frontend/default/shopper/css/local.css                  |    4 +---
+ skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js        |    8 ++++++++
+ 5 files changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 871ff43..fa8acf9 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -244,6 +244,7 @@
+                 <priceslider>1</priceslider>
+                 <wishlist>1</wishlist>
+                 <cart>1</cart>
++                <quick_view>1</quick_view>
+                 <price_circle>1</price_circle>
+                 <totop>1</totop>
+             </ajax>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 976eace..3656cbd 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -764,6 +764,16 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </cart>
++                        <quick_view translate="label">
++                            <label>Enable Quick view button</label>
++                            <comment>Quick view popup will be shown for products with required options regardless of this option</comment>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>85</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </quick_view>
+                         <price_circle translate="label">
+                             <label>Show Price circle on product listing</label>
+                             <frontend_type>select</frontend_type>
+diff --git a/app/design/frontend/default/shopper/template/page/html/head.phtml b/app/design/frontend/default/shopper/template/page/html/head.phtml
+index 8a850f8..bd7d855 100644
+--- a/app/design/frontend/default/shopper/template/page/html/head.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/head.phtml
+@@ -63,6 +63,7 @@
+     Shopper.price_circle = <?php echo Mage::getStoreConfig('shoppersettings/ajax/price_circle') ?>;
+     Shopper.totop = <?php echo Mage::getStoreConfig('shoppersettings/ajax/totop') ?>;
+     Shopper.responsive = <?php echo Mage::getStoreConfig('shoppersettings/design/responsive') ?>;
++    Shopper.quick_view = <?php echo Mage::getStoreConfig('shoppersettings/ajax/quick_view') ?>;
+     Shopper.anystretch_bg = '';
+     <?php
+     $route = Mage::app()->getFrontController()->getRequest()->getRouteName();
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 9e0df38..d127d20 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -643,7 +643,7 @@ a.product-image {display:block;position:relative;}
+ .ajax_loading {position:absolute;margin-top:21px; display:none; }
+ .products-list .product-shop .ajax_loading {left:-23px; margin:10px 0 0; }
+ .product-shop .ajax_loading {margin:19px 0 0 -21px; }
+-.quick-view { display:block; position:absolute; z-index:2; top:14%; left:30%; background:#97d2c9 url('../images/btn_overlay.png') 0 0 repeat-x; height:42px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; line-height:42px; padding:0 16px; font-size:14px; font-weight:300; color:#fff; text-align:center; white-space:nowrap; text-transform:lowercase;}
++.quick-view { display:none; position:absolute; z-index:2; top:14%; left:30%; background:#97d2c9 url('../images/btn_overlay.png') 0 0 repeat-x; height:42px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; line-height:42px; padding:0 16px; font-size:14px; font-weight:300; color:#fff; text-align:center; white-space:nowrap; text-transform:lowercase;}
+ .quick-view:hover {background-color:#393431; color:#fff; text-decoration:none;}
+ 
+ div.alert a{ font-size:12px; color:#8db201; padding-left:5px;}
+@@ -815,8 +815,6 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-list { margin:0; padding:0; }
+ .products-list li.item { border:none; padding:0 0 30px; }
+ .products-list li.item .f-left{ position:relative;}
+-.products-list li.item .f-left .quick-view{display:none;}
+-.products-list li.item .f-left:hover .quick-view{display:block;}
+ .products-list li.item.last {}
+ .products-list .product-image { padding:0; margin:0; position:relative; background:#fff; border:9px solid #fff; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;
+     -webkit-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+diff --git a/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+index e599e46..3b74672 100644
+--- a/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
++++ b/skin/frontend/default/shopper/js/ajaxcart/ajaxcart.js
+@@ -1,3 +1,4 @@
++//called from quick view iframe
+ function setAjaxData(data,iframe){
+     //showMessage(data.message);
+     if (data.status != 'ERROR' && jQuery('.cart-top-container').length) {
+@@ -45,6 +46,13 @@ jQuery(function($) {
+     });
+ 
+ 
++    if ( Shopper.quick_view ) {
++        $('li.item').live({
++            mouseenter: function(){ $(this).find('.quick-view').css('display', 'block'); },
++            mouseleave: function(){ $(this).find('.quick-view').hide(); }
++        });
++    }
++
+     $('.fancybox').live('click', function() {
+         $this = $(this);
+         $.fancybox({
+-- 
+1.7.10.msysgit.1
+

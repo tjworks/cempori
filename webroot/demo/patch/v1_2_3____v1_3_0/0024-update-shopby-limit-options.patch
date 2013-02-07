@@ -1,0 +1,48 @@
+From 5950a47db326f527e01f653f1aacab9424878502 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 16:26:52 +0200
+Subject: [PATCH 24/25] update shopby limit options
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    2 +-
+ skin/frontend/default/shopper/js/script.js              |    6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 116308d..e472e31 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -528,7 +528,7 @@
+ 							<show_in_store>1</show_in_store>
+ 						</categories_filter>
+                         <shopby_num translate="label comment">
+-							<label>Show number of options in layered navigation sideblock: </label>
++							<label>Limit number of shown attribute options in layered navigation sideblock: </label>
+                             <comment>Will hide more than that number and add 'more' link</comment>
+ 							<frontend_type>text</frontend_type>
+ 							<sort_order>14</sort_order>
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 9e8a109..4858097 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -646,14 +646,14 @@ jQuery(function($){
+     //show more in layered nav
+     if ( $('.block-layered-nav').length && Shopper.shopby_num ) {
+         $('.block-layered-nav ol').each(function(i,v){
+-            if ( $('li', this).length > 5 ) {
++            if ( $('li', this).length > Shopper.shopby_num ) {
+                 var that = this;
+-                $('li:gt('+Shopper.shopby_num+')', this).hide();
++                $('li:gt('+(Shopper.shopby_num-1)+')', this).hide();
+                 $('.col-left').masonry('reload');
+                 $(this).next()
+                     .css('display', 'block')
+                     .click(function(){
+-                        $('li:gt('+Shopper.shopby_num+')', that).toggle();
++                        $('li:gt('+(Shopper.shopby_num-1)+')', that).toggle();
+                         $('.col-left').masonry('reload');
+                         return false;
+                     });
+-- 
+1.7.10.msysgit.1
+

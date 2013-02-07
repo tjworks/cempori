@@ -1,0 +1,70 @@
+From 707bab62a4d9c4dc7af9482d4977f4d5c48ca9b9 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 15:57:32 +0200
+Subject: [PATCH 23/25] fix ajax cart - remove product link lead to wrong page
+ css fixes
+
+---
+ .../template/checkout/cart/sidebar/default.phtml   |   25 ++++++++++++++++----
+ skin/frontend/default/shopper/css/local.css        |    2 +-
+ 2 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/checkout/cart/sidebar/default.phtml b/app/design/frontend/default/shopper/template/checkout/cart/sidebar/default.phtml
+index 9fa734c..cc2ed3c 100644
+--- a/app/design/frontend/default/shopper/template/checkout/cart/sidebar/default.phtml
++++ b/app/design/frontend/default/shopper/template/checkout/cart/sidebar/default.phtml
+@@ -29,9 +29,26 @@
+     $isVisibleProduct = $_item->getProduct()->isVisibleInSiteVisibility();
+     $canApplyMsrp = Mage::helper('catalog')->canApplyMsrp($_item->getProduct(), Mage_Catalog_Model_Product_Attribute_Source_Msrp_Type::TYPE_BEFORE_ORDER_CONFIRM);
+ 
+-$helper = $this->helper('shoppersettings/image');
+-$imgX = 50;
+-$imgY = $helper->calculateHeight($imgX);
++    $helper = $this->helper('shoppersettings/image');
++    $imgX = 50;
++    $imgY = $helper->calculateHeight($imgX);
++
++    $deleteUrl = $this->getDeleteUrl();
++    $refererUrl = Mage::registry('referrer_url');
++    if (empty($refererUrl)) {
++        $refererUrl = Mage::getBaseUrl();
++    }
++    $params = $this->getRequest()->getParams();
++    if(!empty($params['isAjax'])){
++        $deleteUrl = $this->getUrl(
++            'checkout/cart/delete',
++            array(
++                'id'=>$this->getItem()->getId(),
++                Mage_Core_Controller_Front_Action::PARAM_NAME_URL_ENCODED => $this->helper('core/url')->getEncodedUrl($refererUrl)
++            )
++        );
++    }
++
+ ?>
+ <li class="item clearfix">
+     <?php if ($this->hasProductUrl()): ?>
+@@ -40,7 +57,7 @@ $imgY = $helper->calculateHeight($imgX);
+         <span class="product-image"><img src="<?php echo $this->getProductThumbnail()->resize($imgX, $imgY)->setWatermarkSize('30x10'); ?>" data-srcX2="<?php echo $this->getProductThumbnail()->resize($imgX*2, $imgY*2)->setWatermarkSize('30x10'); ?>" width="<?php echo $imgX;?>" height="<?php echo $imgY;?>" alt="<?php echo $this->htmlEscape($this->getProductName()) ?>" /></span>
+     <?php endif; ?>
+     <div class="product-details">
+-        <a href="<?php echo $this->getDeleteUrl() ?>" title="<?php echo $this->__('Remove This Item') ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the shopping cart?') ?>');" class="btn-remove"><?php echo $this->__('Remove This Item') ?></a>
++        <a href="<?php echo $deleteUrl; ?>" title="<?php echo $this->__('Remove This Item') ?>" onclick="return confirm('<?php echo $this->__('Are you sure you would like to remove this item from the shopping cart?') ?>');" class="btn-remove"><?php echo $this->__('Remove This Item') ?></a>
+         <?php if ($isVisibleProduct): ?>
+         <a href="<?php echo $this->getConfigureUrl() ?>" title="<?php echo $this->__('Edit item') ?>" class="btn-edit"><?php echo $this->__('Edit item')?></a>
+         <?php endif ?>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 06d28e5..cee6a80 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -823,7 +823,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-grid .product-image img {position:relative; z-index:0; max-width:100%; height:auto; }
+ .products-grid .product-name {color:#3c3c3c; font-size:16px; font-weight:300; display:block; margin:4px; line-height:120%; }
+ .products-grid .product-name:hover {color:#000; text-decoration:none;}
+-.products-grid .price-box {margin:0px 0 5px 4px; line-height:12px; letter-spacing:-1.2px }
++.products-grid .price-box {margin:0px 0 5px 4px; line-height:14px; letter-spacing:-1.2px }
+ /** gird hover mode **/
+ .products-grid .regular {}
+ .products-grid .hover {display:none; position:absolute; z-index:2; top:-9px; left:-9px; width:252px; padding:0; margin:0 30px 30px 0; background:#fff; border:9px solid #fff; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;
+-- 
+1.7.10.msysgit.1
+

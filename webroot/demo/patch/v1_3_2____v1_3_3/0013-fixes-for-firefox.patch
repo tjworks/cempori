@@ -1,0 +1,39 @@
+From 695392d6e94ba937578985174b19fe435df166ef Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 23 Nov 2012 19:31:16 +0200
+Subject: [PATCH 13/17] fixes for firefox
+
+---
+ skin/frontend/default/shopper/css/local.css      |    2 +-
+ skin/frontend/default/shopper/css/responsive.css |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index d3137fa..442ee94 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -936,7 +936,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-list .button-container { float:left; margin:0; line-height:35px; }
+ .products-list .button-container p { line-height:35px;}
+ .products-list .button-container .btn-add-cart { display:block; vertical-align:top; color:#322c29; font-size:14px;}
+-.products-list .button-container .btn-add-cart span{ display:inline-block; border-radius: 100% 100% 100% 100%; height: 35px; text-indent: -9999px; width: 35px; margin:0 15px 0 0; background:#97d2c9 url("../images/icon_cart_listing.png") no-repeat 50% 50%;}
++.products-list .button-container .btn-add-cart span{ float:left; display:inline-block; border-radius: 100% 100% 100% 100%; height: 35px; text-indent: -9999px; width: 35px; margin:0 15px 0 0; background:#97d2c9 url("../images/icon_cart_listing.png") no-repeat 50% 50%;}
+ .products-list .button-container .btn-add-cart:hover {color:#000; text-decoration: none; }
+ .products-list .button-container .btn-add-cart:hover span{background-color:#322c29;}
+ .products-list .add-to-links {float:left; clear:none;}
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 213fe4f..3ec966d 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -358,7 +358,7 @@
+     .language-switch, .currency-switch {display:none;}
+     .language-select, .currency-select {display:block; width:50%; float:left; text-align:center; margin:5px 0 10px; }
+     .language-select span, .currency-select span {display:none; }
+-    .language-select select, .currency-select select {width:125px; }
++    .language-select select, .currency-select select {width:125px; height:auto }
+ 
+     .toolbar-switch .current { display:none; }
+     .toolbar-switch .toolbar-title { background: none; padding: 0 7px 0 0; }
+-- 
+1.7.10.msysgit.1
+

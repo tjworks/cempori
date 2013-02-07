@@ -1,0 +1,24 @@
+From d8055f3b1038a90a4a2979c25445696b2a357c06 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 17 Dec 2012 18:20:08 +0200
+Subject: [PATCH 08/34] fix address select in mobile view
+
+---
+ skin/frontend/default/shopper/css/responsive.css |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 47d1fe3..b504b92 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -517,6 +517,7 @@
+     #checkout-review-submit p {margin:0 20px 0 0;}
+     #checkout-step-login .block-checkout-register, #checkout-step-login .block-checkout-login { width:228px;  margin: 20px auto 0 !important; float: none;}
+     #checkout-step-login input.input-text {width:218px;}
++    .form-list li.wide select {width:250px}
+ }
+ 
+ /***** iPhone (landscape) *****/
+-- 
+1.7.9.msysgit.0
+

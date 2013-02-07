@@ -1,0 +1,64 @@
+From d764fdfcb7245c07695b6292181a137d94f8d5ad Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 15 Oct 2012 17:41:42 +0300
+Subject: [PATCH 23/24] fix top/footer links bug with separator
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/cms.xml           |    6 +++---
+ .../default/shopper/template/page/template/links.phtml         |    8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+index cc50937..2ec0c7e 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+@@ -161,11 +161,11 @@
+                 <content><![CDATA[
+ <ul class="links">
+ 	<li><a href="{{store url=''}}" title="About Us">About Us</a></li>
+-	<li class="separator"></li>
++	<li class="separator">&nbsp;</li>
+ 	<li><a href="{{store url=''}}" title="Delivery & Returns">Delivery & Returns</a></li>
+-	<li class="separator"></li>
++	<li class="separator">&nbsp;</li>
+ 	<li><a href="{{store url=''}}" title="Terms & Conditions">Terms & Conditions</a></li>
+-	<li class="separator"></li>
++	<li class="separator">&nbsp;</li>
+ 	<li><a href="{{store url='contacts'}}" title="Contact Us">Contact Us</a></li>
+ </ul>
+                 ]]></content>
+diff --git a/app/design/frontend/default/shopper/template/page/template/links.phtml b/app/design/frontend/default/shopper/template/page/template/links.phtml
+index 1a4105e..ec11f71 100644
+--- a/app/design/frontend/default/shopper/template/page/template/links.phtml
++++ b/app/design/frontend/default/shopper/template/page/template/links.phtml
+@@ -43,23 +43,23 @@ if (Mage::getStoreConfig('shoppersettings/header/top_custom_link')) {
+ <ul class="links"<?php if($this->getName()): ?> id="<?php echo $this->getName() ?>"<?php endif;?>>
+ 	<?php if (Mage::getStoreConfig('shoppersettings/header/top_custom_link')): ?>
+         <li><a href="<?php echo Mage::getURL( Mage::getStoreConfig('shoppersettings/header/top_custom_link_path') ) ?>" title="<?php echo Mage::getStoreConfig('shoppersettings/header/top_custom_link_title') ?>"><?php echo Mage::getStoreConfig('shoppersettings/header/top_custom_link_anchor') ?></a></li>
+-		<li class="separator"></li>
++		<li class="separator">&nbsp;</li>
+     <?php endif; ?>
+     <?php foreach($_links as $_link): ?>
+         <?php if ($_link instanceof Mage_Core_Block_Abstract):?>
+             <?php echo $_link->toHtml() ?>
+ 			<?php if(!$_link->getIsLast()): ?>
+-			<li class="separator"></li>
++            <li class="separator">&nbsp;</li>
+ 			<?php endif; ?>
+         <?php else: ?>
+             <li <?php echo $_link->getLiParams() ?>><?php echo $_link->getBeforeText() ?><a href="<?php echo $_link->getUrl() ?>" title="<?php echo $_link->getTitle() ?>" <?php echo $_link->getAParams() ?>><?php echo $_link->getLabel() ?></a><?php echo $_link->getAfterText() ?></li>
+ 			<?php if(!$_link->getIsLast()): ?>
+-			<li class="separator"></li>
++            <li class="separator">&nbsp;</li>
+ 			<?php endif; ?>
+         <?php endif;?>
+     <?php endforeach; ?>
+     <?php if (Mage::getSingleton('customer/session')->isLoggedIn() == false && Mage::getStoreConfig('shoppersettings/header/top_signup')): ?>
+-        <li class="separator"></li>
++    <li class="separator">&nbsp;</li>
+         <li><a href="<?php echo Mage::getURL('customer/account/create/') ?>"><?php echo $this->__('Sign Up') ?></a></li>
+     <?php endif; ?>
+ </ul>
+-- 
+1.7.10.msysgit.1
+

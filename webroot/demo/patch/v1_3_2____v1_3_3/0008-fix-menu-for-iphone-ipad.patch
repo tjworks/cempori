@@ -1,0 +1,50 @@
+From bcc4bab9a891f19b16334d4965db78fcfc7a2243 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 23 Nov 2012 16:27:48 +0200
+Subject: [PATCH 08/17] fix menu for iphone/ipad
+
+---
+ skin/frontend/default/shopper/js/script.js |   22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index ccc7d1d..c3abd0c 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -34,21 +34,23 @@ jQuery(window).on("load", function() {
+     if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.match(/iPad/i))) {
+         jQuery("#queldoreiNav li a").on({
+             click: function () {
+-                if ( !jQuery(this).hasClass('touched') && jQuery(this).siblings('div') ) {
+-                    jQuery('#queldoreiNav a').removeClass('touched');
+-                    jQuery(this).parents('li').children('a').addClass('touched');
+-                    jQuery(this).addClass('touched');
+-                    return false;
++                if ( !mobile && jQuery(this).parent().hasClass('parent') ) {
++                    if ( !jQuery(this).hasClass('touched') ) {
++                        jQuery('#queldoreiNav a').removeClass('touched');
++                        jQuery(this).parents('li').children('a').addClass('touched');
++                        return false;
++                    }
+                 }
+             }
+         });
+         jQuery("#nav li a").on({
+             click: function () {
+-                if ( !jQuery(this).hasClass('touched') && jQuery(this).siblings('ul') ) {
+-                    jQuery('#nav a').removeClass('touched');
+-                    jQuery(this).parents('li').children('a').addClass('touched');
+-                    jQuery(this).addClass('touched');
+-                    return false;
++                if ( !mobile && jQuery(this).parent().hasClass('parent') ) {
++                    if ( !jQuery(this).hasClass('touched') ) {
++                        jQuery('#nav a').removeClass('touched');
++                        jQuery(this).parents('li').children('a').addClass('touched');
++                        return false;
++                    }
+                 }
+             }
+         });
+-- 
+1.7.10.msysgit.1
+

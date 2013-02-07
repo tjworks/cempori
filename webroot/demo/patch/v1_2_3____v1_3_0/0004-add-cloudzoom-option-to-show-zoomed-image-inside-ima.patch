@@ -1,0 +1,103 @@
+From a18f70ba5e94f4889a5449a2fdc4b9c29b042c55 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 6 Nov 2012 16:28:45 +0200
+Subject: [PATCH 04/25] add cloudzoom option to show zoomed image inside image
+ frame
+
+---
+ .../ShopperSettings/Model/Config/Zoom/Position.php |   23 ++++++++++++++++++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    9 ++++++++
+ .../template/queldorei/cloudzoom/media.phtml       |    9 +++++++-
+ 4 files changed, 41 insertions(+), 1 deletion(-)
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom/Position.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom/Position.php b/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom/Position.php
+new file mode 100644
+index 0000000..604ac07
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom/Position.php
+@@ -0,0 +1,23 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_ShopperSettings_Model_Config_Zoom_Position
++{
++
++    public function toOptionArray()
++    {
++        return array(
++            array(
++	            'value'=>'right',
++	            'label' => Mage::helper('shoppersettings')->__('Right')),
++            array(
++	            'value'=>'inside',
++	            'label' => Mage::helper('shoppersettings')->__('Inside')),
++        );
++    }
++
++}
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index aa11ec2..0268aa7 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -227,6 +227,7 @@
+             </social>
+             <cloudzoom>
+                 <enabled>1</enabled>
++                <position>right</position>
+                 <lens_opacity>50</lens_opacity>
+                 <zoom_width></zoom_width>
+                 <zoom_height></zoom_height>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 72a39b5..973657b 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -624,6 +624,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </enabled>
++                        <position translate="label">
++                            <label>Cloudzoom position</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shoppersettings/config_zoom_position</source_model>
++                            <sort_order>20</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </position>
+                         <lens_opacity translate="label">
+                             <label>Lens Opacity (%)</label>
+                             <comment>Opacity of the lens pointer.</comment>
+diff --git a/app/design/frontend/default/shopper/template/queldorei/cloudzoom/media.phtml b/app/design/frontend/default/shopper/template/queldorei/cloudzoom/media.phtml
+index cee804a..82a3ea7 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/cloudzoom/media.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/cloudzoom/media.phtml
+@@ -19,12 +19,19 @@
+     list($thumbX, $thumbY) = $helper->getThumbSize();
+ 
+ 	//cloud Zoom config
+-    $config['cloudzoom']['position'] = 'right';
++    $config['cloudzoom']['position'] =  empty($config['cloudzoom']['position']) ? 'right' : $config['cloudzoom']['position'];
+     $config['cloudzoom']['lens_opacity'] = intval($config['cloudzoom']['lens_opacity']) / 100;
+     $config['cloudzoom']['tint_opacity'] = intval($config['cloudzoom']['tint_opacity']) / 100;
+ 
++
+ ?>
+ 
++<?php if ( $config['cloudzoom']['position'] == 'inside' ) : ?>
++<style>
++.cloud-zoom-big { margin:0; -moz-box-shadow:none; -webkit-box-shadow:none; box-shadow:none; }
++</style>
++<?php endif; ?>
++
+ <?php if ($product->getImage() != 'no_selection' && $product->getImage()): ?>
+ 
+ 	<?php
+-- 
+1.7.10.msysgit.1
+

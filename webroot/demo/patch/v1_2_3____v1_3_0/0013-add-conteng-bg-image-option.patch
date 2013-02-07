@@ -1,0 +1,377 @@
+From 7f63811020b2202faff7167e51bc9a7a096ced3c Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 12 Nov 2012 14:57:39 +0200
+Subject: [PATCH 13/25] add conteng bg image option add content bg image to
+ categories color schemes
+
+---
+ .../Queldorei/ShopperSettings/Model/Config/Bg.php  |   23 ++++++++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    2 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |   21 +++++++++
+ .../Adminhtml/Shoppercategories/Edit/Tab/Form.php  |   28 +++++++++++-
+ .../Queldorei/Shoppercategories/Helper/Data.php    |   38 ++++++++++++++++
+ .../Adminhtml/ShoppercategoriesController.php      |   37 ++++++++++++++-
+ .../Queldorei/Shoppercategories/etc/config.xml     |    2 +-
+ .../mysql4-upgrade-0.1.1-0.1.2.php                 |   12 +++++
+ .../default/shopper/template/page/html/head.phtml  |   22 ++++++++-
+ skin/frontend/default/shopper/css/options.css.php  |   47 ++++----------------
+ 10 files changed, 190 insertions(+), 42 deletions(-)
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/Model/Config/Bg.php
+ create mode 100644 app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.1-0.1.2.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Model/Config/Bg.php b/app/code/local/Queldorei/ShopperSettings/Model/Config/Bg.php
+new file mode 100644
+index 0000000..2ecf9a8
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/Model/Config/Bg.php
+@@ -0,0 +1,23 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_ShopperSettings_Model_Config_Bg
++{
++
++    public function toOptionArray()
++    {
++        return array(
++            array(
++	            'value'=>'stretch',
++	            'label' => Mage::helper('shoppersettings')->__('stretch')),
++            array(
++	            'value'=>'tile',
++	            'label' => Mage::helper('shoppersettings')->__('tile')),
++        );
++    }
++
++}
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 72e0f8d..cd35b20 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -159,6 +159,8 @@
+                 <menu_text_color>#373230</menu_text_color>
+                 <slideshow_bg>#f4f4f2</slideshow_bg>
+                 <content_bg>#FAFAFA</content_bg>
++                <content_bg_img></content_bg_img>
++                <content_bg_img_mode></content_bg_img_mode>
+                 <content_link>#322C29</content_link>
+                 <content_link_hover>#97d2c9</content_link_hover>
+                 <page_title_bg>#F5F5F3</page_title_bg>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index dd9da8d..bcee974 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -178,6 +178,27 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </content_bg>
++                        <content_bg_img translate="label comment">
++                            <label>Content Background Image: </label>
++                            <comment>This image will be used for Content Background</comment>
++                            <frontend_type>image</frontend_type>
++                            <backend_model>adminhtml/system_config_backend_image</backend_model>
++                            <upload_dir config="system/filesystem/media" scope_info="1">queldorei/shopper</upload_dir>
++                            <base_url type="media" scope_info="1">queldorei/shopper</base_url>
++                            <sort_order>83</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </content_bg_img>
++                        <content_bg_img_mode translate="label comment">
++                            <label>Content Background Image Display mode: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shoppersettings/config_bg</source_model>
++                            <sort_order>86</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </content_bg_img_mode>
+                         <content_link translate="label comment">
+                             <label>Content Link Color: </label>
+                             <comment>This color will be used for Content Link</comment>
+diff --git a/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php b/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
+index d56c04b..9a4f2ec 100644
+--- a/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
++++ b/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
+@@ -122,6 +122,27 @@ class Queldorei_Shoppercategories_Block_Adminhtml_Shoppercategories_Edit_Tab_For
+           'required'  => false,
+           'name'      => 'content_bg',
+       ));
++
++      $fieldset->addField('content_bg_img', 'image', array(
++          'label'     => Mage::helper('shoppercategories')->__('Content Background Image'),
++          'required'  => false,
++          'name'      => 'content_bg_img',
++      ));
++      $fieldset->addField('content_bg_img_mode', 'select', array(
++          'label'     => Mage::helper('shoppercategories')->__('Content Background Image Display mode'),
++          'name'      => 'content_bg_img_mode',
++          'values'    => array(
++              array(
++                  'value'     => 'stretch',
++                  'label'     => Mage::helper('shoppercategories')->__('stretch'),
++              ),
++              array(
++                  'value'     => 'tile',
++                  'label'     => Mage::helper('shoppercategories')->__('tile'),
++              ),
++          ),
++      ));
++
+       $fieldset->addField('content_link', 'queldorei_color', array(
+           'label'     => Mage::helper('shoppercategories')->__('Content link Color'),
+           'required'  => false,
+@@ -232,7 +253,12 @@ class Queldorei_Shoppercategories_Block_Adminhtml_Shoppercategories_Edit_Tab_For
+       $gfonts447 = "Abel,Abril Fatface,Aclonica,Acme,Actor,Adamina,Aguafina Script,Aladin,Aldrich,Alegreya,Alegreya SC,Alex Brush,Alfa Slab One,Alice,Alike,Alike Angular,Allan,Allerta,Allerta Stencil,Allura,Almendra,Almendra SC,Amaranth,Amatic SC,Amethysta,Andada,Andika,Annie Use Your Telescope,Anonymous Pro,Antic,Anton,Arapey,Arbutus,Architects Daughter,Arimo,Arizonia,Armata,Artifika,Arvo,Asap,Asset,Astloch,Asul,Atomic Age,Aubrey,Bad Script,Balthazar,Bangers,Basic,Baumans,Belgrano,Bentham,Bevan,Bigshot One,Bilbo,Bilbo Swash Caps,Bitter,Black Ops One,Bonbon,Boogaloo,Bowlby One,Bowlby One SC,Brawler,Bree Serif,Bubblegum Sans,Buda,Buenard,Butcherman,Butterfly Kids,Cabin,Cabin Condensed,Cabin Sketch,Caesar Dressing,Cagliostro,Calligraffitti,Cambo,Candal,Cantarell,Cardo,Carme,Carter One,Caudex,Cedarville Cursive,Ceviche One,Changa One,Chango,Chelsea Market,Cherry Cream Soda,Chewy,Chicle,Chivo,Coda,Coda Caption,Comfortaa,Coming Soon,Concert One,Condiment,Contrail One,Convergence,Cookie,Copse,Corben,Cousine,Coustard,Covered By Your Grace,Crafty Girls,Creepster,Crete Round,Crimson Text,Crushed,Cuprum,Damion,Dancing Script,Dawning of a New Day,Days One,Delius,Delius Swash Caps,Delius Unicase,Devonshire,Didact Gothic,Diplomata,Diplomata SC,Dorsa,Dr Sugiyama,Droid Sans,Droid Sans Mono,Droid Serif,Duru Sans,Dynalight,EB Garamond,Eater,Electrolize,Emblema One,Engagement,Enriqueta,Erica One,Esteban,Euphoria Script,Ewert,Exo,Expletus Sans,Fanwood Text,Fascinate,Fascinate Inline,Federant,Federo,Felipa,Fjord One,Flamenco,Flavors,Fondamento,Fontdiner Swanky,Forum,Francois One,Fredericka the Great,Fresca,Frijole,Fugaz One,Galdeano,Gentium Basic,Gentium Book Basic,Geo,Geostar,Geostar Fill,Germania One,Give You Glory,Glegoo,Gloria Hallelujah,Goblin One,Gochi Hand,Goudy Bookletter 1911,Gravitas One,Gruppo,Gudea,Habibi,Hammersmith One,Handlee,Herr Von Muellerhoff,Holtwood One SC,Homemade Apple,Homenaje,IM Fell DW Pica,IM Fell DW Pica SC,IM Fell Double Pica,IM Fell Double Pica SC,IM Fell English,IM Fell English SC,IM Fell French Canon,IM Fell French Canon SC,IM Fell Great Primer,IM Fell Great Primer SC,Iceberg,Iceland,Inconsolata,Inder,Indie Flower,Inika,Irish Grover,Istok Web,Italianno,Jim Nightshade,Jockey One,Josefin Sans,Josefin Slab,Judson,Julee,Junge,Jura,Just Another Hand,Just Me Again Down Here,Kameron,Kaushan Script,Kelly Slab,Kenia,Knewave,Kotta One,Kranky,Kreon,Kristi,La Belle Aurore,Lancelot,Lato,League Script,Leckerli One,Lekton,Lemon,Lilita One,Limelight,Linden Hill,Lobster,Lobster Two,Lora,Love Ya Like A Sister,Loved by the King,Luckiest Guy,Lusitana,Lustria,Macondo,Macondo Swash Caps,Magra,Maiden Orange,Mako,Marck Script,Marko One,Marmelad,Marvel,Mate,Mate SC,Maven Pro,Meddon,MedievalSharp,Medula One,Megrim,Merienda One,Merriweather,Metamorphous,Metrophobic,Michroma,Miltonian,Miltonian Tattoo,Miniver,Miss Fajardose,Modern Antiqua,Molengo,Monofett,Monoton,Monsieur La Doulaise,Montaga,Montez,Montserrat,Mountains of Christmas,Mr Bedfort,Mr Dafoe,Mr De Haviland,Mrs Saint Delafield,Mrs Sheppards,Muli,Neucha,Neuton,News Cycle,Niconne,Nixie One,Nobile,Norican,Nosifer,Nothing You Could Do,Noticia Text,Nova Cut,Nova Flat,Nova Mono,Nova Oval,Nova Round,Nova Script,Nova Slim,Nova Square,Numans,Nunito,Old Standard TT,Oldenburg,Open Sans,Open Sans Condensed,Orbitron,Original Surfer,Oswald,Over the Rainbow,Overlock,Overlock SC,Ovo,PT Sans,PT Sans Caption,PT Sans Narrow,PT Serif,PT Serif Caption,Pacifico,Parisienne,Passero One,Passion One,Patrick Hand,Patua One,Paytone One,Permanent Marker,Petrona,Philosopher,Piedra,Pinyon Script,Plaster,Play,Playball,Playfair Display,Podkova,Poller One,Poly,Pompiere,Port Lligat Sans,Port Lligat Slab,Prata,Princess Sofia,Prociono,Puritan,Quantico,Quattrocento,Quattrocento Sans,Questrial,Quicksand,Qwigley,Radley,Raleway,Rammetto One,Rancho,Rationale,Redressed,Reenie Beanie,Ribeye,Ribeye Marrow,Righteous,Rochester,Rock Salt,Rokkitt,Ropa Sans,Rosario,Rouge Script,Ruda,Ruge Boogie,Ruluko,Ruslan Display,Ruthie,Sail,Salsa,Sancreek,Sansita One,Sarina,Satisfy,Schoolbell,Shadows Into Light,Shanti,Share,Shojumaru,Short Stack,Sigmar One,Signika,Signika Negative,Sirin Stencil,Six Caps,Slackey,Smokum,Smythe,Sniglet,Snippet,Sofia,Sonsie One,Sorts Mill Goudy,Special Elite,Spicy Rice,Spinnaker,Spirax,Squada One,Stardos Stencil,Stint Ultra Condensed,Stint Ultra Expanded,Stoke,Sue Ellen Francisco,Sunshiney,Supermercado One,Swanky and Moo Moo,Syncopate,Tangerine,Telex,Tenor Sans,Terminal Dosis,The Girl Next Door,Tienne,Tinos,Titan One,Trade Winds,Trochut,Trykker,Tulpen One,Ubuntu,Ubuntu Condensed,Ubuntu Mono,Ultra,Uncial Antiqua,UnifrakturCook,UnifrakturMaguntia,Unkempt,Unlock,Unna,VT323,Varela,Varela Round,Vast Shadow,Vibur,Vidaloka,Viga,Volkhov,Vollkorn,Voltaire,Waiting for the Sunrise,Wallpoet,Walter Turncoat,Wellfleet,Wire One,Yanone Kaffeesatz,Yellowtail,Yeseva One,Yesteryear,Zeyada";
+ 
+       $fonts = explode(',', $gfonts447);
+-      $options = array();
++      $options = array(
++          array(
++              'value' => '',
++              'label' => '- Please select -',
++          )
++      );
+       foreach ($fonts as $f ){
+           $options[] = array(
+               'value' => $f,
+diff --git a/app/code/local/Queldorei/Shoppercategories/Helper/Data.php b/app/code/local/Queldorei/Shoppercategories/Helper/Data.php
+index d94436e..9da7db1 100644
+--- a/app/code/local/Queldorei/Shoppercategories/Helper/Data.php
++++ b/app/code/local/Queldorei/Shoppercategories/Helper/Data.php
+@@ -7,5 +7,43 @@
+ 
+ class Queldorei_Shoppercategories_Helper_Data extends Mage_Core_Helper_Abstract
+ {
++    /**
++     * check if there is custom color scheme for given category id
++     *
++     * @param int $current_category - category ID
++     * @return null|array with color scheme options
++     */
++    public function getCategoryScheme($current_category)
++    {
++        $scheme = Mage::getModel('shoppercategories/shoppercategories')->getCollection()
++            ->addStoreFilter(Mage::app()->getStore())
++            ->addFieldToSelect('*')
++            ->addFieldToFilter('status', 1);
+ 
++        $current_scheme = null;
++        if ($scheme->count()) {
++
++            foreach ($scheme as $_scheme) {
++                if ( $_scheme['category_id'] == $current_category ) {
++                    $current_scheme = $_scheme;
++                }
++            }
++
++            // check if we have parent category
++            if ( !$current_scheme ) {
++                $_current_category = Mage::getModel('catalog/category')->load($current_category);
++                if ( $_current_category->getId() ) {
++                    $path = $_current_category->getPath();
++                    $path = explode('/', $path);
++                    foreach ($scheme as $_scheme) {
++                        if ( in_array($_scheme['category_id'], $path) ) {
++                            $current_scheme = $_scheme;
++                        }
++                    }
++                }
++            }
++        }
++
++        return $current_scheme;
++    }
+ }
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shoppercategories/controllers/Adminhtml/ShoppercategoriesController.php b/app/code/local/Queldorei/Shoppercategories/controllers/Adminhtml/ShoppercategoriesController.php
+index e1c6091..4954c67 100644
+--- a/app/code/local/Queldorei/Shoppercategories/controllers/Adminhtml/ShoppercategoriesController.php
++++ b/app/code/local/Queldorei/Shoppercategories/controllers/Adminhtml/ShoppercategoriesController.php
+@@ -61,7 +61,42 @@ class Queldorei_Shoppercategories_Adminhtml_ShoppercategoriesController extends
+  
+ 	public function saveAction() {
+ 		if ($data = $this->getRequest()->getPost()) {
+-			
++
++            if(isset($_FILES['content_bg_img']['name']) && $_FILES['content_bg_img']['name'] != null) {
++                $result['file'] = '';
++                try {
++                    /* Starting upload */
++                    $uploader = new Varien_File_Uploader('content_bg_img');
++
++                    // Any extention would work
++                    $uploader->setAllowedExtensions(array('jpg','jpeg','gif','png'));
++                    $uploader->setAllowRenameFiles(true);
++
++                    // Set the file upload mode
++                    // false -> get the file directly in the specified folder
++                    // true -> get the file in the product like folders
++                    //	(file.jpg will go in something like /media/f/i/file.jpg)
++                    $uploader->setFilesDispersion(false);
++
++                    // We set media as the upload dir
++                    $path = Mage::getBaseDir('media') . DS.'queldorei/shopper'.DS ;
++                    $result = $uploader->save($path, $_FILES['content_bg_img']['name'] );
++
++                } catch (Exception $e) {
++                    Mage::getSingleton('adminhtml/session')->addError($e->getMessage() . '  '. $path);
++                    Mage::getSingleton('adminhtml/session')->setFormData($data);
++                    $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
++                    return;
++                }
++                $data['content_bg_img'] = 'queldorei/shopper/'.$result['file'];
++            }else {
++
++                if(isset($data['content_bg_img']['delete']) && $data['content_bg_img']['delete'] == 1)
++                    $data['content_bg_img'] = '';
++                else
++                    unset($data['content_bg_img']);
++            }
++
+ 			$model = Mage::getModel('shoppercategories/shoppercategories');
+ 			$model->setData($data)
+ 				->setId($this->getRequest()->getParam('id'));
+diff --git a/app/code/local/Queldorei/Shoppercategories/etc/config.xml b/app/code/local/Queldorei/Shoppercategories/etc/config.xml
+index 74040bd..8037cdc 100644
+--- a/app/code/local/Queldorei/Shoppercategories/etc/config.xml
++++ b/app/code/local/Queldorei/Shoppercategories/etc/config.xml
+@@ -2,7 +2,7 @@
+ <config>
+     <modules>
+         <Queldorei_Shoppercategories>
+-            <version>0.1.1</version>
++            <version>0.1.2</version>
+         </Queldorei_Shoppercategories>
+     </modules>
+     <admin>
+diff --git a/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.1-0.1.2.php b/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.1-0.1.2.php
+new file mode 100644
+index 0000000..7881a79
+--- /dev/null
++++ b/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.1-0.1.2.php
+@@ -0,0 +1,12 @@
++<?php
++/**
++ * @version   1.0 06.08.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++$installer = $this;
++$installer->startSetup();
++$installer->getConnection()->addColumn($installer->getTable('shoppercategories/scheme'), 'content_bg_img', 'varchar(255) NOT NULL after `content_bg`');
++$installer->getConnection()->addColumn($installer->getTable('shoppercategories/scheme'), 'content_bg_img_mode', 'varchar(8) NOT NULL after `content_bg_img`');
++$installer->endSetup();
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/page/html/head.phtml b/app/design/frontend/default/shopper/template/page/html/head.phtml
+index df9bf5c..b96bc02 100644
+--- a/app/design/frontend/default/shopper/template/page/html/head.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/head.phtml
+@@ -65,10 +65,30 @@
+     Shopper.quick_view = <?php echo Mage::getStoreConfig('shoppersettings/ajax/quick_view') ?>;
+     Shopper.anystretch_bg = '';
+     <?php
++    $bg_image = '';
++    if (!empty($config['content_bg_img']) && $config['content_bg_img_mode'] == 'stretch') {
++        $bg_image = $config['content_bg_img'];
++    }
++
++    if ($current_category = Mage::registry('current_category')) {
++        $current_scheme = Mage::helper('shoppercategories')->getCategoryScheme($current_category->getId());
++        if ($current_scheme && !empty($current_scheme['content_bg_img'])) {
++            if ($current_scheme['content_bg_img_mode'] == 'stretch') {
++                $bg_image = str_replace('queldorei/shopper/', '', $current_scheme['content_bg_img']);
++            } else {
++                $bg_image = '';
++            }
++        }
++    }
++
+     $route = Mage::app()->getFrontController()->getRequest()->getRouteName();
+     $action = Mage::app()->getFrontController()->getRequest()->getActionName();
+     if ( ($route == 'customer' && ($action == 'login' || $action == 'forgotpassword' || $action == 'create')) && !empty($config['login_bg']) ) {
+-        echo "Shopper.anystretch_bg = '".Mage::getBaseUrl('media') . 'queldorei/shopper/' . $config['login_bg']."'; ";
++        $bg_image = $config['login_bg'];
++    }
++
++    if ( !empty($bg_image) ) {
++        echo "Shopper.anystretch_bg = '".Mage::getBaseUrl('media') . 'queldorei/shopper/' . $bg_image ."'; ";
+     }
+     ?>
+     //]]>
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index dc55390..c9899af 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -16,47 +16,15 @@ $color_helper = Mage::helper('shoppersettings/color');
+ if (!empty($_GET['cat'])) {
+ 
+     $current_category = intval($_GET['cat']);
++    $current_scheme = Mage::helper('shoppercategories')->getCategoryScheme($current_category);
+ 
+-    $scheme = Mage::getModel('shoppercategories/shoppercategories')->getCollection()
+-        ->addStoreFilter(Mage::app()->getStore())
+-        ->addFieldToSelect('*')
+-        ->addFieldToFilter('status', 1);
+-
+-    if ($scheme->count()) {
+-
+-        //check if we have direct match
+-        $match = false;
+-        $current_scheme = null;
+-        foreach ($scheme as $_scheme) {
+-            if ( $_scheme['category_id'] == $current_category ) {
+-                $match = true;
+-                $current_scheme = $_scheme;
+-            }
+-        }
+-
+-        // check if we have parent category
+-        if ( !$match ) {
+-            $_current_category = Mage::getModel('catalog/category')->load($current_category);
+-            if ( $_current_category->getId() ) {
+-                $path = $_current_category->getPath();
+-                $path = explode('/', $path);
+-                foreach ($scheme as $_scheme) {
+-                    if ( in_array($_scheme['category_id'], $path) ) {
+-                        $match = true;
+-                        $current_scheme = $_scheme;
+-                    }
+-                }
++    if ($current_scheme) {
++        foreach ($config['appearance'] as $config_option => $value) {
++            if (!empty($current_scheme[$config_option])) {
++                $config['appearance'][$config_option] = $current_scheme[$config_option];
+             }
+         }
+-
+-        if ($match) {
+-            foreach ($config['appearance'] as $config_option => $value) {
+-                if (!empty($current_scheme[$config_option])) {
+-                    $config['appearance'][$config_option] = $current_scheme[$config_option];
+-                }
+-            }
+-        }
+-
++        $config['appearance']['content_bg_img'] = str_replace('queldorei/shopper/', '', $config['appearance']['content_bg_img']);
+     }
+ }
+ 
+@@ -220,6 +188,9 @@ h1, h2, h3,
+ <?php if ( !empty($config['appearance']['content_bg']) ) : ?>
+ .main-container {background-color:<?php echo $config['appearance']['content_bg']; ?>}
+ <?php endif; ?>
++<?php if ( !empty($config['appearance']['content_bg_img']) && $config['appearance']['content_bg_img_mode'] == 'tile' ) : ?>
++.main-container {background-image:url('<?php echo Mage::getBaseUrl('media') . 'queldorei/shopper/' . $config['appearance']['content_bg_img']; ?>'); background-position:top left; background-repeat:repeat}
++<?php endif; ?>
+ <?php if ( !empty($config['appearance']['content_link']) ) : ?>
+ .block .block-content a, .block .block-content li a, .block .block-content li.item a,
+ .cms-index-index .block .block-content a, .cms-index-index .block .block-content li a, .cms-index-index .block .block-content li.item a,
+-- 
+1.7.10.msysgit.1
+

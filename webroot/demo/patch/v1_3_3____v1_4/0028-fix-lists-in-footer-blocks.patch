@@ -1,0 +1,41 @@
+From da4e06f7476b8bea7a98a93270a3acc7c9668b23 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Sat, 5 Jan 2013 01:42:37 +0200
+Subject: [PATCH 28/34] fix lists in footer blocks
+
+---
+ skin/frontend/default/shopper/css/local.css       |    4 ++--
+ skin/frontend/default/shopper/css/options.css.php |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 9dec44e..af6262c 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -453,8 +453,8 @@ header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 46px;}
+ .footer-info ul{margin:0; padding:0; }
+ .footer-info ul li{margin:0; padding:0; line-height:30px; }
+ .footer-info ul li p{overflow:hidden; line-height:30px; }
+-.footer-info .information ul li{margin:0; padding:0 0 15px 24px; line-height:130%; position:relative; }
+-.footer-info .information ul li:before { content: '\2219';font-size:60px;position: absolute;top:1px;left:0px;font-family: "Times New Roman";font-style:normal;color:#97d2c9; }
++.footer-info .information ul li, .footer-info ul.disc li{margin:0; padding:0 0 15px 24px; line-height:130%; position:relative; }
++.footer-info .information ul li:before, .footer-info ul.disc li:before { content: '\2219';font-size:60px;position: absolute;top:1px;left:0px;font-family: "Times New Roman";font-style:normal;color:#97d2c9; }
+ .footer-info ul.twitterList{margin:-3px 0 0;}
+ .footer-info ul.twitterList li{margin:0; padding:0; line-height:20px; color:#505050;}
+ .footer-info ul.twitterList li.follow{padding:0 0 0 53px;}
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index f7cc455..4713c2c 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -125,7 +125,7 @@ nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span
+ }
+ 
+ .footer-info a,
+-.footer-info .information ul li:before,
++.footer-info .information ul li:before, .footer-info ul.disc li:before,
+ .price-box .price,
+ .pager .pages li a:hover,
+ .pager .pages .current,
+-- 
+1.7.9.msysgit.0
+

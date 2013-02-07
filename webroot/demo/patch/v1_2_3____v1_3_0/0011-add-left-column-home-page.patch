@@ -1,0 +1,154 @@
+From 3c2301a683aa68b197cb4c34d2354043b263bf71 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 9 Nov 2012 19:03:47 +0200
+Subject: [PATCH 11/25] add left column home page
+
+---
+ .../local/Queldorei/ShopperSettings/etc/cms.xml    |   16 +++++++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    2 +-
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    2 +-
+ .../mysql4-upgrade-0.1.0-1.3.0.php                 |   34 ++++++++++++++++++++
+ skin/frontend/default/shopper/css/local.css        |    4 +++
+ skin/frontend/default/shopper/css/responsive.css   |    9 ++++--
+ 6 files changed, 63 insertions(+), 4 deletions(-)
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+index af4c8a4..8f893f9 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+@@ -51,6 +51,22 @@
+                 <root_template>one_column</root_template>
+             </item>
+             <item>
++                <title>Shopper Home page - left column</title>
++                <identifier>shopper_home_2col_left</identifier>
++                <content><![CDATA[
++<div class="home-left-col clearfix">
++<div class="home-main">{{block type="shoppersettings/product_list" category_id="12" num_products="6" template="catalog/product/featured_products.phtml"}}</div>
++<div class="home-left">{{block type="cms/block" block_id="shopper_banners_slideshow" }} {{block type="newsletter/subscribe" template="newsletter/subscribe_home.phtml" }} {{block type="shoppersettings/bestsellers" template="queldorei/bestsellers.phtml" }}</div>
++</div></div>
++                ]]></content>
++                <is_active>1</is_active>
++                <sort_order>0</sort_order>
++                <stores>
++                    <item>0</item>
++                </stores>
++                <root_template>one_column</root_template>
++            </item>
++            <item>
+                 <title>Shopper No Route page</title>
+                 <identifier>shopper_no_route</identifier>
+                 <content><![CDATA[
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 8022f3e..72e0f8d 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -2,7 +2,7 @@
+ <config>
+     <modules>
+         <Queldorei_ShopperSettings>
+-            <version>0.1.0</version>
++            <version>1.3.0</version>
+         </Queldorei_ShopperSettings>
+     </modules>
+     <frontend>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index f90482b..dd9da8d 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -17,7 +17,7 @@
+ 			<groups>
+ 				<appearance translate="label">
+ 					<label>Appearance</label>
+-                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.0]]></comment>
++                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.3.0]]></comment>
+ 					<frontend_type>text</frontend_type>
+ 					<sort_order>10</sort_order>
+ 					<show_in_default>1</show_in_default>
+diff --git a/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php b/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
+new file mode 100644
+index 0000000..0de8bc6
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
+@@ -0,0 +1,34 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Olegnax http://www.olegnax.com <mail@olegnax.com>
++ * @copyright Copyright (C) 2010 - 2012 Olegnax
++ */
++
++
++try {
++//create left col home page if not exist
++    $is_page_exist = Mage::getModel('cms/page')->getCollection()
++        ->addFieldToFilter('identifier', 'shopper_home_2col_left')
++        ->load();
++
++    if ( !count($is_page_exist) ) {
++        $cmsPage = array(
++            'title' => 'Shopper Home page - left column',
++            'identifier' => 'shopper_home_2col_left',
++            'content' => '<div class="home-left-col clearfix">
++<div class="home-main">{{block type="shoppersettings/product_list" category_id="12" num_products="6" template="catalog/product/featured_products.phtml"}}</div>
++<div class="home-left">{{block type="cms/block" block_id="shopper_banners_slideshow" }} {{block type="newsletter/subscribe" template="newsletter/subscribe_home.phtml" }} {{block type="shoppersettings/bestsellers" template="queldorei/bestsellers.phtml" }}</div>
++</div></div>',
++            'is_active' => 1,
++            'sort_order' => 0,
++            'stores' => array(0),
++            'root_template' => 'one_column'
++        );
++        Mage::getModel('cms/page')->setData($cmsPage)->save();
++    }
++
++}
++catch (Exception $e) {
++    Mage::getSingleton('adminhtml/session')->addError(Mage::helper('adminhtml')->__('An error occurred while updating shopper theme pages and cms blocks.'));
++}
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index a8fcfaf..1c20c72 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -691,6 +691,10 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .home-left {width:300px;float:left; margin:30px 0 0;}
+ .col1-layout .home-main .products-grid {width:900px;}
+ 
++.home-left-col {}
++.home-left-col .home-main {float:right;}
++.home-left-col .home-left {float:left;}
++
+ /*********** < SLIDER */
+ .slider-container{position: relative; border-top:1px solid #e1e1e1; background:#ededed; margin:53px 0 0 -15px; padding:42px 0 0; }
+ .main-container > .slider-container {margin:0;}
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 0a943f0..a75fb5c 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -33,6 +33,11 @@
+     .home-main {width:600px;}
+     .col1-layout .home-main .products-grid {width:600px;}
+     .home-main .category-products {margin-left:30px;}
++    .home-left-col {}
++    .home-left-col .home-main {margin:30px 30px 0 0;}
++    .home-left-col .home-main .category-products {margin-left:0;}
++    .home-left-col .home-left {margin:30px 0 0 30px;}
++
+     .flexslider .slides .content{max-width:760px;}
+     .flex-direction-nav {width:960px;}
+ 
+@@ -153,8 +158,8 @@
+     .breadcrumbs{ margin-left:99px; }
+ 
+     .home-main .category-products {margin:0 0 30px 0;}
+-    .home-main, .home-right {float:none}
+-    .home-right {width:600px; margin:0 auto;}
++    .home-main, .home-right, .home-left {float:none}
++    .home-right, .home-left {width:600px; margin:0 auto;}
+     .home-main, .col1-layout .home-main .products-grid {width:600px;}
+ 
+     .flexslider .slides .content{max-width:560px;}
+-- 
+1.7.10.msysgit.1
+

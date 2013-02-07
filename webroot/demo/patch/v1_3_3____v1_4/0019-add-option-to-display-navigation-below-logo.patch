@@ -1,0 +1,186 @@
+From 14ceb0bf203907aa38596b97849f2ef35546470d Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 28 Dec 2012 16:13:24 +0200
+Subject: [PATCH 19/34] add option to display navigation below logo
+
+---
+ .../shopper/template/catalogsearch/form.mini.phtml |    1 +
+ .../shopper/template/page/html/header.phtml        |   15 ++++++++++++---
+ skin/frontend/default/shopper/css/local.css        |    3 +++
+ skin/frontend/default/shopper/css/responsive.css   |    9 +++++++--
+ .../default/shopper/css/wide_navigation.css        |   15 ++++++++-------
+ skin/frontend/default/shopper/js/script.js         |    7 +++++++
+ 6 files changed, 38 insertions(+), 12 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml b/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
+index c85f51e..b0e0afa 100644
+--- a/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
++++ b/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
+@@ -63,4 +63,5 @@ if (isset($config['design']['search_field']) && $config['design']['search_field'
+             //]]>
+         </script>
+     </form>
++</div>
+ <?php endif; ?>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/page/html/header.phtml b/app/design/frontend/default/shopper/template/page/html/header.phtml
+index 00816e4..0438ebd 100644
+--- a/app/design/frontend/default/shopper/template/page/html/header.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/header.phtml
+@@ -29,7 +29,10 @@
+ $config = Mage::getStoreConfig('shoppersettings', Mage::app()->getStore()->getId());
+ $hdr_style = '';
+ if ( $config['design']['search_field'] ) {
+-	$hdr_style = 'search-field';
++	$hdr_style .= ' search-field';
++}
++if ( $config['design']['below_logo'] ) {
++	$hdr_style .= ' below-logo';
+ }
+ 
+ ?>
+@@ -66,9 +69,15 @@ if ( $config['design']['search_field'] ) {
+                 </div>
+             </div>
+ 	        <div class="row clearfix">
+-                <div class="grid_12">
++                <div class="grid_12 <?php if ( $config['navigation']['use_wide_navigation'] ) { echo 'wide-navigation'; } ?>">
+                     <!-- NAVIGATION -->
+-			        <?php echo $this->getChildHtml('topMenu'); ?>
++	                <?php
++	                if ( !$config['navigation']['use_wide_navigation'] && $config['navigation']['use_navigation'] ) {
++		                echo $this->getChildHtml('topShopperMenu');
++	                } else {
++		                echo $this->getChildHtml('topMenu');
++	                }
++	                ?>
+                     <!-- NAVIGATION EOF -->
+ 			        <?php echo $this->getChildHtml('topContainer'); ?>
+                 </div>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 6439a84..f5c07c6 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -504,6 +504,7 @@ nav .nav-top-title.active div.icon span, .nav-container .nav-top-title.active di
+ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-align:middle;}
+ #queldoreiNav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
+ .search-field #queldoreiNav {width:560px}
++.below-logo #queldoreiNav {width:auto; margin:0 0 10px 3px}
+ 
+ /* All Levels */
+ #queldoreiNav li { text-align:left; position: static; }
+@@ -574,6 +575,8 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
+ 
+ #nav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
+ .search-field #nav {width:560px}
++.below-logo .nav-container {display:block; position:static;}
++.below-logo #nav {width:auto; margin:0 0 10px 3px}
+ 
+ /* All Levels */
+ #nav li { text-align:left; position: static; }
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 12102fa..9e88426 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -28,7 +28,7 @@
+ 
+     #queldoreiNav, #nav { width:510px; }
+     .search-field #queldoreiNav, .search-field #nav { width:320px; }
+-
++    .below-logo #queldoreiNav, .below-logo #nav {width:auto; margin:0 0 10px 26px}
+ 
+     .homepage-banners a .content{margin:18px;}
+     .col1-layout .products-grid { width:900px; margin:0;}
+@@ -56,7 +56,7 @@
+     .col2-left-layout .products-grid,
+     .col2-right-layout .products-grid { width:600px; margin:0 -15px; }
+     .col1-layout .col-main {width: 900px; margin:0 0 0 45px;}
+-    .cms-index-index .col1-layout .col-main {width: 960px; margin:0;}
++    .cms-index-index .col1-layout .col-main {width: 960px; margin:0 0 0 30px;}
+     .toolbar { margin: 0 30px 0 0; }
+     .breadcrumbs{ margin-left:45px; }
+     .cart .cart-collaterals .grid_4{margin:0 2px 0 16px;}
+@@ -64,6 +64,7 @@
+     .homepage-banners {width:900px !important;}
+     .homepage-banners .grid_6{width:420px !important; margin:0 15px;}
+ 
++    .col2-left-layout .category-description {margin-right:30px; }
+     .products-list {margin: 0 30px 0 0; }
+     .products-list .add-to-links {float:none; clear:both;}
+     .products-list .price-box {float:none}
+@@ -164,6 +165,8 @@
+     .search-top-container {margin:0 0 10px; padding:0; float:none; clear:left; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+     .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; background:none transparent; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .search-field #search {width:224px}
++    .search-field #search_mini_form .form-search button {margin-left:216px}
+ 
+     footer .grid_6{ text-align:center; float:none; width:768px; margin:0 auto; }
+     footer ul.links { float:none; }
+@@ -379,6 +382,8 @@
+     .search-top-container {margin:0; padding:0; float:none; clear:left; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+     .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; background:none transparent; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .search-field #search {width:224px}
++    .search-field #search_mini_form .form-search button {margin-left:216px}
+ 
+     nav .nav-top-title, .nav-container .nav-top-title{display:block; }
+     #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+diff --git a/skin/frontend/default/shopper/css/wide_navigation.css b/skin/frontend/default/shopper/css/wide_navigation.css
+index 7e1b0cd..59878c8 100644
+--- a/skin/frontend/default/shopper/css/wide_navigation.css
++++ b/skin/frontend/default/shopper/css/wide_navigation.css
+@@ -1,9 +1,7 @@
+ .nav-container, #nav, #nav > li {position:static}
+-/*.nav-container {display:block;}
+-#nav, .search-field #nav {width:auto; margin:0 0 10px 3px}
+-*/
++
+ #nav ul.level0, #nav > li div { position:absolute; left:-10000px; padding:16px; margin:36px 0 0; background-color:#fff; width:1138px; z-index:2000;}
+-#nav ul.level0 > li { float:left; width:175px;  margin:0 14px 10px 0;}
++#nav ul.level0 > li { float:none; display:inline-block; vertical-align:top; width:175px;  margin:0 14px 10px 0;}
+ #nav ul.level0 > li.last {}
+ #nav ul.level0 > li > a { padding:0 10px; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
+ 
+@@ -11,14 +9,17 @@
+ #nav ul li.parent {}
+ 
+ #nav ul ul,#nav ul div { position:static !important; width:auto; padding:0; margin:0; -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
+-#nav ul ul li { float:none; margin:0 0 0 11px; padding:0 0 0 13px; line-height:20px; background: url("../images/arrow_item.gif") 0 8px no-repeat;}
++#nav ul ul li { float:none; width:auto;  margin:0 0 0 11px; padding:0 0 0 13px; line-height:20px; background: url("../images/arrow_item.gif") 0 8px no-repeat;}
+ #nav ul ul li a { padding:0;}
+ 
+ #nav ul ul li.active, #nav ul ul li.over, #nav ul ul li:hover { background-position:5px 8px }
+ #nav ul ul li.over > a, #nav ul ul li a:hover { background:transparent;}
++#nav ul ul li.active > a {background:#f0f0f0 !important; color:#000 !important;}
+ 
+-#nav ul.level2 { padding:5px 0 5px 8px; }
+-#nav ul.level2 a { color:#aaa; font-size:11px; line-height:13px; }
++#nav ul.level2 { padding:5px 0; }
++#nav ul.level2 li { background-position:0px 4px  }
++#nav ul.level2 li a { font-size:11px; line-height:13px; }
++#nav ul.level2 li:hover { background-position:5px 4px  }
+ 
+ #nav li > ul.shown-sub, #nav li > div.shown-sub { left:0px; }
+ 
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index df734cd..013fbd6 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -658,6 +658,13 @@ jQuery(function($){
+         return false;
+     });
+ 
++    $(window).resize(function(){
++        if ( mobile ) return;
++        if ( $('#nav').css('display') == 'none' || $('#queldoreiNav').css('display') == 'none' ) {
++            $('#nav, #queldoreiNav').show();
++        }
++    });
++
+     //show more in layered nav
+     if ( $('.block-layered-nav').length && Shopper.shopby_num ) {
+         $('.block-layered-nav ol').each(function(i,v){
+-- 
+1.7.9.msysgit.0
+

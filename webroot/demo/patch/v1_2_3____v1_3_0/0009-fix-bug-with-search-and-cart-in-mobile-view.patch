@@ -1,0 +1,44 @@
+From 87c2eed4bfd5599773d5e2c0587335b69391faaa Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 9 Nov 2012 16:54:31 +0200
+Subject: [PATCH 09/25] fix bug with search and cart in mobile view
+
+---
+ skin/frontend/default/shopper/css/responsive.css |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 4ba254c..0a943f0 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -102,11 +102,11 @@
+     header h1.logo { float:none; display:block; }
+     .cart-top-container {margin:0; float:none; }
+     .cart-top-container .cart-top, .cart-top-container .details-border, .cart-top-container .cart-promotion, .cart-top-container .details p, .cart-top-container .details .mini-products-list, .cart-top-container .details .subtotal-wrapper, .cart-top-container .details .buttons {display:none; }
+-    .cart-top-container .details{display:block; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .cart-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+     .cart-top-container .details .cart-top-title{display:block; }
+     .search-top-container {margin:0 0 10px; padding:0; float:none; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+-    .search-top-container .search-form{display:block; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+ 
+     footer .grid_6{ text-align:center; float:none; width:768px; margin:0 auto; }
+     footer ul.links { float:none; }
+@@ -268,11 +268,11 @@
+     header h1.logo { float:none; display:block; }
+     .cart-top-container {margin:0; float:none;}
+     .cart-top-container .cart-top, .cart-top-container .details-border, .cart-top-container .cart-promotion, .cart-top-container .details p, .cart-top-container .details .mini-products-list, .cart-top-container .details .subtotal-wrapper, .cart-top-container .details .buttons {display:none; }
+-    .cart-top-container .details{display:block; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .cart-top-container .details{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:10px 16px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+     .cart-top-container .details .cart-top-title{display:block; }
+     .search-top-container {margin:0; padding:0; float:none; }
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+-    .search-top-container .search-form{display:block; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
++    .search-top-container .search-form{display:block !important; opacity:1 !important; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+ 
+     nav .nav-top-title, .nav-container .nav-top-title{display:block; }
+     #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+-- 
+1.7.10.msysgit.1
+

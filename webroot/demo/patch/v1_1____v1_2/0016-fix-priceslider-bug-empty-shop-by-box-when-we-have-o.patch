@@ -1,0 +1,112 @@
+From e98cb16e1f9d6f7754f596138d5308f5ad6071f4 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Thu, 11 Oct 2012 13:42:32 +0300
+Subject: [PATCH 16/24] fix priceslider bug - empty shop by box when we have
+ only price filter
+
+---
+ .../shopper/template/catalog/layer/view.phtml      |   32 ++++++++++++--------
+ .../queldorei/priceslider/slider_layered_nav.phtml |   22 ++++++++------
+ 2 files changed, 33 insertions(+), 21 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/layer/view.phtml b/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
+index 07d93a6..c8d60cd 100644
+--- a/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
+@@ -33,28 +33,36 @@ ob_start();
+  */
+ ?>
+ <?php if($this->canShowBlock()): ?>
++
++<?php
++$filtersHtml = '';
++$_filters = $this->getFilters();
++foreach ($_filters as $_filter) {
++    if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue;
++    if ($_filter->getItemsCount()) {
++        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'</dd>';
++    }
++}
++?>
++
++<?php if ( !empty($filtersHtml) ): ?>
+ <div class="block block-layered-nav">
+     <div class="block-title">
+         <strong><span><?php echo $this->__('Shop By') ?></span></strong>
+     </div>
+     <div class="block-content">
+         <?php echo $this->getStateHtml() ?>
+-        <?php if($this->canShowOptions()): ?>
+-            <p class="block-subtitle"><?php echo $this->__('Shopping Options') ?></p>
+-            <dl id="narrow-by-list">
+-                <?php $_filters = $this->getFilters();  ?>
+-                <?php foreach ($_filters as $_filter): ?>
+-               	<?php if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue; ?>
+-                <?php if($_filter->getItemsCount()): ?>
+-                    <dt><?php echo $this->__($_filter->getName()) ?></dt>
+-                    <dd><?php echo $_filter->getHtml() ?></dd>
+-                <?php endif; ?>
+-                <?php endforeach; ?>
+-            </dl>
++        <?php if ($this->canShowOptions()): ?>
++        <p class="block-subtitle"><?php echo $this->__('Shopping Options') ?></p>
++        <dl id="narrow-by-list">
++            <?php echo $filtersHtml; ?>
++        </dl>
+         <?php endif; ?>
+     </div>
+ </div>
+ <?php endif; ?>
++
++<?php endif; ?>
+ <?php
+ $queldorei_blocks = Mage::registry('queldorei_blocks');
+ if ( !$queldorei_blocks ) {
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index 15b24ed..9cf3db9 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -46,7 +46,18 @@ var Queldorei_Priceslider = {
+ </script>
+ <?php endif; ?>
+ 
++<?php
++$filtersHtml = '';
++foreach ($_filters as $_filter) {
++    if ( $_filter->getType() == 'catalog/layer_filter_price' ) continue;
++    if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue;
++    if ($_filter->getItemsCount()) {
++        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'</dd>';
++    }
++}
++?>
+ 
++<?php if ( !empty($filtersHtml) ): ?>
+ <div class="block block-layered-nav">
+     <div class="block-title">
+         <strong><span><?php echo $this->__('Shop By') ?></span></strong>
+@@ -56,19 +67,12 @@ var Queldorei_Priceslider = {
+         <?php if ($this->canShowOptions()): ?>
+         <p class="block-subtitle"><?php echo $this->__('Shopping Options') ?></p>
+         <dl id="narrow-by-list">
+-            <?php $_filters = $this->getFilters() ?>
+-            <?php foreach ($_filters as $_filter): ?>
+-            <?php if ( $_filter->getType() == 'catalog/layer_filter_price' ) {continue;} ?>
+-            <?php if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue; ?>
+-            <?php if ($_filter->getItemsCount()): ?>
+-                <dt><?php echo $this->__($_filter->getName()) ?></dt>
+-                <dd><?php echo $_filter->getHtml() ?></dd>
+-                <?php endif; ?>
+-            <?php endforeach; ?>
++            <?php echo $filtersHtml; ?>
+         </dl>
+         <?php endif; ?>
+     </div>
+ </div>
++<?php endif; ?>
+ 
+ <?php endif; ?>
+ <?php
+-- 
+1.7.10.msysgit.1
+

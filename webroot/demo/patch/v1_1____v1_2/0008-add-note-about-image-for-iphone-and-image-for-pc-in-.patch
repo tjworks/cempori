@@ -1,0 +1,39 @@
+From e7b6cee24d07e1b2ae5223cb7bcb8c5f4d46cf09 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 17:26:11 +0300
+Subject: [PATCH 08/24] add note about image for iphone and image for pc in
+ slideshow form
+
+---
+ .../Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php           |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
+index 4ef7405..2fbec6a 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
+@@ -96,10 +96,10 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow_Edit_Tab_Form
+ 	  }
+ 
+       $fieldset->addField('image', 'file', array(
+-          'label'     => Mage::helper('shopperslideshow')->__('Image'),
++          'label'     => Mage::helper('shopperslideshow')->__('Image for PC'),
+           'required'  => false,
+           'name'      => 'image',
+-	      'note' => $out,
++	      'note' => 'Image used for PC screens (larger than 768) '.$out,
+ 	  ));
+ 
+       $out = '';
+@@ -111,7 +111,7 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow_Edit_Tab_Form
+ 	  }
+ 
+       $fieldset->addField('small_image', 'file', array(
+-          'label'     => Mage::helper('shopperslideshow')->__('Small Image'),
++          'label'     => Mage::helper('shopperslideshow')->__('Small Image for iPhone'),
+           'required'  => false,
+           'name'      => 'small_image',
+ 	      'note' => 'Small image used for small screens (less than 768) '.$out,
+-- 
+1.7.10.msysgit.1
+

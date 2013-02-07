@@ -1,0 +1,426 @@
+From 94f0dc74841a40f0819dc4684c0fb69d4b3f2d19 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 12 Nov 2012 18:50:04 +0200
+Subject: [PATCH 14/25] add option to switch number of products in a row
+
+---
+ .../Model/Config/Grid/Onecolumn.php                |   26 +++++
+ .../Model/Config/Grid/Twocolumns.php               |   26 +++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    2 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |   21 ++++
+ .../shopper/template/catalog/product/list.phtml    |   10 +-
+ .../queldorei/priceslider/slider_content.phtml     |    4 +-
+ js/queldorei/jquery.priceslider.js                 |    2 +-
+ skin/frontend/default/shopper/css/local.css        |   56 +++++++++-
+ skin/frontend/default/shopper/css/responsive.css   |  113 ++++++++++++++++++++
+ skin/frontend/default/shopper/js/script.js         |    7 +-
+ 10 files changed, 259 insertions(+), 8 deletions(-)
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Onecolumn.php
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Twocolumns.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Onecolumn.php b/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Onecolumn.php
+new file mode 100644
+index 0000000..f97afb9
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Onecolumn.php
+@@ -0,0 +1,26 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_ShopperSettings_Model_Config_Grid_Onecolumn
++{
++
++    public function toOptionArray()
++    {
++        return array(
++            array(
++	            'value'=> 4,
++	            'label' => 4),
++            array(
++	            'value'=> 5,
++	            'label' => 5),
++            array(
++	            'value'=> 6,
++	            'label' => 6),
++        );
++    }
++
++}
+diff --git a/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Twocolumns.php b/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Twocolumns.php
+new file mode 100644
+index 0000000..60b1b02
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/Model/Config/Grid/Twocolumns.php
+@@ -0,0 +1,26 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_ShopperSettings_Model_Config_Grid_Twocolumns
++{
++
++    public function toOptionArray()
++    {
++        return array(
++            array(
++	            'value'=> 3,
++	            'label' => 3),
++            array(
++	            'value'=> 4,
++	            'label' => 4),
++            array(
++	            'value'=> 5,
++	            'label' => 5),
++        );
++    }
++
++}
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index cd35b20..8a78da8 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -201,6 +201,8 @@
+             </navigation>
+ 			<catalog>
+                 <categories_filter>0</categories_filter>
++                <grid_columns_2col>3</grid_columns_2col>
++                <grid_columns_1col>4</grid_columns_1col>
+                 <bestsellers></bestsellers>
+             </catalog>
+             <header>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index bcee974..44c16b7 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -518,6 +518,27 @@
+ 							<show_in_website>1</show_in_website>
+ 							<show_in_store>1</show_in_store>
+ 						</categories_filter>
++                        <grid_columns_2col translate="label comment">
++                            <label>Number of columns in grid mode ( 2 columns layout ) : </label>
++                            <comment>
++                                <![CDATA[To change number of products per page go to<br/> <strong>System -> Configuration -> Catalog -> Frontend</strong>]]>
++                            </comment>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shoppersettings/config_grid_twocolumns</source_model>
++                            <sort_order>20</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </grid_columns_2col>
++                        <grid_columns_1col translate="label comment">
++                            <label>Number of columns in grid mode ( 1 column layout ) : </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shoppersettings/config_grid_onecolumn</source_model>
++                            <sort_order>30</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </grid_columns_1col>
+                         <bestsellers translate="label">
+                             <label>Bestsellers</label>
+                             <comment>Enter product ids you want to display in bestsellers block separated by comma. Example: 23,354,12. Leave empty to hide bestsellers</comment>
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/list.phtml b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+index 5174319..e176279 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/list.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/list.phtml
+@@ -125,11 +125,17 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
+ 
+     <?php
+     $_collectionSize = $_productCollection->count();
+-    //$_columnCount = $this->getColumnCount();
++
++    $pageLayout = $this->getLayout()->getBlock('root')->getTemplate();
++    if ( strpos($pageLayout, '2columns') ) {
++        $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
++    } else {
++        $grid_class = 'one_column_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_1col');
++    }
+     $imgX = 252;
+     $imgY = $helper->calculateHeight($imgX);
+     ?>
+-    <ul class="products-grid">
++    <ul class="products-grid <?php echo $grid_class; ?>">
+     <?php $i=0; foreach ($_productCollection as $_product): ?>
+         <li class="item">
+ 
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+index 6348160..e40afde 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_content.phtml
+@@ -124,11 +124,11 @@ $listY = $helper->calculateHeight($listX);
+ 
+     <?php
+     $_collectionSize = $_productCollection->count();
+-    //$_columnCount = $this->getColumnCount();
++    $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
+     $imgX = 252;
+     $imgY = $helper->calculateHeight($imgX);
+     ?>
+-    <ul class="products-grid">
++    <ul class="products-grid <?php echo $grid_class; ?>">
+         <?php $i=0; foreach ($_productCollection as $_product): ?>
+         <li class="item">
+ 
+diff --git a/js/queldorei/jquery.priceslider.js b/js/queldorei/jquery.priceslider.js
+index 67df720..d395c78 100644
+--- a/js/queldorei/jquery.priceslider.js
++++ b/js/queldorei/jquery.priceslider.js
+@@ -54,7 +54,7 @@ jQuery(function($){
+             $("#slider-min").html(Queldorei_Priceslider.currency+ui.values[0]);
+             $("#slider-max").html(Queldorei_Priceslider.currency+ui.values[1]);
+             },
+-        create:function (event, ui) { reloadProducts(); },
++        create:function (event, ui) { $('.col-main .category-products').html(''); reloadProducts(); },
+         stop:function (event, ui) {
+             $.cookie("queldorei_priceslider_min_"+Queldorei_Priceslider.category_id, ui.values[0], { path: '/' });
+             $.cookie("queldorei_priceslider_max_"+Queldorei_Priceslider.category_id, ui.values[1], { path: '/' });
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 1c20c72..5ad7be0 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -795,7 +795,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-grid .button-container button.button span {width:35px; height:35px; border-radius:100%; -webkit-border-radius:100%; -moz-border-radius:100%; text-indent:-9999px;}
+ .products-grid .button-container button.button span span {padding:0; background:url('../images/icon_cart_listing.png') 50% 50% no-repeat; }
+ .products-grid .product-image {display: block; margin:0 0 12px; position:relative; z-index:1; }
+-.products-grid .product-image img {position:relative; z-index:0; }
++.products-grid .product-image img {position:relative; z-index:0; max-width:100%; height:auto; }
+ .products-grid .product-name {color:#3c3c3c; font-size:16px; font-weight:300; display:block; margin:4px; line-height:120%; }
+ .products-grid .product-name:hover {color:#000; text-decoration:none;}
+ .products-grid .price-box {margin:0px 0 5px 4px; line-height:12px; letter-spacing:-1.2px }
+@@ -829,6 +829,60 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .products-grid .add-to-links a:hover {text-decoration:none;}
+ .products-grid .add-to-links a.link-compare {}
+ 
++/* two_columns 3 products per row */
++.two_columns_3 {}
++/* two_columns 4 products per row */
++.two_columns_4 {}
++.two_columns_4 li.item {width:177px;}
++.two_columns_4 .hover {width:177px;}
++.two_columns_4 .add-to-links { width:195px; height:auto; padding:10px 0;}
++.two_columns_4 .add-to-links li { display:block; margin:0; line-height:140%; }
++.two_columns_4 .add-to-links li { display:block; margin:0; }
++.two_columns_4 .hover .price-box {display:none}
++.two_columns_4 .quick-view { top:18%; left:26%; height:32px; line-height:32px; font-size:12px; }
++.two_columns_4 .product-name {font-size:14px}
++.two_columns_4 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
++/* two_columns 5 products per row */
++.col2-left-layout .two_columns_5 { margin:0 -10px}
++.two_columns_5 {}
++.two_columns_5 li.item {width:140px; margin:0 10px 20px}
++.two_columns_5 .hover {width:140px;}
++.two_columns_5 .add-to-links { width:158px; height:auto; padding:10px 0;}
++.two_columns_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++.two_columns_5 .add-to-links li { display:block; margin:0; }
++.two_columns_5 .hover .price-box {display:none}
++.two_columns_5 .quick-view { top:15%; left:20%; height:32px; line-height:32px; font-size:12px; }
++.two_columns_5 .product-name {font-size:14px}
++.two_columns_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
++
++
++/* one_columns 4 products per row */
++.one_column_4 {}
++/* one_columns 5 products per row */
++.one_column_5 {}
++.one_column_5 li.item {width:192px;}
++.one_column_5 .hover {width:192px;}
++.one_column_5 .add-to-links { width:210px; height:auto; padding:10px 0;}
++.one_column_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++.one_column_5 .add-to-links li { display:block; margin:0; }
++.one_column_5 .hover .price-box {display:none}
++.one_column_5 .quick-view { top:18%; left:26%; height:32px; line-height:32px; font-size:12px; }
++.one_column_5 .product-name {font-size:14px}
++.one_column_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++/* one_columns 6 products per row */
++.one_column_6 {}
++.one_column_6 li.item {width:152px;}
++.one_column_6 .hover {width:152px;}
++.one_column_6 .add-to-links { width:170px; height:auto; padding:10px 0;}
++.one_column_6 .add-to-links li { display:block; margin:0; line-height:140%; }
++.one_column_6 .add-to-links li { display:block; margin:0; }
++.one_column_6 .hover .price-box {display:none}
++.one_column_6 .quick-view { top:18%; left:21%; height:32px; line-height:32px; font-size:12px; }
++.one_column_6 .product-name {font-size:14px}
++.one_column_6 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
+ /* View Type: List */
+ .products-list { margin:0; padding:0; }
+ .products-list li.item { border:none; padding:0 0 30px; }
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index a75fb5c..a68be08 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -67,6 +67,53 @@
+     .products-list .ratings {float:none; margin:5px 0;}
+     .products-list .add-to-links li:first-child span {display:none}
+ 
++    /* two_columns 4 products per row */
++    .two_columns_4 {}
++    .two_columns_4 li.item {width:152px; margin:0 15px 30px}
++    .two_columns_4 .hover {width:152px;}
++    .two_columns_4 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .two_columns_4 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .two_columns_4 .add-to-links li { display:block; margin:0; }
++    .two_columns_4 .hover .price-box {display:none}
++    .two_columns_4 .quick-view { top:15%; left:23%; height:32px; line-height:32px; font-size:12px; }
++    .two_columns_4 .product-name {font-size:14px}
++    .two_columns_4 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++    /* two_columns 5 products per row */
++    .col2-left-layout .two_columns_5 { margin:0 -15px}
++    .two_columns_5 {}
++    .two_columns_5 li.item {width:152px; margin:0 15px 30px}
++    .two_columns_5 .hover {width:152px;}
++    .two_columns_5 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .two_columns_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .two_columns_5 .add-to-links li { display:block; margin:0; }
++    .two_columns_4 .hover .price-box {display:none}
++    .two_columns_5 .quick-view { top:15%; left:23%; height:32px; line-height:32px; font-size:12px; }
++    .two_columns_5 .product-name {font-size:14px}
++    .two_columns_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
++    /* one_columns 5 products per row */
++    .one_column_5 {}
++    .one_column_5 li.item {width:177px;}
++    .one_column_5 .hover {width:177px;}
++    .one_column_5 .add-to-links { width:195px; height:auto; padding:10px 0;}
++    .one_column_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .one_column_5 .add-to-links li { display:block; margin:0; }
++    .one_column_5 .hover .price-box {display:none}
++    .one_column_5 .quick-view { top:18%; left:26%; height:32px; line-height:32px; font-size:12px; }
++    .one_column_5 .product-name {font-size:14px}
++    .one_column_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++    /* one_columns 6 products per row */
++    .one_column_6 {}
++    .one_column_6 li.item {width:177px;}
++    .one_column_6 .hover {width:177px;}
++    .one_column_6 .add-to-links { width:195px; height:auto; padding:10px 0;}
++    .one_column_6 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .one_column_6 .add-to-links li { display:block; margin:0; }
++    .one_column_6 .hover .price-box {display:none}
++    .one_column_6 .quick-view { top:18%; left:26%; height:32px; line-height:32px; font-size:12px; }
++    .one_column_6 .product-name {font-size:14px}
++    .one_column_6 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
+     .top-opc {width:960px;}
+     .top-opc li{float:left; width:150px; margin: 0 10px 30px 0;}
+     .opc {width:630px;}
+@@ -220,6 +267,53 @@
+     .products-list .ratings {float:none; margin:5px 0;}
+     .products-list .add-to-links li:first-child span {display:none}
+ 
++    /* two_columns 4 products per row */
++    .two_columns_4 {}
++    .two_columns_4 li.item {width:152px; margin:0 15px 30px}
++    .two_columns_4 .hover {width:152px;}
++    .two_columns_4 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .two_columns_4 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .two_columns_4 .add-to-links li { display:block; margin:0; }
++    .two_columns_4 .hover .price-box {display:none}
++    .two_columns_4 .quick-view { top:15%; left:23%; height:32px; line-height:32px; font-size:12px; }
++    .two_columns_4 .product-name {font-size:14px}
++    .two_columns_4 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++    /* two_columns 5 products per row */
++    .col2-left-layout .two_columns_5 { margin:0}
++    .two_columns_5 {}
++    .two_columns_5 li.item {width:152px; margin:0 15px 30px}
++    .two_columns_5 .hover {width:152px;}
++    .two_columns_5 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .two_columns_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .two_columns_5 .add-to-links li { display:block; margin:0; }
++    .two_columns_4 .hover .price-box {display:none}
++    .two_columns_5 .quick-view { top:15%; left:23%; height:32px; line-height:32px; font-size:12px; }
++    .two_columns_5 .product-name {font-size:14px}
++    .two_columns_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
++    /* one_columns 5 products per row */
++    .one_column_5 {}
++    .one_column_5 li.item {width:152px;}
++    .one_column_5 .hover {width:152px;}
++    .one_column_5 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .one_column_5 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .one_column_5 .add-to-links li { display:block; margin:0; }
++    .one_column_5 .hover .price-box {display:none}
++    .one_column_5 .quick-view { top:18%; left:21%; height:32px; line-height:32px; font-size:12px; }
++    .one_column_5 .product-name {font-size:14px}
++    .one_column_5 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++    /* one_columns 6 products per row */
++    .one_column_6 {}
++    .one_column_6 li.item {width:152px;}
++    .one_column_6 .hover {width:152px;}
++    .one_column_6 .add-to-links { width:170px; height:auto; padding:10px 0;}
++    .one_column_6 .add-to-links li { display:block; margin:0; line-height:140%; }
++    .one_column_6 .add-to-links li { display:block; margin:0; }
++    .one_column_6 .hover .price-box {display:none}
++    .one_column_6 .quick-view { top:18%; left:21%; height:32px; line-height:32px; font-size:12px; }
++    .one_column_6 .product-name {font-size:14px}
++    .one_column_6 .hover .button-container button.button span span em {margin:0 5px 0 0;}
++
+     .top-opc {width:600px; margin:0 0 0 50px}
+     .opc {width:600px;}
+     .opc .td-label {display:block; float:left; }
+@@ -392,6 +486,25 @@
+     .products-list .add-to-links li:first-child span {display:none}
+     .products-list .product-shop {margin:10px 0 0;}
+ 
++    /* two_columns 4 products per row */
++    .two_columns_4 {}
++    .two_columns_4 li.item {width:252px; margin:0 15px 30px}
++    .two_columns_4 .product-name {font-size:16px}
++    /* two_columns 5 products per row */
++    .col2-left-layout .two_columns_5 { margin:0 auto}
++    .two_columns_5 {}
++    .two_columns_5 li.item {width:252px; margin:0 15px 30px}
++    .two_columns_5 .product-name {font-size:16px}
++
++    /* one_column 5 products per row */
++    .one_column_5 {}
++    .one_column_5 li.item {width:252px; margin:0 15px 30px}
++    .one_column_5 .product-name {font-size:16px}
++    /* one_column 6 products per row */
++    .one_column_6 {}
++    .one_column_6 li.item {width:252px; margin:0 15px 30px}
++    .one_column_6 .product-name {font-size:16px}
++
+     .top-opc {width:300px; margin:0}
+     .top-opc li{margin:0 0 30px 0}
+     .opc {width:300px;}
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index bf7ea92..d2995c4 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -222,9 +222,10 @@ jQuery(function($){
+ 	//fix grid items height
+     function fixGridHeight() {
+         $('.products-grid').each(function(){
+-            var items_in_row = Math.floor($(this).width() / $('li.item', this).width());
++            var items_in_row = Math.floor($(this).width() / $('li.item', this).outerWidth(true));
+             var height = [], row = 0;
+             $('li.item', this).each(function(i,v){
++                $(this).css('height', 'auto');
+                 var h = $(this).height();
+                 if ( !height[row] ) {
+                     height[row] = h;
+@@ -241,7 +242,9 @@ jQuery(function($){
+             });
+         });
+     }
+-    fixGridHeight();
++    $(window).load(function(){
++        fixGridHeight();
++    });
+ 
+     var config = {
+         over: function(){
+-- 
+1.7.10.msysgit.1
+

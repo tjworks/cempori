@@ -1,0 +1,26 @@
+From 20b55593c52406fe47996710e2be783f9b3a0acc Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Fri, 11 Jan 2013 13:21:54 +0200
+Subject: [PATCH 2/2] fix bug - revolution slider table do not use database
+ prefix
+
+---
+ .../mysql4-upgrade-0.1.0-1.4.0.php                 |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php b/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
+index c580112..03936a9 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
++++ b/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
+@@ -63,7 +63,7 @@ CREATE TABLE `{$this->getTable('shopperslideshow/revolution_slides')}` (
+   PRIMARY KEY (`slide_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+-INSERT INTO `shopper_revolution_slides` (`slide_id`, `transition`, `masterspeed`, `slotamount`, `link`, `thumb`, `image`, `text`, `status`, `sort_order`, `created_time`, `update_time`) VALUES
++INSERT INTO `{$this->getTable('shopperslideshow/revolution_slides')}` (`slide_id`, `transition`, `masterspeed`, `slotamount`, `link`, `thumb`, `image`, `text`, `status`, `sort_order`, `created_time`, `update_time`) VALUES
+ 	(1, 'papercut', '460', '1', '', '', 'queldorei/shopper/revolution/features_02.jpg', '', 1, 2, '2013-01-05 16:16:16', '2013-01-05 16:16:16'),
+ 	(2, 'fade', '300', '1', '', '', 'queldorei/shopper/revolution/features_05.jpg', '', 1, 1, '2013-01-05 16:17:06', '2013-01-05 16:17:06'),
+ 	(3, 'slideleft', '300', '1', '', '', 'queldorei/shopper/revolution/unique_magento_theme.jpg', '', 1, 2, '2013-01-05 16:18:06', '2013-01-05 16:18:06'),
+-- 
+1.7.9.msysgit.0
+

@@ -1,0 +1,26 @@
+From 692cf8ba890f00830cb04a961117c2e1e9b68519 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 8 Oct 2012 18:36:28 +0300
+Subject: [PATCH 01/24] fix bug with header links when there are no currencies
+ and languages
+
+---
+ skin/frontend/default/shopper/css/local.css |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index fdde8bd..8fc46b5 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1666,7 +1666,7 @@ html[xmlns] .slides {display: block;}
+ /***** Standard 1200px *****/
+ .row { margin:0 auto; width:1200px; }
+ .row .row { width:auto; display:inline-block; margin:0 -15px; }
+-.grid_1, .grid_2, .grid_3, .grid_4, .grid_5, .grid_6, .grid_7, .grid_8, .grid_9, .grid_10, .grid_11, .grid_12 {	display:inline;	float: left; position: relative; margin:0 15px;}
++.grid_1, .grid_2, .grid_3, .grid_4, .grid_5, .grid_6, .grid_7, .grid_8, .grid_9, .grid_10, .grid_11, .grid_12 {	display:inline;	float: left; position: relative; margin:0 15px; min-height:1px;}
+ .grid_1 { width:70px;}
+ .grid_2 { width:170px;}
+ .grid_3 { width:270px;}
+-- 
+1.7.10.msysgit.1
+

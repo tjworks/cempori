@@ -1,0 +1,55 @@
+From 346c94f09e1cc302d654a892d2faf4c4e858ee1a Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 16 Nov 2012 18:53:39 +0200
+Subject: [PATCH 03/17] hide slideshow on sign up page turn off ability to
+ switch slides using keyboard on login page
+
+---
+ .../frontend/default/shopper/template/queldorei/slideshow.phtml     |    2 +-
+ skin/frontend/default/shopper/js/script.js                          |    3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml b/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
+index c26c334..6eef443 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/slideshow.phtml
+@@ -16,7 +16,7 @@ if ( $config['enabled'] ) {
+             }
+         }
+     }
+-    if ( $show && ($route == 'customer' && ($action == 'login' || $action == 'forgotpassword')) ) {
++    if ( $show && ($route == 'customer' && ($action == 'login' || $action == 'forgotpassword' || $action == 'create')) ) {
+         $show = false;
+     }
+     if ( $show ) {
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 86e869e..adb0319 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -546,6 +546,7 @@ jQuery(function($){
+                 useCSS: false,
+                 animationLoop: true,
+                 mousewheel: false,
++                keyboard:false,
+                 smoothHeight: false,
+                 slideshowSpeed: 7000,
+                 animationSpeed: 600,
+@@ -561,6 +562,7 @@ jQuery(function($){
+                 animation: "slide",
+                 slideshow: false,
+                 useCSS: false,
++                keyboard:false,
+                 animationLoop: false,
+                 smoothHeight: false,
+                 animationSpeed: 600,
+@@ -639,6 +641,7 @@ jQuery(function($){
+     $('nav .nav-top-title, .nav-container .nav-top-title').click(function(){
+         $(this).toggleClass('active').next().toggle();
+         $(".header-wrapper").height($("header").height());
++        return false;
+     });
+ 
+     //show more in layered nav
+-- 
+1.7.10.msysgit.1
+
