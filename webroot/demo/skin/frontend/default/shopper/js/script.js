@@ -335,7 +335,9 @@ jQuery(function($){
         $('#product_tabs_review_tabbed').scrollToMe();
         return false;
     });
-
+     /** 
+       * Disable product image hoer * 
+       *
     $('.products-grid .item').live({
         mouseenter: function(){
             if (mobile) return;
@@ -367,6 +369,7 @@ jQuery(function($){
             $(this).removeClass('no-shadow');
         }
     });
+    */
 
     var $flexslider = $("#flexslider"),
         $flexslides = $flexslider.find('ul.slides').children('li');
