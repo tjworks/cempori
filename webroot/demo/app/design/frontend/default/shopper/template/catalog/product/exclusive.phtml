@@ -1,0 +1,128 @@
+<?php
+/**
+ * Product list template
+ *
+ * @see Mage_Catalog_Block_Product_List
+ */
+?>
+<?php
+$_productCollection=$this->getLoadedProductCollection();
+$_helper = $this->helper('catalog/output');
+$helper = $this->helper('shoppersettings/image');
+
+$cms_id = $this->helper('shoppersettings')->getCurrentCmsPage();
+if ( !$cms_id ) {
+    $pageLayout = $this->getLayout()->getBlock('root')->getTemplate();
+    if ( strpos($pageLayout, '2columns') ) {
+        $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
+    } else {
+        $grid_class = 'one_column_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_1col');
+    }
+} else {
+    if ( $cms_id == 'shopper_home' ) {
+        $grid_class = 'one_column_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_1col');
+    } else {
+        $grid_class = 'two_columns_' . Mage::getStoreConfig('shoppersettings/catalog/grid_columns_2col');
+    }
+}
+
+$imgX = 352;
+$imgY = $helper->calculateHeight($imgX);
+?>
+<style>
+.product-exclusive {
+background-color:#333;
+width:1000px;
+margin:10px auto;
+}
+.product-exclusive .image {
+  float:left;
+}
+
+.product-exclusive .info {
+  float:left;
+  background-color:#333;
+  height:352;
+  overflow:auto;
+  color:white;
+  text-align:center;
+  padding:10px 0px;
+} 
+.info h2 {
+  color:white;
+  text-align:center;
+  margin:auto;
+
+}
+.clear
+{
+ clear:both
+}
+
+.hidden {
+  display:none
+
+}
+</style>
+
+
+<?php if($_productCollection->count()): ?>
+<div class="category-products">
+<!--    <h2>
+
+   <?php echo $this->__($this->getBlockTitle());?></h2> -->
+
+    <?php $_collectionSize = $_productCollection->count(); ?>
+    
+	<?php foreach ($_productCollection as $_product): ?>
+<table width="1000" border=0 class="product-exclusive">
+              <tr>
+               <td width=352>
+                <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="the-product-image">
+                    <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                    <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX, $imgY) ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX*2, $imgY*2) ?>" width="<?php echo $imgX; ?>" height="<?php echo $imgY; ?>" alt="<?php echo $this->htmlEscape($_product->getName()) ?>" />
+                </a>
+                </td>  <!-- end image div -->
+
+
+                 <td class="info" width="648"> 
+                    <h1> PLACEHOLDER</h1>
+                    <h2>
+                    <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
+<!--                    <a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>"> -->
+
+<?php echo $_helper->productAttribute($_product, $_product->getName() , 'name'); ?>
+
+                    </h2>
+ <span style="font-size:2em;padding:30px" > 
+  <?php echo $_helper->productAttribute($_product, ($_product->getShortDescription()), 'short_description') ?>
+                    </span> 
+                 </td>
+  </tr>
+<!--
+                <div class="hidden " >
+                        <?php if($_product->isSaleable()): ?>
+                        <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
+                            <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
+                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
+                                <?php } else { ?>
+                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
+                                <?php }  ?>
+                            <?php else: ?>
+                            <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
+                            <?php endif; ?>
+                        <?php else: ?>
+                        <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                        <?php endif; ?>
+                    <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
+                    <a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>"><?php echo $_helper->productAttribute($_product, $_product->getName() , 'name'); ?></a>
+                    <?php echo $this->getPriceHtml($_product, true) ?>
+                </div> -->
+            </div>  <!-- end product-exclusvie div -->
+
+
+    <?php endforeach ?>
+</table>
+<div class="clear"></div>
+<?php endif; ?>
+
