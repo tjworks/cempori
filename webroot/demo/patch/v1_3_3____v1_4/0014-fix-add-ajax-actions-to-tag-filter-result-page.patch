@@ -1,0 +1,50 @@
+From 74323ad9d12b27b47958d43e1d4f27d2efaa43f6 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 24 Dec 2012 18:57:54 +0200
+Subject: [PATCH 14/34] fix - add ajax actions to tag filter result page
+
+---
+ .../frontend/default/shopper/layout/ajax.xml       |    9 +++++++++
+ .../default/shopper/layout/ajaxwishlist.xml        |    7 +++++++
+ 2 files changed, 16 insertions(+), 0 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/layout/ajax.xml b/app/design/frontend/default/shopper/layout/ajax.xml
+index f98e6da..a7b5f58 100644
+--- a/app/design/frontend/default/shopper/layout/ajax.xml
++++ b/app/design/frontend/default/shopper/layout/ajax.xml
+@@ -46,6 +46,15 @@
+         </reference>
+     </catalogsearch_result_index>
+ 
++    <tag_product_list>
++    	<reference name="head">
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
++            <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
++        </reference>
++    </tag_product_list>
++
+     <ajax_index_options>
+         <reference name="root">
+             <action method="setTemplate"><template>page/empty.phtml</template></action>
+diff --git a/app/design/frontend/default/shopper/layout/ajaxwishlist.xml b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+index 08c2d3b..0c9861c 100644
+--- a/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
++++ b/app/design/frontend/default/shopper/layout/ajaxwishlist.xml
+@@ -43,4 +43,11 @@
+         </reference>
+     </catalogsearch_result_index>
+ 
++    <tag_product_list translate="label">
++        <reference name="head">
++            <action method="addJs" ifconfig="shoppersettings/ajax/wishlist"><script>queldorei/jquery-1.8.2.min.js</script></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/wishlist"><type>skin_js</type><name>js/ajaxwishlist/ajaxwishlist.js</name></action>
++        </reference>
++    </tag_product_list>
++
+ </layout> 
+\ No newline at end of file
+-- 
+1.7.9.msysgit.0
+

@@ -1,0 +1,62 @@
+From b925936ca0ad6b6c5d48defaa0787777210c7e1a Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 13 Nov 2012 13:16:57 +0200
+Subject: [PATCH 21/25] add option to show/hide header compare block
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    9 +++++++++
+ skin/frontend/default/shopper/css/options.css.php       |    6 +++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 0cd2876..3ee93dd 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -192,6 +192,7 @@
+                 <responsive>1</responsive>
+                 <price_circle>1</price_circle>
+                 <fixed_header>1</fixed_header>
++                <top_compare>1</top_compare>
+             </design>
+             <navigation>
+                 <use_navigation>1</use_navigation>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 5d9f7c8..18737c6 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -452,6 +452,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </fixed_header>
++                        <top_compare translate="label">
++                            <label>Show compare block in header</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>100</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </top_compare>
+                     </fields>
+                 </design>
+ 				<navigation translate="label">
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 56afc98..ffee0e2 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -283,4 +283,8 @@ footer a:hover, footer ul.links li a:hover {color:<?php echo $config['appearance
+ 
+ button.invert span, button.btn-continue span, .cart-shipping button span, .cart-coupon button span {background-color:#393431;}
+ #queldoreiNav > li > a:hover, #queldoreiNav > li.active > a, #queldoreiNav > li.over > a,
+-#nav > li > a:hover, #nav > li.active > a, #nav > li.over > a {color:#373230}
+\ No newline at end of file
++#nav > li > a:hover, #nav > li.active > a, #nav > li.over > a {color:#373230}
++
++<?php if ( isset($config['design']['top_compare']) && $config['design']['top_compare'] == 0 ) : ?>
++.compare-top-container {display:none}
++<?php endif; ?>
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

@@ -1,0 +1,24 @@
+From 06d483816682b6f0d32bf9d267c46b034f06480e Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 4 Dec 2012 18:38:26 +0200
+Subject: [PATCH 01/34] fix price underline in safari
+
+---
+ skin/frontend/default/shopper/css/local.css |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 5e42268..89383eb 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -822,6 +822,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+     -webkit-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+     -moz-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+     box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);}
++.products-grid li.item a:hover {text-decoration:none; }
+ .products-grid h3{ font-size:24px; font-family:"Myriad Pro",serif; font-weight:300; color:#000; color:rgba(0,0,0,0.67); letter-spacing:-1px; margin:27px 0 26px 2px; text-align:center; }
+ .products-grid .button-container {float:right; margin-left:5px; }
+ .products-grid .button-container button.button span {width:35px; height:35px; border-radius:100%; -webkit-border-radius:100%; -moz-border-radius:100%; text-indent:-9999px;}
+-- 
+1.7.9.msysgit.0
+

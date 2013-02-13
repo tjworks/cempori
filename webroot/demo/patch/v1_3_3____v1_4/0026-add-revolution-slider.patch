@@ -1,0 +1,1054 @@
+From d40b99b15eefe8c40181b9525b031d6b19e17b1d Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 3 Jan 2013 19:18:19 +0200
+Subject: [PATCH 26/34] add revolution slider
+
+---
+ .../Block/Adminhtml/Shopperrevolution.php          |   18 ++
+ .../Block/Adminhtml/Shopperrevolution/Edit.php     |   42 ++++
+ .../Adminhtml/Shopperrevolution/Edit/Form.php      |   24 ++
+ .../Adminhtml/Shopperrevolution/Edit/Tab/Form.php  |  232 ++++++++++++++++++++
+ .../Adminhtml/Shopperrevolution/Edit/Tabs.php      |   29 +++
+ .../Block/Adminhtml/Shopperrevolution/Grid.php     |  151 +++++++++++++
+ .../Shopperrevolution/Grid/Renderer/Image.php      |   32 +++
+ .../Block/Adminhtml/Shopperslideshow.php           |    2 +-
+ .../Adminhtml/Shopperslideshow/Edit/Tab/Form.php   |    2 +-
+ .../Block/Adminhtml/Shopperslideshow/Edit/Tabs.php |    6 +-
+ .../Model/Mysql4/Shopperrevolution.php             |   69 ++++++
+ .../Model/Mysql4/Shopperrevolution/Collection.php  |   38 ++++
+ .../Shopperslideshow/Model/Shopperrevolution.php   |   16 ++
+ .../Adminhtml/ShopperrevolutionController.php      |  228 +++++++++++++++++++
+ .../Adminhtml/ShopperslideshowController.php       |    2 +-
+ 15 files changed, 885 insertions(+), 6 deletions(-)
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Form.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tab/Form.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tabs.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid/Renderer/Image.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution/Collection.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Shopperrevolution.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperrevolutionController.php
+
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution.php
+new file mode 100644
+index 0000000..8683fe6
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution.php
+@@ -0,0 +1,18 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution extends Mage_Adminhtml_Block_Widget_Grid_Container
++{
++	public function __construct()
++	{
++		$this->_controller = 'adminhtml_shopperrevolution';
++		$this->_blockGroup = 'shopperslideshow';
++		$this->_headerText = Mage::helper('shopperslideshow')->__('Revolution Slides Manager');
++		$this->_addButtonLabel = Mage::helper('shopperslideshow')->__('Add Slide');
++		parent::__construct();
++	}
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit.php
+new file mode 100644
+index 0000000..7fb3398
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit.php
+@@ -0,0 +1,42 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
++{
++    public function __construct()
++    {
++        parent::__construct();
++                 
++        $this->_objectId = 'id';
++        $this->_blockGroup = 'shopperslideshow';
++        $this->_controller = 'adminhtml_shopperrevolution';
++        
++        $this->_updateButton('save', 'label', Mage::helper('shopperslideshow')->__('Save Slide'));
++        $this->_updateButton('delete', 'label', Mage::helper('shopperslideshow')->__('Delete Slide'));
++		
++        $this->_addButton('saveandcontinue', array(
++            'label'     => Mage::helper('adminhtml')->__('Save And Continue Edit'),
++            'onclick'   => 'saveAndContinueEdit()',
++            'class'     => 'save',
++        ), -100);
++
++        $this->_formScripts[] = "
++            function saveAndContinueEdit(){
++                editForm.submit($('edit_form').action+'back/edit/');
++            }
++        ";
++    }
++
++    public function getHeaderText()
++    {
++        if( Mage::registry('shopperrevolution_data') && Mage::registry('shopperrevolution_data')->getId() ) {
++            return Mage::helper('shopperslideshow')->__("Edit Slide");
++        } else {
++            return Mage::helper('shopperslideshow')->__('Add Slide');
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Form.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Form.php
+new file mode 100644
+index 0000000..9101026
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Form.php
+@@ -0,0 +1,24 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
++{
++  protected function _prepareForm()
++  {
++      $form = new Varien_Data_Form(array(
++	          'id' => 'edit_form',
++	          'action' => $this->getUrl('*/*/save', array('id' => $this->getRequest()->getParam('id'))),
++	          'method' => 'post',
++	          'enctype' => 'multipart/form-data'
++	       )
++      );
++
++      $form->setUseContainer(true);
++      $this->setForm($form);
++      return parent::_prepareForm();
++  }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tab/Form.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tab/Form.php
+new file mode 100644
+index 0000000..a9eaa0a
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tab/Form.php
+@@ -0,0 +1,232 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Edit_Tab_Form extends Mage_Adminhtml_Block_Widget_Form
++{
++	protected function _prepareForm()
++	{
++
++		$model = Mage::registry('shopperslideshow_shopperrevolution');
++
++		$form = new Varien_Data_Form();
++		$this->setForm($form);
++		$fieldset = $form->addFieldset('shopperslideshow_form', array('legend' => Mage::helper('shopperslideshow')->__('Revolution Slide information')));
++
++		if (!Mage::app()->isSingleStoreMode()) {
++			$fieldset->addField('store_id', 'multiselect', array(
++				'name' => 'stores[]',
++				'label' => Mage::helper('shopperslideshow')->__('Store View'),
++				'title' => Mage::helper('shopperslideshow')->__('Store View'),
++				'required' => true,
++				'values' => Mage::getSingleton('adminhtml/system_store')->getStoreValuesForForm(false, true),
++			));
++		} else {
++			$fieldset->addField('store_id', 'hidden', array(
++				'name' => 'stores[]',
++				'value' => Mage::app()->getStore(true)->getId()
++			));
++		}
++
++		$fieldset->addField('transition', 'select', array(
++			'label' => Mage::helper('shopperslideshow')->__('Transition'),
++			'name' => 'transition',
++			'values' => array(
++				array(
++					'value' => 'boxslide',
++					'label' => Mage::helper('shopperslideshow')->__('boxslide'),
++				),
++				array(
++					'value' => 'boxfade',
++					'label' => Mage::helper('shopperslideshow')->__('boxfade'),
++				),
++				array(
++					'value' => 'slotzoom-horizontal',
++					'label' => Mage::helper('shopperslideshow')->__('slotzoom-horizontal'),
++				),
++				array(
++					'value' => 'slotslide-horizontal',
++					'label' => Mage::helper('shopperslideshow')->__('slotslide-horizontal'),
++				),
++				array(
++					'value' => 'slotfade-horizontal',
++					'label' => Mage::helper('shopperslideshow')->__('slotfade-horizontal'),
++				),
++				array(
++					'value' => 'slotzoom-vertical',
++					'label' => Mage::helper('shopperslideshow')->__('slotzoom-vertical'),
++				),
++				array(
++					'value' => 'slotslide-vertical',
++					'label' => Mage::helper('shopperslideshow')->__('slotslide-vertical'),
++				),
++				array(
++					'value' => 'slotfade-vertical',
++					'label' => Mage::helper('shopperslideshow')->__('slotfade-vertical'),
++				),
++				array(
++					'value' => 'curtain-1',
++					'label' => Mage::helper('shopperslideshow')->__('curtain-1'),
++				),
++				array(
++					'value' => 'curtain-2',
++					'label' => Mage::helper('shopperslideshow')->__('curtain-2'),
++				),
++				array(
++					'value' => 'curtain-3',
++					'label' => Mage::helper('shopperslideshow')->__('curtain-3'),
++				),
++				array(
++					'value' => 'slideleft',
++					'label' => Mage::helper('shopperslideshow')->__('slideleft'),
++				),
++				array(
++					'value' => 'slideright',
++					'label' => Mage::helper('shopperslideshow')->__('slideright'),
++				),
++				array(
++					'value' => 'slideup',
++					'label' => Mage::helper('shopperslideshow')->__('slideup'),
++				),
++				array(
++					'value' => 'slidedown',
++					'label' => Mage::helper('shopperslideshow')->__('slidedown'),
++				),
++				array(
++					'value' => 'fade',
++					'label' => Mage::helper('shopperslideshow')->__('fade'),
++				),
++				array(
++					'value' => 'random',
++					'label' => Mage::helper('shopperslideshow')->__('random'),
++				),
++				array(
++					'value' => 'slidehorizontal',
++					'label' => Mage::helper('shopperslideshow')->__('slidehorizontal'),
++				),
++				array(
++					'value' => 'slidevertical',
++					'label' => Mage::helper('shopperslideshow')->__('slidevertical'),
++				),
++				array(
++					'value' => 'papercut',
++					'label' => Mage::helper('shopperslideshow')->__('papercut'),
++				),
++				array(
++					'value' => 'flyin',
++					'label' => Mage::helper('shopperslideshow')->__('flyin'),
++				),
++				array(
++					'value' => 'turnoff',
++					'label' => Mage::helper('shopperslideshow')->__('turnoff'),
++				),
++				array(
++					'value' => 'cube',
++					'label' => Mage::helper('shopperslideshow')->__('cube'),
++				),
++				array(
++					'value' => '3dcurtain-vertical',
++					'label' => Mage::helper('shopperslideshow')->__('3dcurtain-vertical'),
++				),
++				array(
++					'value' => '3dcurtain-horizontal',
++					'label' => Mage::helper('shopperslideshow')->__('3dcurtain-horizontal'),
++				),
++			),
++			'note' => 'The appearance transition of this slide',
++		));
++
++		$fieldset->addField('masterspeed', 'text', array(
++			'label' => Mage::helper('shopperslideshow')->__('Masterspeed'),
++			'required' => false,
++			'name' => 'masterspeed',
++			'note' => 'Set the Speed of the Slide Transition. Default 300, min:100 max:2000.'
++		));
++		$fieldset->addField('slotamount', 'text', array(
++			'label' => Mage::helper('shopperslideshow')->__('Slotamount'),
++			'required' => false,
++			'name' => 'slotamount',
++			'note' => 'The number of slots or boxes the slide is divided into. If you use boxfade, over 7 slots can be juggy.'
++		));
++		$fieldset->addField('link', 'text', array(
++			'label' => Mage::helper('shopperslideshow')->__('Slide Link'),
++			'required' => false,
++			'name' => 'link',
++		));
++
++		$data = array();
++		$out = '';
++		if (Mage::getSingleton('adminhtml/session')->getShopperrevolutionData()) {
++			$data = Mage::getSingleton('adminhtml/session')->getShopperrevolutionData();
++		} elseif (Mage::registry('shopperrevolution_data')) {
++			$data = Mage::registry('shopperrevolution_data')->getData();
++		}
++
++		if (!empty($data['image'])) {
++			$url = Mage::getBaseUrl('media') . $data['image'];
++			$out = '<br/><center><a href="' . $url . '" target="_blank" id="imageurl">';
++			$out .= "<img src=" . $url . " width='150px' />";
++			$out .= '</a></center>';
++		}
++
++		$fieldset->addField('image', 'file', array(
++			'label' => Mage::helper('shopperslideshow')->__('Image'),
++			'required' => false,
++			'name' => 'image',
++			'note' => $out,
++		));
++
++		$out = '';
++		if (!empty($data['thumb'])) {
++			$url = Mage::getBaseUrl('media') . $data['thumb'];
++			$out = '<br/><center><a href="' . $url . '" target="_blank" id="imageurl">';
++			$out .= "<img src=" . $url . " width='150px' />";
++			$out .= '</a></center>';
++		}
++
++		$fieldset->addField('thumb', 'file', array(
++			'label' => Mage::helper('shopperslideshow')->__('Slide thumb'),
++			'required' => false,
++			'name' => 'thumb',
++			'note' => 'An Alternative Source for thumbs. If not defined a copy of the background image will be used in resized form. ' . $out,
++		));
++
++		$fieldset->addField('text', 'textarea', array(
++			'label'     => Mage::helper('shopperslideshow')->__('Slide Content'),
++			'required'  => false,
++			'name'      => 'text',
++		));
++
++		$fieldset->addField('status', 'select', array(
++			'label' => Mage::helper('shopperslideshow')->__('Status'),
++			'name' => 'status',
++			'values' => array(
++				array(
++					'value' => 1,
++					'label' => Mage::helper('shopperslideshow')->__('Enabled'),
++				),
++				array(
++					'value' => 2,
++					'label' => Mage::helper('shopperslideshow')->__('Disabled'),
++				),
++			),
++		));
++
++		$fieldset->addField('sort_order', 'text', array(
++			'label' => Mage::helper('shopperslideshow')->__('Sort Order'),
++			'required' => false,
++			'name' => 'sort_order',
++		));
++
++		if (Mage::getSingleton('adminhtml/session')->getShopperrevolutionData()) {
++			$form->setValues(Mage::getSingleton('adminhtml/session')->getShopperrevolutionData());
++			Mage::getSingleton('adminhtml/session')->getShopperrevolutionData(null);
++		} elseif (Mage::registry('shopperrevolution_data')) {
++			$form->setValues(Mage::registry('shopperrevolution_data')->getData());
++		}
++		return parent::_prepareForm();
++	}
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tabs.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tabs.php
+new file mode 100644
+index 0000000..2459339
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Edit/Tabs.php
+@@ -0,0 +1,29 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Edit_Tabs extends Mage_Adminhtml_Block_Widget_Tabs
++{
++
++  public function __construct()
++  {
++      parent::__construct();
++      $this->setId('shopperrevolution_tabs');
++      $this->setDestElementId('edit_form');
++      $this->setTitle(Mage::helper('shopperslideshow')->__('Revolution Slide Information'));
++  }
++
++  protected function _beforeToHtml()
++  {
++      $this->addTab('form_section', array(
++          'label'     => Mage::helper('shopperslideshow')->__('Revolution Slide Information'),
++          'title'     => Mage::helper('shopperslideshow')->__('Revolution Slide Information'),
++          'content'   => $this->getLayout()->createBlock('shopperslideshow/adminhtml_shopperrevolution_edit_tab_form')->toHtml(),
++      ));
++     
++      return parent::_beforeToHtml();
++  }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid.php
+new file mode 100644
+index 0000000..0f8399c
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid.php
+@@ -0,0 +1,151 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Grid extends Mage_Adminhtml_Block_Widget_Grid
++{
++  public function __construct()
++  {
++      parent::__construct();
++      $this->setId('shopperrevolutionGrid');
++      $this->setDefaultSort('slide_id');
++      $this->setDefaultDir('ASC');
++      $this->setSaveParametersInSession(true);
++  }
++
++  protected function _prepareCollection()
++  {
++      $collection = Mage::getModel('shopperslideshow/shopperrevolution')->getCollection();
++      $this->setCollection($collection);
++      return parent::_prepareCollection();
++  }
++
++  protected function _prepareColumns()
++  {
++      $this->addColumn('slide_id', array(
++          'header'    => Mage::helper('shopperslideshow')->__('ID'),
++          'align'     =>'right',
++          'width'     => '50px',
++          'index'     => 'slide_id',
++      ));
++
++	  if (!Mage::app()->isSingleStoreMode()) {
++          $this->addColumn('store_id', array(
++              'header'        => Mage::helper('shopperslideshow')->__('Store View'),
++              'index'         => 'store_id',
++              'type'          => 'store',
++              'store_all'     => true,
++              'store_view'    => true,
++              'sortable'      => false,
++              'filter_condition_callback'
++                              => array($this, '_filterStoreCondition'),
++          ));
++      }
++
++	  $this->addColumn('link', array(
++          'header'    => Mage::helper('shopperslideshow')->__('Link'),
++          'align'     =>'left',
++          'index'     => 'link',
++      ));
++
++	  $this->addColumn('image', array(
++          'header'    => Mage::helper('shopperslideshow')->__('Image'),
++          'align'     =>'left',
++          'index'     => 'image',
++		  'renderer' => 'shopperslideshow/adminhtml_shopperrevolution_grid_renderer_image'
++      ));
++
++	  $this->addColumn('status', array(
++          'header'    => Mage::helper('shopperslideshow')->__('Status'),
++          'align'     => 'left',
++          'width'     => '80px',
++          'index'     => 'status',
++          'type'      => 'options',
++          'options'   => array(
++              1 => 'Enabled',
++              2 => 'Disabled',
++          ),
++      ));
++
++      $this->addColumn('sort_order', array(
++            'header'    => Mage::helper('shopperslideshow')->__('Sort Order'),
++            'align'     =>'left',
++            'index'     => 'sort_order',
++        ));
++	  
++        $this->addColumn('action',
++            array(
++                'header'    =>  Mage::helper('shopperslideshow')->__('Action'),
++                'width'     => '100',
++                'type'      => 'action',
++                'getter'    => 'getId',
++                'actions'   => array(
++                    array(
++                        'caption'   => Mage::helper('shopperslideshow')->__('Edit'),
++                        'url'       => array('base'=> '*/*/edit'),
++                        'field'     => 'id'
++                    )
++                ),
++                'filter'    => false,
++                'sortable'  => false,
++                'index'     => 'stores',
++                'is_system' => true,
++        ));
++
++      return parent::_prepareColumns();
++  }
++
++	protected function _afterLoadCollection()
++    {
++        $this->getCollection()->walk('afterLoad');
++        parent::_afterLoadCollection();
++    }
++
++    protected function _filterStoreCondition($collection, $column)
++    {
++        if (!$value = $column->getFilter()->getValue()) {
++            return;
++        }
++
++        $this->getCollection()->addStoreFilter($value);
++    }
++
++    protected function _prepareMassaction()
++    {
++        $this->setMassactionIdField('slide_id');
++        $this->getMassactionBlock()->setFormFieldName('shopperrevolution');
++
++        $this->getMassactionBlock()->addItem('delete', array(
++             'label'    => Mage::helper('shopperslideshow')->__('Delete'),
++             'url'      => $this->getUrl('*/*/massDelete'),
++             'confirm'  => Mage::helper('shopperslideshow')->__('Are you sure?')
++        ));
++
++        $statuses = Mage::getSingleton('shopperslideshow/status')->getOptionArray();
++
++        array_unshift($statuses, array('label'=>'', 'value'=>''));
++        $this->getMassactionBlock()->addItem('status', array(
++             'label'=> Mage::helper('shopperslideshow')->__('Change status'),
++             'url'  => $this->getUrl('*/*/massStatus', array('_current'=>true)),
++             'additional' => array(
++                    'visibility' => array(
++                         'name' => 'status',
++                         'type' => 'select',
++                         'class' => 'required-entry',
++                         'label' => Mage::helper('shopperslideshow')->__('Status'),
++                         'values' => $statuses
++                     )
++             )
++        ));
++        return $this;
++    }
++
++  public function getRowUrl($row)
++  {
++      return $this->getUrl('*/*/edit', array('id' => $row->getId()));
++  }
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid/Renderer/Image.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid/Renderer/Image.php
+new file mode 100644
+index 0000000..214201b
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperrevolution/Grid/Renderer/Image.php
+@@ -0,0 +1,32 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperrevolution_Grid_Renderer_Image extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Action {
++    public function render(Varien_Object $row)
++    {
++        return $this->_getValue($row);
++    }
++
++	public function _getValue(Varien_Object $row)
++    {
++        if ($getter = $this->getColumn()->getGetter()) {
++            $val = $row->$getter();
++        }
++        $val = $row->getData($this->getColumn()->getIndex());
++        $val = str_replace("no_selection", "", $val);
++	    $out = '';
++	    if ( !empty($val) ) {
++	        $url = Mage::getBaseUrl('media') . $val;
++	        $out = '<center><a href="'.$url.'" target="_blank" id="imageurl">';
++	        $out .= "<img src=". $url ." width='150px' />";
++	        $out .= '</a></center>';
++	    }
++
++	    return $out;
++
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow.php
+index d313178..1fbbe2d 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow.php
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow.php
+@@ -11,7 +11,7 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow extends Mage_A
+ 	{
+ 		$this->_controller = 'adminhtml_shopperslideshow';
+ 		$this->_blockGroup = 'shopperslideshow';
+-		$this->_headerText = Mage::helper('shopperslideshow')->__('Slides Manager');
++		$this->_headerText = Mage::helper('shopperslideshow')->__('Flexslider Slides Manager');
+ 		$this->_addButtonLabel = Mage::helper('shopperslideshow')->__('Add Slide');
+ 		parent::__construct();
+ 	}
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
+index fbf0573..fc0c65f 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tab/Form.php
+@@ -14,7 +14,7 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow_Edit_Tab_Form
+ 
+       $form = new Varien_Data_Form();
+       $this->setForm($form);
+-      $fieldset = $form->addFieldset('shopperslideshow_form', array('legend'=>Mage::helper('shopperslideshow')->__('Slide information')));
++      $fieldset = $form->addFieldset('shopperslideshow_form', array('legend'=>Mage::helper('shopperslideshow')->__('Flexslider Slide information')));
+ 
+ 	  if (!Mage::app()->isSingleStoreMode()) {
+         $fieldset->addField('store_id', 'multiselect', array(
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tabs.php b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tabs.php
+index 384f284..5d85569 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tabs.php
++++ b/app/code/local/Queldorei/Shopperslideshow/Block/Adminhtml/Shopperslideshow/Edit/Tabs.php
+@@ -13,14 +13,14 @@ class Queldorei_Shopperslideshow_Block_Adminhtml_Shopperslideshow_Edit_Tabs exte
+       parent::__construct();
+       $this->setId('shopperslideshow_tabs');
+       $this->setDestElementId('edit_form');
+-      $this->setTitle(Mage::helper('shopperslideshow')->__('Slide Information'));
++      $this->setTitle(Mage::helper('shopperslideshow')->__('Flexslider Slide Information'));
+   }
+ 
+   protected function _beforeToHtml()
+   {
+       $this->addTab('form_section', array(
+-          'label'     => Mage::helper('shopperslideshow')->__('Slide Information'),
+-          'title'     => Mage::helper('shopperslideshow')->__('Slide Information'),
++          'label'     => Mage::helper('shopperslideshow')->__('Flexslider Slide Information'),
++          'title'     => Mage::helper('shopperslideshow')->__('Flexslider Slide Information'),
+           'content'   => $this->getLayout()->createBlock('shopperslideshow/adminhtml_shopperslideshow_edit_tab_form')->toHtml(),
+       ));
+      
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution.php b/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution.php
+new file mode 100644
+index 0000000..93c2f26
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution.php
+@@ -0,0 +1,69 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Mysql4_Shopperrevolution extends Mage_Core_Model_Mysql4_Abstract
++{
++    public function _construct()
++    {    
++        // Note that the slide_id refers to the key field in your database table.
++        $this->_init('shopperslideshow/revolution_slides', 'slide_id');
++    }
++
++	/**
++	 * add slide to store
++     *
++     * @param Mage_Core_Model_Abstract $object
++	 * @return Mage_Core_Model_Abstract $object
++     */
++	protected function _afterSave(Mage_Core_Model_Abstract $object)
++	{
++		$condition = $this->_getWriteAdapter()->quoteInto('slide_id = ?', $object->getId());
++		$this->_getWriteAdapter()->delete($this->getTable('shopperslideshow/revolution_slides_store'), $condition);
++
++		if(!$object->getData('stores')){
++			$object->setData('stores',$object->getData('store_id'));
++		}
++
++		if(in_array(0,$object->getData('stores'))){
++			$object->setData('stores',array(0));
++		}
++
++		foreach ((array)$object->getData('stores') as $store) {
++			$storeArray = array();
++			$storeArray['slide_id'] = $object->getId();
++			$storeArray['store_id'] = $store;
++			$this->_getWriteAdapter()->insert($this->getTable('shopperslideshow/revolution_slides_store'), $storeArray);
++		}
++
++		return parent::_afterSave($object);
++	}
++
++	/**
++     * add store data to slide
++     *
++     * @param Mage_Core_Model_Abstract $object
++     * @return Mage_Core_Model_Abstract $object
++     */
++	protected function _afterLoad(Mage_Core_Model_Abstract $object)
++	{
++		// Liste des stores
++		$select = $this->_getReadAdapter()->select()
++			->from($this->getTable('shopperslideshow/revolution_slides_store'))
++			->where('slide_id = ?', $object->getId());
++
++		if ($data = $this->_getReadAdapter()->fetchAll($select)) {
++			$storesArray = array();
++			foreach ($data as $row) {
++				$storesArray[] = $row['store_id'];
++			}
++			$object->setData('store_id', $storesArray);
++		}
++
++		return parent::_afterLoad($object);
++	}
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution/Collection.php b/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution/Collection.php
+new file mode 100644
+index 0000000..af4b7dc
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Mysql4/Shopperrevolution/Collection.php
+@@ -0,0 +1,38 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Mysql4_Shopperrevolution_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
++{
++    public function _construct()
++    {
++        parent::_construct();
++        $this->_init('shopperslideshow/shopperrevolution');
++    }
++
++	/**
++     * Add Filter by store
++     *
++     * @param Mage_Core_Model_Store $store
++	 * @param bool $withAdmin
++	 * @return Queldorei_Shopperslideshow_Model_Mysql4_Shopperrevolution_Collection
++	 */
++	public function addStoreFilter($store, $withAdmin = true)
++	{
++		if ($store instanceof Mage_Core_Model_Store) {
++			$store = array($store->getId());
++		}
++
++		$this->getSelect()->join(
++			array('store_table' => $this->getTable('shopperslideshow/revolution_slides_store')),
++			'main_table.slide_id = store_table.slide_id',
++			array()
++		)
++		->where('store_table.store_id in (?)', ($withAdmin ? array(0, $store) : $store));
++
++		return $this;
++	}
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Shopperrevolution.php b/app/code/local/Queldorei/Shopperslideshow/Model/Shopperrevolution.php
+new file mode 100644
+index 0000000..4dbe5ec
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Shopperrevolution.php
+@@ -0,0 +1,16 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Shopperrevolution extends Mage_Core_Model_Abstract
++{
++    public function _construct()
++    {
++        parent::_construct();
++        $this->_init('shopperslideshow/shopperrevolution');
++    }
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperrevolutionController.php b/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperrevolutionController.php
+new file mode 100644
+index 0000000..6a1f989
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperrevolutionController.php
+@@ -0,0 +1,228 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Adminhtml_ShopperrevolutionController extends Mage_Adminhtml_Controller_Action
++{
++
++    protected function _isAllowed()
++    {
++        return Mage::getSingleton('admin/session')
++            ->isAllowed('queldorei/shopper/shopperslideshow');
++    }
++
++	protected function _initAction() {
++		$this->loadLayout()
++			->_setActiveMenu('queldorei/shopper/shopperslideshow/revolution_items')
++			->_addBreadcrumb(Mage::helper('adminhtml')->__('Revolution Slide Manager'), Mage::helper('adminhtml')->__('Revolution Slide Manager'));
++		
++		return $this;
++	}
++ 
++	public function indexAction() {
++		$this->_initAction()
++			->_addContent($this->getLayout()->createBlock('shopperslideshow/adminhtml_shopperrevolution'))
++			->renderLayout();
++	}
++
++	public function editAction() {
++		$id     = $this->getRequest()->getParam('id');
++		$model  = Mage::getModel('shopperslideshow/shopperrevolution')->load($id);
++
++		if ($model->getId() || $id == 0) {
++
++			$this->_initAction();
++
++			$data = Mage::getSingleton('adminhtml/session')->getFormData(true);
++			if (!empty($data)) {
++				$model->setData($data);
++			}
++
++			Mage::register('shopperrevolution_data', $model);
++
++			$this->getLayout()->getBlock('head')->setCanLoadExtJs(true);
++
++			$this->_addContent($this->getLayout()->createBlock('shopperslideshow/adminhtml_shopperrevolution_edit'))
++				->_addLeft($this->getLayout()->createBlock('shopperslideshow/adminhtml_shopperrevolution_edit_tabs'));
++
++			$this->renderLayout();
++		} else {
++			Mage::getSingleton('adminhtml/session')->addError(Mage::helper('shopperslideshow')->__('Slide does not exist'));
++			$this->_redirect('*/*/');
++		}
++	}
++ 
++	public function newAction() {
++		$this->_forward('edit');
++	}
++ 
++	public function saveAction() {
++		if ($data = $this->getRequest()->getPost()) {
++			
++			if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != null) {
++                $result['file'] = '';
++				try {	
++					/* Starting upload */	
++					$uploader = new Varien_File_Uploader('image');
++					
++					// Any extention would work
++	           		$uploader->setAllowedExtensions(array('jpg','jpeg','gif','png'));
++					$uploader->setAllowRenameFiles(true);
++					
++					// Set the file upload mode 
++					// false -> get the file directly in the specified folder
++					// true -> get the file in the product like folders 
++					//	(file.jpg will go in something like /media/f/i/file.jpg)
++					$uploader->setFilesDispersion(false);
++							
++					// We set media as the upload dir
++					$path = Mage::getBaseDir('media') . DS.'queldorei/shopper/revolution'.DS ;
++					$result = $uploader->save($path, $_FILES['image']['name'] );
++					
++				} catch (Exception $e) {
++					Mage::getSingleton('adminhtml/session')->addError($e->getMessage() . '  '. $path);
++	                Mage::getSingleton('adminhtml/session')->setFormData($data);
++	                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
++	                return;
++		        }
++	        
++		        $data['image'] = 'queldorei/shopper/revolution/'.$result['file'];
++			}
++
++            if(isset($_FILES['thumb']['name']) && $_FILES['thumb']['name'] != null) {
++                $result['file'] = '';
++				try {
++					/* Starting upload */
++					$uploader = new Varien_File_Uploader('small_image');
++	           		$uploader->setAllowedExtensions(array('jpg','jpeg','gif','png'));
++					$uploader->setAllowRenameFiles(true);
++					$uploader->setFilesDispersion(false);
++					$path = Mage::getBaseDir('media') . DS.'queldorei/shopper/revolution'.DS ;
++					$result = $uploader->save($path, $_FILES['thumb']['name'] );
++				} catch (Exception $e) {
++					Mage::getSingleton('adminhtml/session')->addError($e->getMessage() . '  '. $path);
++	                Mage::getSingleton('adminhtml/session')->setFormData($data);
++	                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
++	                return;
++		        }
++
++		        $data['thumb'] = 'queldorei/shopper/revolution/'.$result['file'];
++			}
++	  			
++	  			
++			$model = Mage::getModel('shopperslideshow/shopperrevolution');
++			$model->setData($data)
++				->setId($this->getRequest()->getParam('id'));
++
++			try {
++				if ($model->getCreatedTime == NULL || $model->getUpdateTime() == NULL) {
++					$model->setCreatedTime(now())
++						->setUpdateTime(now());
++				} else {
++					$model->setUpdateTime(now());
++				}	
++				
++				$model->save();
++				Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('shopperslideshow')->__('Slide was successfully saved'));
++				Mage::getSingleton('adminhtml/session')->setFormData(false);
++
++				if ($this->getRequest()->getParam('back')) {
++					$this->_redirect('*/*/edit', array('id' => $model->getId()));
++					return;
++				}
++				$this->_redirect('*/*/');
++				return;
++            } catch (Exception $e) {
++                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
++                Mage::getSingleton('adminhtml/session')->setFormData($data);
++                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
++                return;
++            }
++        }
++        Mage::getSingleton('adminhtml/session')->addError(Mage::helper('shopperslideshow')->__('Unable to find item to save'));
++        $this->_redirect('*/*/');
++	}
++ 
++	public function deleteAction() {
++		if( $this->getRequest()->getParam('id') > 0 ) {
++			try {
++				$model = Mage::getModel('shopperslideshow/shopperrevolution');
++				 
++				$model->setId($this->getRequest()->getParam('id'))
++					->delete();
++					 
++				Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('adminhtml')->__('Slide was successfully deleted'));
++				$this->_redirect('*/*/');
++			} catch (Exception $e) {
++				Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
++				$this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
++			}
++		}
++		$this->_redirect('*/*/');
++	}
++
++    public function massDeleteAction() {
++        $shopperslideshowIds = $this->getRequest()->getParam('shopperrevolution');
++        if(!is_array($shopperslideshowIds)) {
++			Mage::getSingleton('adminhtml/session')->addError(Mage::helper('adminhtml')->__('Please select slide(s)'));
++        } else {
++            try {
++                foreach ($shopperslideshowIds as $shopperslideshowId) {
++                    $shopperslideshow = Mage::getModel('shopperslideshow/shopperrevolution')->load($shopperslideshowId);
++                    $shopperslideshow->delete();
++                }
++                Mage::getSingleton('adminhtml/session')->addSuccess(
++                    Mage::helper('adminhtml')->__(
++                        'Total of %d record(s) were successfully deleted', count($shopperslideshowIds)
++                    )
++                );
++            } catch (Exception $e) {
++                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
++            }
++        }
++        $this->_redirect('*/*/index');
++    }
++	
++    public function massStatusAction()
++    {
++        $shopperslideshowIds = $this->getRequest()->getParam('shopperrevolution');
++        if(!is_array($shopperslideshowIds)) {
++            Mage::getSingleton('adminhtml/session')->addError($this->__('Please select slide(s)'));
++        } else {
++            try {
++                foreach ($shopperslideshowIds as $shopperslideshowId) {
++                    $shopperslideshow = Mage::getSingleton('shopperslideshow/shopperrevolution')
++                        ->load($shopperslideshowId)
++                        ->setStatus($this->getRequest()->getParam('status'))
++                        ->setIsMassupdate(true)
++                        ->save();
++                }
++                $this->_getSession()->addSuccess(
++                    $this->__('Total of %d record(s) were successfully updated', count($shopperslideshowIds))
++                );
++            } catch (Exception $e) {
++                $this->_getSession()->addError($e->getMessage());
++            }
++        }
++        $this->_redirect('*/*/index');
++    }
++  
++    protected function _sendUploadResponse($fileName, $content, $contentType='application/octet-stream')
++    {
++        $response = $this->getResponse();
++        $response->setHeader('HTTP/1.1 200 OK','');
++        $response->setHeader('Pragma', 'public', true);
++        $response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
++        $response->setHeader('Content-Disposition', 'attachment; filename='.$fileName);
++        $response->setHeader('Last-Modified', date('r'));
++        $response->setHeader('Accept-Ranges', 'bytes');
++        $response->setHeader('Content-Length', strlen($content));
++        $response->setHeader('Content-type', $contentType);
++        $response->setBody($content);
++        $response->sendResponse();
++        die;
++    }
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperslideshowController.php b/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperslideshowController.php
+index 2585efd..5e99638 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperslideshowController.php
++++ b/app/code/local/Queldorei/Shopperslideshow/controllers/Adminhtml/ShopperslideshowController.php
+@@ -17,7 +17,7 @@ class Queldorei_Shopperslideshow_Adminhtml_ShopperslideshowController extends Ma
+ 	protected function _initAction() {
+ 		$this->loadLayout()
+ 			->_setActiveMenu('queldorei/shopper/shopperslideshow/items')
+-			->_addBreadcrumb(Mage::helper('adminhtml')->__('Slide Manager'), Mage::helper('adminhtml')->__('Slide Manager'));
++			->_addBreadcrumb(Mage::helper('adminhtml')->__('Flexslider Slide Manager'), Mage::helper('adminhtml')->__('Flexslider Slide Manager'));
+ 		
+ 		return $this;
+ 	}   
+-- 
+1.7.9.msysgit.0
+

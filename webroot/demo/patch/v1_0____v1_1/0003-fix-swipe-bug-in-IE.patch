@@ -1,0 +1,25 @@
+From 9d551d5c65e175a2d9413ff33617fc4827571cb4 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Sat, 6 Oct 2012 02:02:38 +0300
+Subject: [PATCH 3/6] fix swipe bug in IE update docs
+
+---
+ .../design/frontend/default/shopper/layout/local.xml |    2 +-
+ 1 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index 87bfd3f..610049c 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -33,7 +33,7 @@
+ 
+             <action method="addItem"><type>js</type><name>queldorei/html5shiv.js</name><params/><if>lt IE 9</if></action>
+ 			<action method="addJs"><script>queldorei/jquery-1.8.2.min.js</script></action>
+-			<action method="addJs"><script>queldorei/swipe.js</script></action>
++            <action method="addItem"><type>js</type><name>queldorei/swipe.js</name><params/><if>!IE</if></action>
+             <action method="addJs"><script>queldorei/jquery.masonry.min.js</script></action>
+ 			<action method="addJs"><script>queldorei/jquery.ui.totop.js</script></action>
+ 			<action method="addJs"><script>queldorei/jquery.anystretch.min.js</script></action>
+-- 
+1.7.10.msysgit.1
+

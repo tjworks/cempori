@@ -1,0 +1,27 @@
+From e662a525d37a2f36fe255772bdbd6fc9973a778f Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 13:28:06 +0300
+Subject: [PATCH 06/24] fix getLabel function - check function parameter to be
+ product object
+
+---
+ app/code/local/Queldorei/ShopperSettings/Helper/Data.php |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+index 7c9f6e2..599a016 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
++++ b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+@@ -15,6 +15,9 @@ class Queldorei_ShopperSettings_Helper_Data extends Mage_Core_Helper_Abstract
+ 
+     public function getLabel(Mage_Catalog_Model_Product $product)
+     {
++        if ( 'Mage_Catalog_Model_Product' != get_class($product) )
++            return;
++
+         $html = '';
+         if (!Mage::getStoreConfig("shoppersettings/labels/new_label") &&
+             !Mage::getStoreConfig("shoppersettings/labels/sale_label") ) {
+-- 
+1.7.10.msysgit.1
+

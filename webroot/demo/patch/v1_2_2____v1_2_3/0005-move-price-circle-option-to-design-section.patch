@@ -1,0 +1,83 @@
+From d09b78a3dcda7af9e70fbd96d2f3ae1385918064 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 26 Oct 2012 23:52:54 +0300
+Subject: [PATCH 05/11] move price circle option to design section
+
+---
+ .../local/Queldorei/ShopperSettings/etc/config.xml   |    2 +-
+ .../local/Queldorei/ShopperSettings/etc/system.xml   |   18 +++++++++---------
+ .../default/shopper/template/page/html/head.phtml    |    2 +-
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index fa8acf9..e64d64f 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -188,6 +188,7 @@
+ 			</appearance>
+             <design>
+                 <responsive>1</responsive>
++                <price_circle>1</price_circle>
+             </design>
+             <navigation>
+                 <use_navigation>1</use_navigation>
+@@ -245,7 +246,6 @@
+                 <wishlist>1</wishlist>
+                 <cart>1</cart>
+                 <quick_view>1</quick_view>
+-                <price_circle>1</price_circle>
+                 <totop>1</totop>
+             </ajax>
+             <blocks>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 51c68cc..d31157f 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -412,6 +412,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </responsive>
++                        <price_circle translate="label">
++                            <label>Show Price circle on product listing</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>90</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </price_circle>
+                     </fields>
+                 </design>
+ 				<navigation translate="label">
+@@ -774,15 +783,6 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </quick_view>
+-                        <price_circle translate="label">
+-                            <label>Show Price circle on product listing</label>
+-                            <frontend_type>select</frontend_type>
+-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+-                            <sort_order>90</sort_order>
+-                            <show_in_default>1</show_in_default>
+-                            <show_in_website>1</show_in_website>
+-                            <show_in_store>1</show_in_store>
+-                        </price_circle>
+                         <totop translate="label">
+                             <label>Enable Scroll to top button</label>
+                             <frontend_type>select</frontend_type>
+diff --git a/app/design/frontend/default/shopper/template/page/html/head.phtml b/app/design/frontend/default/shopper/template/page/html/head.phtml
+index bd7d855..17a2669 100644
+--- a/app/design/frontend/default/shopper/template/page/html/head.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/head.phtml
+@@ -60,7 +60,7 @@
+ <script type="text/javascript">
+     //<![CDATA[
+     var Shopper = {};
+-    Shopper.price_circle = <?php echo Mage::getStoreConfig('shoppersettings/ajax/price_circle') ?>;
++    Shopper.price_circle = <?php echo Mage::getStoreConfig('shoppersettings/design/price_circle') ?>;
+     Shopper.totop = <?php echo Mage::getStoreConfig('shoppersettings/ajax/totop') ?>;
+     Shopper.responsive = <?php echo Mage::getStoreConfig('shoppersettings/design/responsive') ?>;
+     Shopper.quick_view = <?php echo Mage::getStoreConfig('shoppersettings/ajax/quick_view') ?>;
+-- 
+1.7.10.msysgit.1
+

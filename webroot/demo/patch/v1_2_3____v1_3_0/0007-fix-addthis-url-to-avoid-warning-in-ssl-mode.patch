@@ -1,0 +1,25 @@
+From 942bb7e83d281cedcd58073be453faabdc0c8d16 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 8 Nov 2012 18:35:36 +0200
+Subject: [PATCH 07/25] fix addthis url to avoid warning in ssl mode
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/cms.xml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+index e776148..af4c8a4 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/cms.xml
+@@ -294,7 +294,7 @@
+ <a class="addthis_button_compact"></a>
+ <a class="addthis_counter addthis_bubble_style"></a>
+ </div>
+-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4f574ddc5bcdccbc"></script>
++<script type="text/javascript" src="//s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4f574ddc5bcdccbc"></script>
+ <!-- AddThis Button END -->
+                         ]]></content>
+                 <is_active>1</is_active>
+-- 
+1.7.10.msysgit.1
+

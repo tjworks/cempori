@@ -1,0 +1,61 @@
+From 89be6c6bdba12bc9c530ce63d4a571e594a42a37 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 25 Dec 2012 12:24:14 +0200
+Subject: [PATCH 15/34] add option to change slideshow timeline color
+
+---
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    9 +++++++++
+ skin/frontend/default/shopper/css/options.css.php  |    4 ++++
+ 3 files changed, 14 insertions(+), 0 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 0efcc00..64a1a3d 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -187,6 +187,7 @@
+                 <price_circle_color></price_circle_color>
+ 
+                 <login_bg>login_bg.jpg</login_bg>
++                <timeline>#322c29</timeline>
+ 			</appearance>
+             <design>
+                 <responsive>1</responsive>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index f76ce8d..981ae9a 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -413,6 +413,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </login_bg>
++                        <timeline translate="label comment">
++                            <label>Timeline Color: </label>
++                            <frontend_type>text</frontend_type>
++                            <frontend_model>shoppersettings/adminhtml_system_config_form_field_color</frontend_model>
++                            <sort_order>310</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </timeline>
+ 
+ 					</fields>
+ 				</appearance>
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index f013e1c..30ec8dc 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -281,6 +281,10 @@ footer a:hover, footer ul.links li a:hover {color:<?php echo $config['appearance
+ .products-grid .hover .price-box {background-color:<?php echo $config['appearance']['price_circle_color']; ?>}
+ <?php endif; ?>
+ 
++<?php if ( !empty($config['appearance']['timeline']) ) : ?>
++#slide-timeline {background-color:<?php echo $config['appearance']['timeline']; ?>}
++<?php endif; ?>
++
+ button.invert span, button.btn-continue span, .cart-shipping button span, .cart-coupon button span {background-color:#393431;}
+ #queldoreiNav > li > a:hover, #queldoreiNav > li.active > a, #queldoreiNav > li.over > a,
+ #nav > li > a:hover, #nav > li.active > a, #nav > li.over > a {color:#373230}
+-- 
+1.7.9.msysgit.0
+

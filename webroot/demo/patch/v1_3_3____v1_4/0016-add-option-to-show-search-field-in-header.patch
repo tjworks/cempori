@@ -1,0 +1,179 @@
+From 615304540ada850c81ce99adc2386b4736d57386 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Tue, 25 Dec 2012 16:15:24 +0200
+Subject: [PATCH 16/34] add option to show search field in header
+
+---
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |    9 +++++
+ .../shopper/template/catalogsearch/form.mini.phtml |   32 ++++++++++++++++----
+ .../shopper/template/page/html/header.phtml        |    8 ++++-
+ skin/frontend/default/shopper/css/local.css        |    6 ++++
+ skin/frontend/default/shopper/css/responsive.css   |    5 +++
+ 6 files changed, 54 insertions(+), 7 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 64a1a3d..8a085c0 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -194,6 +194,7 @@
+                 <price_circle>1</price_circle>
+                 <fixed_header>1</fixed_header>
+                 <top_compare>1</top_compare>
++                <search_field>0</search_field>
+             </design>
+             <navigation>
+                 <use_navigation>1</use_navigation>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 981ae9a..f655ef3 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -470,6 +470,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </top_compare>
++                        <search_field translate="label">
++                            <label>Show search field instead of icon in header</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>110</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </search_field>
+                     </fields>
+                 </design>
+ 				<navigation translate="label">
+diff --git a/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml b/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
+index 916740a..c85f51e 100644
+--- a/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
++++ b/app/design/frontend/default/shopper/template/catalogsearch/form.mini.phtml
+@@ -23,7 +23,9 @@
+  * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
+  * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+  */
+-?>
++$config = Mage::getStoreConfig('shoppersettings', Mage::app()->getStore()->getId());
++if (isset($config['design']['search_field']) && $config['design']['search_field'] == 0) :
++	?>
+ <div class="search-top-container">
+     <div class="search-top"></div>
+     <div class="search-form">
+@@ -31,16 +33,34 @@
+         <div class="search-top-title"><span class="icon"></span><?php echo $this->__('Search'); ?></div>
+         <form id="search_mini_form" action="<?php echo $this->helper('catalogsearch')->getResultUrl() ?>" method="get">
+             <div class="form-search">
+-                <input id="search" type="text" name="<?php echo $this->helper('catalogsearch')->getQueryParamName() ?>" value="<?php echo $this->helper('catalogsearch')->getEscapedQueryText() ?>" class="input-text" />
+-                <button type="submit" title="<?php echo $this->__('Search') ?>" ></button>
++                <input id="search" type="text" name="<?php echo $this->helper('catalogsearch')->getQueryParamName() ?>"
++                       value="<?php echo $this->helper('catalogsearch')->getEscapedQueryText() ?>" class="input-text"/>
++                <button type="submit" title="<?php echo $this->__('Search') ?>"></button>
+             </div>
+             <div id="search_autocomplete" class="search-autocomplete"></div>
+             <script type="text/javascript">
+-            //<![CDATA[
++                //<![CDATA[
+                 var searchForm = new Varien.searchForm('search_mini_form', 'search', '<?php echo $this->__('Search entire store here...') ?>');
+                 searchForm.initAutocomplete('<?php echo $this->helper('catalogsearch')->getSuggestUrl() ?>', 'search_autocomplete');
+-            //]]>
++                //]]>
+             </script>
+         </form>
+     </div>
+-</div>
+\ No newline at end of file
++</div>
++<?php else : ?>
++<div class="search-top-container">
++    <form id="search_mini_form" action="<?php echo $this->helper('catalogsearch')->getResultUrl() ?>" method="get">
++        <div class="form-search">
++            <input id="search" type="text" name="<?php echo $this->helper('catalogsearch')->getQueryParamName() ?>"
++                   value="<?php echo $this->helper('catalogsearch')->getEscapedQueryText() ?>" class="input-text"/>
++            <button type="submit" title="<?php echo $this->__('Search') ?>"></button>
++        </div>
++        <div id="search_autocomplete" class="search-autocomplete"></div>
++        <script type="text/javascript">
++            //<![CDATA[
++            var searchForm = new Varien.searchForm('search_mini_form', 'search', '<?php echo $this->__('Search entire store here...') ?>');
++            searchForm.initAutocomplete('<?php echo $this->helper('catalogsearch')->getSuggestUrl() ?>', 'search_autocomplete');
++            //]]>
++        </script>
++    </form>
++<?php endif; ?>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/page/html/header.phtml b/app/design/frontend/default/shopper/template/page/html/header.phtml
+index 3082cf9..10764a9 100644
+--- a/app/design/frontend/default/shopper/template/page/html/header.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/header.phtml
+@@ -26,6 +26,12 @@
+ /**
+  * @var Mage_Page_Block_Html_Header $this
+  */
++$config = Mage::getStoreConfig('shoppersettings', Mage::app()->getStore()->getId());
++$hdr_style = '';
++if (isset($config['design']['search_field']) && $config['design']['search_field'] == 1) {
++	$hdr_style = 'search-field';
++}
++
+ ?>
+ 
+ <!-- HEADER BOF -->
+@@ -41,7 +47,7 @@
+             </div>
+         </div>
+     </div>
+-    <div class="header-wrapper">
++    <div class="header-wrapper <?php echo $hdr_style?>">
+         <header>
+             <div class="row clearfix">
+                 <div class="grid_12">
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 89383eb..bfbe95e 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -405,6 +405,10 @@ header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 46px;}
+ .search-autocomplete ul li.even{background:#e7e7e7;}
+ .search-autocomplete ul li.last{}
+ .search-autocomplete ul li:hover{background:#ddd;}
++
++.search-field {}
++.search-field #search_mini_form .form-search { margin: 5px 12px 0 0; }
++.search-field #search_mini_form .form-search button {display:block; position:absolute; width:23px; height:29px; margin:-29px 0 0 216px; background:transparent url('../images/search_icon.png') 0 0 no-repeat; border:0; }
+ /********** < Search form */
+ 
+ /* top compare block*/
+@@ -498,6 +502,7 @@ nav .nav-top-title.active div.icon span, .nav-container .nav-top-title.active di
+ 
+ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-align:middle;}
+ #queldoreiNav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
++.search-field #queldoreiNav {width:520px}
+ 
+ /* All Levels */
+ #queldoreiNav li { text-align:left; position: static; }
+@@ -567,6 +572,7 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
+ 
+ 
+ #nav { width:750px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
++.search-field #nav {width:520px}
+ 
+ /* All Levels */
+ #nav li { text-align:left; position: static; }
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index b504b92..265dcba 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -27,6 +27,11 @@
+     .space_11 { margin-left:896px; }
+ 
+     #queldoreiNav, #nav { width:510px; }
++    .search-field #search {width:184px}
++    .search-field #search_mini_form .form-search button { margin:-29px 0 0 176px; }
++    .search-field #queldoreiNav, .search-field #nav { width:320px; }
++
++
+     .homepage-banners a .content{margin:18px;}
+     .col1-layout .products-grid { width:900px; margin:0;}
+     .home-right {margin-right:30px;}
+-- 
+1.7.9.msysgit.0
+

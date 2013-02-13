@@ -1,0 +1,42 @@
+From eafc6d9ab1f57750c34c089e7f026aea8b7b2ac5 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 5 Nov 2012 19:46:53 +0200
+Subject: [PATCH 02/25] fix cart icon alignment in FF
+
+---
+ .../frontend/default/shopper/template/checkout/cart/cart-top.phtml |    2 +-
+ skin/frontend/default/shopper/css/local.css                        |    4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+index 337452c..d106f3b 100644
+--- a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
++++ b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+@@ -39,7 +39,7 @@
+     </div>
+     <div class="details">
+         <div class="details-border"></div>
+-        <div class="cart-top-title"><a href="<?php echo $this->getUrl('checkout/cart') ?>"><span class="icon"></span><?php echo $this->__('Shopping cart') . ' - ' . $_cartQty .' '. $this->__('item(s)'); ?></a></div>
++        <div class="cart-top-title"><a href="<?php echo $this->getUrl('checkout/cart') ?>" class="clearfix"><span class="icon"></span><?php echo $this->__('Shopping cart') . ' - ' . $_cartQty .' '. $this->__('item(s)'); ?></a></div>
+         <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_cart_promotion')->toHtml() ?>
+         <?php $_items = $this->getRecentItems() ?>
+         <?php if(count($_items)): ?>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index f9e0c3c..a1fafd5 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -339,9 +339,9 @@ header.fixed .cart-top-container {margin-top:13px;}
+     -webkit-border-radius:2px; -moz-border-radius:2px; border-radius:2px; }
+ .cart-top-container .details-border{background:#97d2c9; height:4px; width:254px; padding:0 16px; margin:-16px 0 16px -16px; border-top-left-radius:2px; border-top-right-radius:2px; -moz-border-top-left-radius:2px; -moz-border-top-right-radius:2px; -webkit-border-top-left-radius:2px; -webkit-border-top-right-radius:2px; }
+ .cart-top-container .details-border:before{content:""; position:absolute; border-color: transparent transparent #97d2c9 transparent; border-style: solid; border-width:5px; height:0; width:0; top:-9px; right:52px;}
+-.cart-top-container .details .cart-top-title{font-family:'Myriad Pro', sans-serif; font-size:16px; line-height:38px; text-align:left; margin:0 0 0 5px; display:none; }
++.cart-top-container .details .cart-top-title{font-family:'Myriad Pro', sans-serif; font-size:16px; line-height:38px; text-align:left; margin:0 0 10px 5px; display:none; }
+ .cart-top-container .details .cart-top-title a{display:block; vertical-align:top;}
+-.cart-top-container .details .cart-top-title a span.icon {display:inline-block; background:#97d2c9 url('../images/icon_cart.png') 50% 50% no-repeat; width:38px; height:38px; margin:0 10px 0 0; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; }
++.cart-top-container .details .cart-top-title a span.icon {display:block; float:left; background:#97d2c9 url('../images/icon_cart.png') 50% 50% no-repeat; width:38px; height:38px; margin:0 10px 0 0; -webkit-border-radius: 100%; -moz-border-radius: 100%; border-radius: 100%; }
+ .cart-top-container .details .cart-top-title a:hover span.icon {background-color:#322c29; text-decoration:none; }
+ .cart-top-container .details .text-recently{font-size:11px;}
+ .cart-top-container .details a{color:#7b7b7b; }
+-- 
+1.7.10.msysgit.1
+

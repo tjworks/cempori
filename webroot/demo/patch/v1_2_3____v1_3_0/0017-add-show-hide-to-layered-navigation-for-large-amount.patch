@@ -1,0 +1,99 @@
+From ec186a1d3c169bbec58720e8ac94985971a349fc Mon Sep 17 00:00:00 2001
+From: altairus <mail@queldorei.com>
+Date: Mon, 12 Nov 2012 22:26:44 +0200
+Subject: [PATCH 17/25] add show/hide to layered navigation for large amount
+ of options
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/config.xml       |    1 +
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml       |    9 +++++++++
+ .../default/shopper/template/catalog/layer/view.phtml         |    2 +-
+ .../frontend/default/shopper/template/page/html/head.phtml    |    1 +
+ skin/frontend/default/shopper/js/script.js                    |    6 +++---
+ 5 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 8a78da8..0cd2876 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -201,6 +201,7 @@
+             </navigation>
+ 			<catalog>
+                 <categories_filter>0</categories_filter>
++                <shopby_num>5</shopby_num>
+                 <grid_columns_2col>3</grid_columns_2col>
+                 <grid_columns_1col>4</grid_columns_1col>
+                 <bestsellers></bestsellers>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 44c16b7..5d9f7c8 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -518,6 +518,15 @@
+ 							<show_in_website>1</show_in_website>
+ 							<show_in_store>1</show_in_store>
+ 						</categories_filter>
++                        <shopby_num translate="label comment">
++							<label>Show number of options in layered navigation sideblock: </label>
++                            <comment>Will hide more than that number and add 'more' link</comment>
++							<frontend_type>text</frontend_type>
++							<sort_order>14</sort_order>
++							<show_in_default>1</show_in_default>
++							<show_in_website>1</show_in_website>
++							<show_in_store>1</show_in_store>
++						</shopby_num>
+                         <grid_columns_2col translate="label comment">
+                             <label>Number of columns in grid mode ( 2 columns layout ) : </label>
+                             <comment>
+diff --git a/app/design/frontend/default/shopper/template/catalog/layer/view.phtml b/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
+index c44cb39..d9ce731 100644
+--- a/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/layer/view.phtml
+@@ -40,7 +40,7 @@ $_filters = $this->getFilters();
+ foreach ($_filters as $_filter) {
+     if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue;
+     if ($_filter->getItemsCount()) {
+-        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'</dd>';
++        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'<a href="#" class="shopby_more">'.$this->__('more...').'</a></dd>';
+     }
+ }
+ ?>
+diff --git a/app/design/frontend/default/shopper/template/page/html/head.phtml b/app/design/frontend/default/shopper/template/page/html/head.phtml
+index b96bc02..2363fa6 100644
+--- a/app/design/frontend/default/shopper/template/page/html/head.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/head.phtml
+@@ -63,6 +63,7 @@
+     Shopper.totop = <?php echo Mage::getStoreConfig('shoppersettings/ajax/totop') ?>;
+     Shopper.responsive = <?php echo Mage::getStoreConfig('shoppersettings/design/responsive') ?>;
+     Shopper.quick_view = <?php echo Mage::getStoreConfig('shoppersettings/ajax/quick_view') ?>;
++    Shopper.shopby_num = '<?php echo Mage::getStoreConfig('shoppersettings/catalog/shopby_num') ?>';
+     Shopper.anystretch_bg = '';
+     <?php
+     $bg_image = '';
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 5f21953..ed63ad0 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -628,17 +628,17 @@ jQuery(function($){
+     });
+ 
+     //show more in layered nav
+-    if ( $('.block-layered-nav').length ) {
++    if ( $('.block-layered-nav').length && Shopper.shopby_num ) {
+         $('.block-layered-nav ol').each(function(i,v){
+             //console.log($('li', this).length);
+             if ( $('li', this).length > 5 ) {
+                 var that = this;
+-                $('li:gt(4)', this).hide();
++                $('li:gt('+Shopper.shopby_num+')', this).hide();
+                 $('.col-left').masonry('reload');
+                 $(this).next()
+                     .css('display', 'block')
+                     .click(function(){
+-                        $('li:gt(4)', that).toggle();
++                        $('li:gt('+Shopper.shopby_num+')', that).toggle();
+                         $('.col-left').masonry('reload');
+                         return false;
+                     });
+-- 
+1.7.10.msysgit.1
+

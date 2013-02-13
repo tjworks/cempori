@@ -1,0 +1,873 @@
+From 73e0df8a814852b1b65a8d8d046d08f2a099f84e Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Mon, 31 Dec 2012 00:39:59 +0200
+Subject: [PATCH 22/34] add revolution slider
+
+---
+ .../mysql4-upgrade-0.1.0-1.3.0.php                 |    4 +-
+ .../Model/Config/Revolution/Navarrows.php          |   29 ++
+ .../Model/Config/Revolution/Navbar.php             |   33 ++
+ .../Model/Config/Revolution/Navbullets.php         |   37 ++
+ .../Model/Config/Revolution/Onoff.php              |   25 ++
+ .../Model/Config/Revolution/Shadow.php             |   33 ++
+ .../Shopperslideshow/Model/Config/Slider.php       |   25 ++
+ .../Queldorei/Shopperslideshow/etc/config.xml      |   47 +++-
+ .../Queldorei/Shopperslideshow/etc/system.xml      |  349 ++++++++++++++++----
+ .../mysql4-upgrade-0.1.0-1.4.0.php                 |  103 ++++++
+ 10 files changed, 611 insertions(+), 74 deletions(-)
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navarrows.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbar.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbullets.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Onoff.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Shadow.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/Model/Config/Slider.php
+ create mode 100644 app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php b/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
+index 0de8bc6..a8dcf81 100644
+--- a/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
++++ b/app/code/local/Queldorei/ShopperSettings/sql/shoppersettings_setup/mysql4-upgrade-0.1.0-1.3.0.php
+@@ -1,8 +1,8 @@
+ <?php
+ /**
+  * @version   1.0 12.0.2012
+- * @author    Olegnax http://www.olegnax.com <mail@olegnax.com>
+- * @copyright Copyright (C) 2010 - 2012 Olegnax
++ * @author    queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 queldorei
+  */
+ 
+ 
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navarrows.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navarrows.php
+new file mode 100644
+index 0000000..20980f1
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navarrows.php
+@@ -0,0 +1,29 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Revolution_Navarrows
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++        $options[] = array(
++            'value' => 'none',
++            'label' => 'none',
++        );
++	    $options[] = array(
++            'value' => 'nexttobullets',
++            'label' => 'nexttobullets',
++        );
++        $options[] = array(
++            'value' => 'verticalcentered',
++            'label' => 'verticalcentered',
++        );
++
++        return $options;
++    }
++
++}
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbar.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbar.php
+new file mode 100644
+index 0000000..ce647dc
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbar.php
+@@ -0,0 +1,33 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Revolution_Navbar
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++        $options[] = array(
++            'value' => 'none',
++            'label' => 'none',
++        );
++	    $options[] = array(
++            'value' => 'bullet',
++            'label' => 'bullet',
++        );
++        $options[] = array(
++            'value' => 'thumb',
++            'label' => 'thumb',
++        );
++        $options[] = array(
++            'value' => 'both',
++            'label' => 'both',
++        );
++
++        return $options;
++    }
++
++}
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbullets.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbullets.php
+new file mode 100644
+index 0000000..4575357
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Navbullets.php
+@@ -0,0 +1,37 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Revolution_Navbullets
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++        $options[] = array(
++            'value' => 'round',
++            'label' => 'round',
++        );
++	    $options[] = array(
++            'value' => 'navbar',
++            'label' => 'navbar',
++        );
++        $options[] = array(
++            'value' => 'round-old',
++            'label' => 'round-old',
++        );
++        $options[] = array(
++            'value' => 'square-old',
++            'label' => 'square-old',
++        );
++        $options[] = array(
++            'value' => 'navbar-old',
++            'label' => 'navbar-old',
++        );
++
++        return $options;
++    }
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Onoff.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Onoff.php
+new file mode 100644
+index 0000000..e789bc9
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Onoff.php
+@@ -0,0 +1,25 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Revolution_Onoff
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++	    $options[] = array(
++            'value' => 'on',
++            'label' => 'On',
++        );
++        $options[] = array(
++            'value' => 'off',
++            'label' => 'Off',
++        );
++
++        return $options;
++    }
++
++}
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Shadow.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Shadow.php
+new file mode 100644
+index 0000000..620025e
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Revolution/Shadow.php
+@@ -0,0 +1,33 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Revolution_Shadow
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++        $options[] = array(
++            'value' => '0',
++            'label' => '0',
++        );
++	    $options[] = array(
++            'value' => '1',
++            'label' => '1',
++        );
++        $options[] = array(
++            'value' => '2',
++            'label' => '2',
++        );
++        $options[] = array(
++            'value' => '3',
++            'label' => '3',
++        );
++
++        return $options;
++    }
++
++}
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/Model/Config/Slider.php b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Slider.php
+new file mode 100644
+index 0000000..445c0cd
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/Model/Config/Slider.php
+@@ -0,0 +1,25 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_Shopperslideshow_Model_Config_Slider
++{
++    public function toOptionArray()
++    {
++	    $options = array();
++	    $options[] = array(
++            'value' => 'flexslider',
++            'label' => 'Flexslider',
++        );
++        $options[] = array(
++            'value' => 'revolution',
++            'label' => 'Revolution slider',
++        );
++
++        return $options;
++    }
++
++}
+diff --git a/app/code/local/Queldorei/Shopperslideshow/etc/config.xml b/app/code/local/Queldorei/Shopperslideshow/etc/config.xml
+index 874e6d0..d76796e 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/etc/config.xml
++++ b/app/code/local/Queldorei/Shopperslideshow/etc/config.xml
+@@ -2,7 +2,7 @@
+ <config>
+     <modules>
+         <Queldorei_Shopperslideshow>
+-            <version>0.1.0</version>
++            <version>1.4.0</version>
+         </Queldorei_Shopperslideshow>
+     </modules>
+     <admin>
+@@ -31,10 +31,15 @@
+                                 <sort_order>120</sort_order>
+                                 <children>
+                                     <items translate="title" module="shopperslideshow">
+-                                        <title>Manage Slides</title>
++                                        <title>Flexslider Slides</title>
+                                         <sort_order>0</sort_order>
+                                         <action>shopperslideshow/adminhtml_shopperslideshow</action>
+                                     </items>
++                                    <revolution_items translate="title" module="shopperslideshow">
++                                        <title>Revolution slider Slides</title>
++                                        <sort_order>0</sort_order>
++                                        <action>shopperslideshow/adminhtml_shopperrevolution</action>
++                                    </revolution_items>
+                                     <configuration>
+                                         <title>Configuration</title>
+                                         <sort_order>1</sort_order>
+@@ -75,8 +80,11 @@
+                                             <title>Slideshow</title>
+                                             <children>
+                                                 <items>
+-                                                    <title>Manage Slides</title>
++                                                    <title>Flexslider Slides</title>
+                                                 </items>
++                                                <revolution_items>
++                                                    <title>Revolution slider Slides</title>
++                                                </revolution_items>
+                                                 <configuration>
+                                                     <title>Configuration</title>
+                                                 </configuration>
+@@ -106,6 +114,12 @@
+ 	                <slides_store>
+                         <table>shopper_slides_store</table>
+                     </slides_store>
++                    <revolution_slides>
++                        <table>shopper_revolution_slides</table>
++                    </revolution_slides>
++	                <revolution_slides_store>
++                        <table>shopper_revolution_slides_store</table>
++                    </revolution_slides_store>
+                 </entities>
+             </shopperslideshow_mysql4>
+         </models>
+@@ -145,6 +159,9 @@
+ 			<config>
+                 <enabled>1</enabled>
+                 <show>home</show>
++                <slider>flexslider</slider>
++			</config>
++            <flexslider>
+                 <height></height>
+                 <animation>slide</animation>
+                 <slideshow>true</slideshow>
+@@ -156,7 +173,29 @@
+                 <control_nav>false</control_nav>
+                 <direction_nav>true</direction_nav>
+                 <timeline>true</timeline>
+-			</config>
++            </flexslider>
++            <revolutionslider>
++                <delay>9000</delay>
++                <startheight>400</startheight>
++                <startwidth>960</startwidth>
++                <hideThumbs>10</hideThumbs>
++                <navigationType>none</navigationType>
++                <navigationArrows>verticalcentered</navigationArrows>
++                <navigationStyle>round</navigationStyle>
++                <touchenabled>on</touchenabled>
++                <navOffsetHorizontal>0</navOffsetHorizontal>
++                <navOffsetVertical>20</navOffsetVertical>
++                <shadow>0</shadow>
++                <onHoverStop>on</onHoverStop>
++                <thumbWidth>100</thumbWidth>
++                <thumbHeight>50</thumbHeight>
++                <thumbAmount>5</thumbAmount>
++                <hideCaptionAtLimit></hideCaptionAtLimit>
++                <hideAllCaptionAtLilmit></hideAllCaptionAtLilmit>
++                <hideSliderAtLimit></hideSliderAtLimit>
++                <stopAtSlide>-1</stopAtSlide>
++                <stopAfterLoops>-1</stopAfterLoops>
++            </revolutionslider>
+ 		</shopperslideshow>
+ 	</default>
+ </config>
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/etc/system.xml b/app/code/local/Queldorei/Shopperslideshow/etc/system.xml
+index b283b61..a847806 100644
+--- a/app/code/local/Queldorei/Shopperslideshow/etc/system.xml
++++ b/app/code/local/Queldorei/Shopperslideshow/etc/system.xml
+@@ -28,7 +28,7 @@
+ 							<frontend_type>select</frontend_type>
+                             <source_model>adminhtml/system_config_source_yesno</source_model>
+ 							<comment>Enable/Disable slideshow</comment>
+-							<sort_order>5</sort_order>
++							<sort_order>10</sort_order>
+ 							<show_in_default>1</show_in_default>
+ 							<show_in_store>1</show_in_store>
+ 							<show_in_website>1</show_in_website>
+@@ -38,30 +38,49 @@
+ 							<frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_show</source_model>
+ 							<comment>Select pages to show slideshow</comment>
+-							<sort_order>6</sort_order>
++							<sort_order>20</sort_order>
+ 							<show_in_default>1</show_in_default>
+ 							<show_in_store>1</show_in_store>
+ 							<show_in_website>1</show_in_website>
+ 						</show>
++                        <slider>
++                            <label>Select slider: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_slider</source_model>
++                            <sort_order>30</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </slider>
++					</fields>
++				</config>
++                <flexslider translate="label">
++                    <label>Flexslider Config</label>
++                    <frontend_type>text</frontend_type>
++                    <sort_order>1</sort_order>
++                    <show_in_default>1</show_in_default>
++                    <show_in_website>1</show_in_website>
++                    <show_in_store>1</show_in_store>
++                    <fields>
+                         <height>
+-							<label>Fixed height: </label>
+-							<frontend_type>text</frontend_type>
+-							<comment>Enter height in px. Leave empty to have slideshow height adjusted to largest slide</comment>
++                            <label>Fixed height: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>Enter height in px. Leave empty to have slideshow height adjusted to largest slide</comment>
+                             <sort_order>9</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</height>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </height>
+                         <animation>
+-							<label>Animation: </label>
+-							<frontend_type>select</frontend_type>
+-							<comment>Select your animation type</comment>
++                            <label>Animation: </label>
++                            <frontend_type>select</frontend_type>
++                            <comment>Select your animation type</comment>
+                             <source_model>shopperslideshow/config_effect</source_model>
+-							<sort_order>10</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</animation>
++                            <sort_order>10</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </animation>
+                         <slideshow>
+                             <label>Slideshow: </label>
+                             <frontend_type>select</frontend_type>
+@@ -83,76 +102,270 @@
+                             <show_in_website>1</show_in_website>
+                         </smoothheight>
+                         <animation_loop>
+-							<label>Animation loop: </label>
+-							<frontend_type>select</frontend_type>
++                            <label>Animation loop: </label>
++                            <frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_yesno</source_model>
+-							<comment>Should the animation loop?</comment>
+-							<sort_order>50</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</animation_loop>
++                            <comment>Should the animation loop?</comment>
++                            <sort_order>50</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </animation_loop>
+                         <mousewheel>
+-							<label>Mousewheel: </label>
+-							<frontend_type>select</frontend_type>
++                            <label>Mousewheel: </label>
++                            <frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_yesno</source_model>
+-							<comment>Allows slider navigating via mousewheel</comment>
+-							<sort_order>60</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</mousewheel>
++                            <comment>Allows slider navigating via mousewheel</comment>
++                            <sort_order>60</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </mousewheel>
+                         <slideshow_speed>
+-							<label>Slideshow speed: </label>
+-							<frontend_type>text</frontend_type>
++                            <label>Slideshow speed: </label>
++                            <frontend_type>text</frontend_type>
+                             <comment>Set the speed of the slideshow cycling, in milliseconds</comment>
+-							<sort_order>70</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</slideshow_speed>
++                            <sort_order>70</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </slideshow_speed>
+                         <animation_speed>
+-							<label>Animation speed: </label>
+-							<frontend_type>text</frontend_type>
++                            <label>Animation speed: </label>
++                            <frontend_type>text</frontend_type>
+                             <comment>Set the speed of animations, in milliseconds</comment>
+-							<sort_order>80</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</animation_speed>
++                            <sort_order>80</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </animation_speed>
+                         <control_nav>
+-							<label>Show navigation: </label>
++                            <label>Show navigation: </label>
+                             <frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_yesno</source_model>
+                             <comment>Show navigation for paging control of each slide?</comment>
+-							<sort_order>90</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</control_nav>
++                            <sort_order>90</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </control_nav>
+                         <direction_nav>
+-							<label>Show  previous/next navigation: </label>
++                            <label>Show  previous/next navigation: </label>
+                             <frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_yesno</source_model>
+                             <sort_order>100</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</direction_nav>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </direction_nav>
+                         <timeline>
+-							<label>Show timeline: </label>
++                            <label>Show timeline: </label>
+                             <frontend_type>select</frontend_type>
+                             <source_model>shopperslideshow/config_yesno</source_model>
+                             <sort_order>110</sort_order>
+-							<show_in_default>1</show_in_default>
+-							<show_in_store>1</show_in_store>
+-							<show_in_website>1</show_in_website>
+-						</timeline>
+-					</fields>
+-				</config>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </timeline>
++                    </fields>
++                </flexslider>
++                <revolutionslider>
++                    <label>Revolution slider Config</label>
++                    <frontend_type>text</frontend_type>
++                    <sort_order>10</sort_order>
++                    <show_in_default>1</show_in_default>
++                    <show_in_website>1</show_in_website>
++                    <show_in_store>1</show_in_store>
++                    <fields>
++                        <delay>
++                            <label>Delay: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>The time one slide stays on the screen in Milliseconds (Default: 9000)</comment>
++                            <sort_order>10</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </delay>
++                        <startheight>
++                            <label>Start height: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>Basic Height of the Slider in the desktop resolution in pixel, other screen sizes will be calculated from this (Default: 490)   It should be similiar to the settings of the style sheet.  If you use a fullwidth banner, ti will deinfe the max. Height of the banner by resizing of the browser. The banner wont be higher than this value.</comment>
++                            <sort_order>20</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </startheight>
++                        <startwidth>
++                            <label>Start width: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>Basic Width of the Slider in the desktop resolution in pixel, other screen sizes will be calculated from this (Default: 890)   It should be similiar to the settings of the style sheet.  If you use a fullwidth banner, ti will deinfe the max. Width of the banner by resizing of the browser.</comment>
++                            <sort_order>30</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </startwidth>
++                        <hideThumbs>
++                            <label>Hide thumbs time: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>Time after that the Thumbs will be hidden(Default: 200)</comment>
++                            <sort_order>40</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </hideThumbs>
++                        <navigationType>
++                            <label>Navigation bar type: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_navbar</source_model>
++                            <comment>Display type of the navigation bar (Default:"none").
++                                ** In Fullwidth version thumbs wont be displayed  if navigation offset set to shwop thumbs outside of the container ! Thumbs must be showen in the container!</comment>
++                            <sort_order>50</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </navigationType>
++                        <navigationArrows>
++                            <label>position of the Navigation Arrows: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_navarrows</source_model>
++                            <comment>Display position of the Navigation Arrows (Default: "nexttobullets")</comment>
++                            <sort_order>60</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </navigationArrows>
++                        <navigationStyle>
++                            <label>Navigation bullets: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_navbullets</source_model>
++                            <comment>Look of the navigation bullets (Default: "round")
++                                ** If you choose navbar-old, we recommend to choose Navigation Arrows to nexttobullets</comment>
++                            <sort_order>70</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </navigationStyle>
++                        <touchenabled>
++                            <label>Enable Swipe Function on touch devices: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_onoff</source_model>
++                            <sort_order>80</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </touchenabled>
++                        <navOffsetHorizontal>
++                            <label>Navigation offset (horizontal): </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>The Bar is centered but could be moved this pixel count left(e.g. -10) or right (Default: 0)  ** By resizing the banner, it will be always centered !!</comment>
++                            <sort_order>90</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </navOffsetHorizontal>
++                        <navOffsetVertical>
++                            <label>Navigation offset (vertical): </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>The Bar is bound to the bottom but could be moved this pixel count up (e. g. -20) or down (Default: 20)</comment>
++                            <sort_order>100</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </navOffsetVertical>
++                        <shadow>
++                            <label>The Shadow display underneath the banner: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_shadow</source_model>
++                            <sort_order>110</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </shadow>
++                        <onHoverStop>
++                            <label>Stop the Timer when hovering the slider: </label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shopperslideshow/config_revolution_onoff</source_model>
++                            <sort_order>120</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </onHoverStop>
++                        <thumbWidth>
++                            <label>the basic Width of one Thumbnail: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment> (only if thumb is selected. Default:100)</comment>
++                            <sort_order>130</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </thumbWidth>
++                        <thumbHeight>
++                            <label>the basic Height of one Thumbnail: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment> (only if thumb is selected. Default:50)</comment>
++                            <sort_order>140</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </thumbHeight>
++                        <thumbAmount>
++                            <label>the amount of the Thumbs visible same time: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment> (only if thumb is selected)
++                                ** All Thumbs will be hidden in smallest Responsive Level, and in smaller level default size is reseted to 60x30px. Can be modificated in the settings.css file)</comment>
++                            <sort_order>150</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </thumbAmount>
++                        <hideCaptionAtLimit>
++                            <label>Hide caption limit: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>It Defines if a caption should be shown under a Width Limit ( Based on The Width of Banner ! ) You need to define the captions which should be shown seperately with data-captionhidden="on/off"</comment>
++                            <sort_order>160</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </hideCaptionAtLimit>
++                        <hideAllCaptionAtLilmit>
++                            <label>Hide all caption limit: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>Hide all The Captions if Width of Browser is less then this value</comment>
++                            <sort_order>170</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </hideAllCaptionAtLilmit>
++                        <hideSliderAtLimit>
++                            <label>Hide slider limit: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>under this Limit the Slider is hidden and the timer is stopped</comment>
++                            <sort_order>180</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </hideSliderAtLimit>
++                        <stopAtSlide>
++                            <label>Stop at selected Slide Number: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>-1 or 1 to 999. Stop at selected Slide Number. If set to -1 it will loop without stopping. Only available if stopAfterLoops is not equal -1 !</comment>
++                            <sort_order>190</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </stopAtSlide>
++                        <stopAfterLoops>
++                            <label>Stop at selected Slide Number after slide looped "x" time: </label>
++                            <frontend_type>text</frontend_type>
++                            <comment>-1 or 0 to 999. Stop at selected Slide Number (stopAtSlide) after slide looped "x" time, where x this Number. If set to -1 it will loop without stopping. Only available if stopAtSlide not equal -1 !</comment>
++                            <sort_order>200</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_store>1</show_in_store>
++                            <show_in_website>1</show_in_website>
++                        </stopAfterLoops>
++                    </fields>
++                </revolutionslider>
+ 			</groups>
+ 		</shopperslideshow>
+ 	</sections>
+-</config>
+-
+-
++</config>
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php b/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
+new file mode 100644
+index 0000000..d145a7e
+--- /dev/null
++++ b/app/code/local/Queldorei/Shopperslideshow/sql/shopperslideshow_setup/mysql4-upgrade-0.1.0-1.4.0.php
+@@ -0,0 +1,103 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 queldorei
++ */
++
++$installer = $this;
++/* @var $installer Mage_Catalog_Model_Resource_Eav_Mysql4_Setup */
++$installer->startSetup();
++/* flexslider */
++$installer->setConfigData('shopperslideshow/config/slider', 'flexslider');
++$installer->setConfigData('shopperslideshow/flexslider/height', '');
++$installer->setConfigData('shopperslideshow/flexslider/animation', 'slide');
++$installer->setConfigData('shopperslideshow/flexslider/slideshow', 'true');
++$installer->setConfigData('shopperslideshow/flexslider/animation_loop', 'true');
++$installer->setConfigData('shopperslideshow/flexslider/mousewheel', 'false');
++$installer->setConfigData('shopperslideshow/flexslider/smoothheight', 'false');
++$installer->setConfigData('shopperslideshow/flexslider/slideshow_speed', '7000');
++$installer->setConfigData('shopperslideshow/flexslider/animation_speed', '400');
++$installer->setConfigData('shopperslideshow/flexslider/control_nav', 'false');
++$installer->setConfigData('shopperslideshow/flexslider/direction_nav', 'true');
++$installer->setConfigData('shopperslideshow/flexslider/timeline', 'true');
++/* revolution slider */
++$installer->setConfigData('shopperslideshow/revolutionslider/delay', '9000');
++$installer->setConfigData('shopperslideshow/revolutionslider/startheight', '400');
++$installer->setConfigData('shopperslideshow/revolutionslider/startwidth', '960');
++$installer->setConfigData('shopperslideshow/revolutionslider/hideThumbs', '10');
++$installer->setConfigData('shopperslideshow/revolutionslider/navigationType', 'none');
++$installer->setConfigData('shopperslideshow/revolutionslider/navigationArrows', 'verticalcentered');
++$installer->setConfigData('shopperslideshow/revolutionslider/navigationStyle', 'round');
++$installer->setConfigData('shopperslideshow/revolutionslider/touchenabled', 'on');
++$installer->setConfigData('shopperslideshow/revolutionslider/navOffsetHorizontal', '0');
++$installer->setConfigData('shopperslideshow/revolutionslider/navOffsetVertical', '20');
++$installer->setConfigData('shopperslideshow/revolutionslider/shadow', '0');
++$installer->setConfigData('shopperslideshow/revolutionslider/onHoverStop', 'on');
++$installer->setConfigData('shopperslideshow/revolutionslider/thumbWidth', '100');
++$installer->setConfigData('shopperslideshow/revolutionslider/thumbHeight', '50');
++$installer->setConfigData('shopperslideshow/revolutionslider/thumbAmount', '5');
++$installer->setConfigData('shopperslideshow/revolutionslider/hideCaptionAtLimit', '');
++$installer->setConfigData('shopperslideshow/revolutionslider/hideAllCaptionAtLilmit', '');
++$installer->setConfigData('shopperslideshow/revolutionslider/hideSliderAtLimit', '');
++$installer->setConfigData('shopperslideshow/revolutionslider/stopAtSlide', '-1');
++$installer->setConfigData('shopperslideshow/revolutionslider/stopAfterLoops', '-1');
++
++$installer->run("
++
++DROP TABLE IF EXISTS `{$this->getTable('shopperslideshow/revolution_slides')}`;
++CREATE TABLE `{$this->getTable('shopperslideshow/revolution_slides')}` (
++  `slide_id` int(11) unsigned NOT NULL auto_increment,
++  `transition` text NOT NULL default '',
++  `masterspeed` text NOT NULL default '',
++  `slotamount` text NOT NULL default '',
++  `link` varchar(255) NOT NULL default '',
++  `thumb` varchar(8) NOT NULL default '',
++  `image` varchar(255) NOT NULL default '',
++  `text` text NOT NULL default '',
++  `status` smallint(6) NOT NULL default '0',
++  `sort_order` smallint(6) NOT NULL default '0',
++  `created_time` datetime NULL,
++  `update_time` datetime NULL,
++  PRIMARY KEY (`slide_id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++");
++
++/**
++ * Drop 'slides_store' table
++ */
++$conn = $installer->getConnection();
++$conn->dropTable($installer->getTable('shopperslideshow/revolution_slides_store'));
++
++/**
++ * Create table for stores
++ */
++$table = $installer->getConnection()
++    ->newTable($installer->getTable('shopperslideshow/revolution_slides_store'))
++    ->addColumn('slide_id', Varien_Db_Ddl_Table::TYPE_SMALLINT, null, array(
++    'nullable'  => false,
++    'primary'   => true,
++), 'Slide ID')
++    ->addColumn('store_id', Varien_Db_Ddl_Table::TYPE_SMALLINT, null, array(
++    'unsigned'  => true,
++    'nullable'  => false,
++    'primary'   => true,
++), 'Store ID')
++    ->addIndex($installer->getIdxName('shopperslideshow/revolution_slides_store', array('store_id')),
++    array('store_id'))
++    ->addForeignKey($installer->getFkName('shopperslideshow/revolution_slides_store', 'slide_id', 'shopperslideshow/revolution_slides', 'slide_id'),
++    'slide_id', $installer->getTable('shopperslideshow/revolution_slides'), 'slide_id',
++    Varien_Db_Ddl_Table::ACTION_CASCADE, Varien_Db_Ddl_Table::ACTION_CASCADE)
++    ->addForeignKey($installer->getFkName('shopperslideshow/revolution_slides_store', 'store_id', 'core/store', 'store_id'),
++    'store_id', $installer->getTable('core/store'), 'store_id',
++    Varien_Db_Ddl_Table::ACTION_CASCADE, Varien_Db_Ddl_Table::ACTION_CASCADE)
++    ->setComment('Slide To Store Linkage Table');
++$installer->getConnection()->createTable($table);
++
++/**
++ * Assign 'all store views' to existing slides
++ */
++$installer->run("INSERT INTO {$this->getTable('shopperslideshow/revolution_slides_store')} (`slide_id`, `store_id`) SELECT `slide_id`, 0 FROM {$this->getTable('shopperslideshow/revolution_slides')};");
++
++$installer->endSetup();
+\ No newline at end of file
+-- 
+1.7.9.msysgit.0
+

@@ -1,0 +1,38 @@
+From 63dc2f6ddb5b940fc57835ce0ba839c5eb08b67c Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Wed, 12 Dec 2012 18:18:26 +0200
+Subject: [PATCH 02/34] fix js regexp for retina images
+
+---
+ skin/frontend/default/shopper/js/script.js |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 9c9b5eb..8af9709 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -14,7 +14,7 @@ jQuery(window).on("load", function() {
+                 elements[key]
+                     .width(elements[key].width())
+                     .height(elements[key].height())
+-                    .attr('src', elements[key].attr('src').replace(".gif","@2x.png"));
++                    .attr('src', elements[key].attr('src').replace(/^(.*)\.gif$/,"$1@2x.png"));
+             }
+         }
+         //product images
+@@ -24,10 +24,11 @@ jQuery(window).on("load", function() {
+         //custom block images.
+         jQuery('img.retina').each(function(){
+             var file_ext = jQuery(this).attr('src').split('.').pop();
++            var pattern = new RegExp("^(.*)\."+file_ext+"+$");
+             jQuery(this)
+                 .width(jQuery(this).width())
+                 .height(jQuery(this).height())
+-                .attr('src',jQuery(this).attr('src').replace("."+file_ext,"_2x."+file_ext));
++                .attr('src',jQuery(this).attr('src').replace(pattern,"$1_2x."+file_ext));
+         });
+     }
+     //ipad and iphone fix
+-- 
+1.7.9.msysgit.0
+

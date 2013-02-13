@@ -1,0 +1,28 @@
+From bd9552f001c71afe321f3e5f033b3e71e372f6fe Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 17 Dec 2012 16:40:58 +0200
+Subject: [PATCH 05/34] remove breadcrumbs on cms pages
+
+---
+ .../frontend/default/shopper/layout/local.xml      |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index e029f6b..8a8d346 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -250,4 +250,10 @@
+         </reference>
+     </catalog_product_compare_index>
+ 
++    <cms_page>
++        <reference name="root">
++            <remove name="breadcrumbs" />
++        </reference>
++    </cms_page>
++
+ </layout>
+\ No newline at end of file
+-- 
+1.7.9.msysgit.0
+

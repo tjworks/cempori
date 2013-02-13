@@ -1,0 +1,76 @@
+From 49a68896020f373abb469a173295c6579100eb42 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 19:08:24 +0300
+Subject: [PATCH 11/24] add option to hide second price after product options
+ on configurable product page
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    9 +++++++++
+ app/design/frontend/default/shopper/layout/local.xml    |    4 ++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 8034e52..f4c0f57 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -212,6 +212,7 @@
+                 <number_upsell>6</number_upsell>
+                 <replace_upsell>only</replace_upsell>
+                 <sku>1</sku>
++                <clone_price>1</clone_price>
+             </labels>
+             <social>
+                 <twitter>queldoreithemes</twitter>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index df8f90b..237ccef 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -809,6 +809,15 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </sku>
++                        <clone_price translate="label">
++                            <label>Hide second price after product options on configurable product page</label>
++                            <frontend_type>select</frontend_type>
++                            <source_model>adminhtml/system_config_source_yesno</source_model>
++                            <sort_order>80</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </clone_price>
+                     </fields>
+                 </labels>
+ 
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index 8a33eab..28a5ce5 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -181,7 +181,7 @@
+ 
+ 		<reference name="product.info">
+                 <action method="insert"><blockName>global_messages</blockName></action>
+-                <action method="unsetChild" ><name>additional</name></action>
++                <action method="unsetChild"><name>additional</name></action>
+                 <block type="cms/block" name="queldorei_product_additional">
+                     <action method="setBlockId"><block_id>shopper_product_additional</block_id></action>
+                 </block>
+@@ -196,7 +196,6 @@
+ 
+ 		<reference name="content">
+             <block type="catalog/product_list_related" name="content.product.related" as="content_related" template="catalog/product/list/related_content.phtml"/>
+-
+         </reference>
+ 
+ 		<reference name="product.info.additional">
+@@ -212,6 +211,7 @@
+ 
+         <reference name="product.info.options.wrapper.bottom">
+             <action method="unsetChild"><name>product.info.addto</name></action>
++            <action ifconfig="shoppersettings/labels/clone_price" method="unsetChild"><name>prices</name></action>
+         </reference>
+ 
+         <reference name="product.info.upsell">
+-- 
+1.7.10.msysgit.1
+

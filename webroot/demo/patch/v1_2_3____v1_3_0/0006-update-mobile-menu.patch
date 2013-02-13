@@ -1,0 +1,377 @@
+From 6aeda7179514320a17f04a528cb203bcebd00ebf Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Wed, 7 Nov 2012 19:54:45 +0200
+Subject: [PATCH 06/25] update mobile menu add login form for non persistant
+ mode update quick view layout/ajax.xml fix small css
+ bugs
+
+---
+ .../frontend/default/shopper/layout/ajax.xml       |    4 +-
+ .../shopper/template/catalog/navigation/top.phtml  |    5 +-
+ .../shopper/template/customer/form/login.phtml     |  106 ++++++++++++++++++++
+ .../shopper/template/page/html/topmenu.phtml       |    5 +-
+ .../template/queldorei/navigation/top.phtml        |    5 +-
+ .../queldorei/priceslider/slider_layered_nav.phtml |    4 +-
+ skin/frontend/default/shopper/css/animation.css    |    5 +-
+ skin/frontend/default/shopper/css/local.css        |   14 ++-
+ skin/frontend/default/shopper/css/options.css.php  |   12 ++-
+ skin/frontend/default/shopper/css/responsive.css   |   28 +++++-
+ skin/frontend/default/shopper/js/script.js         |    6 ++
+ 11 files changed, 170 insertions(+), 24 deletions(-)
+ create mode 100644 app/design/frontend/default/shopper/template/customer/form/login.phtml
+
+diff --git a/app/design/frontend/default/shopper/layout/ajax.xml b/app/design/frontend/default/shopper/layout/ajax.xml
+index dfa625d..f597190 100644
+--- a/app/design/frontend/default/shopper/layout/ajax.xml
++++ b/app/design/frontend/default/shopper/layout/ajax.xml
+@@ -47,8 +47,10 @@
+     </catalogsearch_result_index>
+ 
+     <ajax_index_options>
+-    	<reference name="root">
++        <reference name="root">
+             <action method="setTemplate"><template>page/empty.phtml</template></action>
++            <!-- Mark root page block that template is applied -->
++            <action method="setIsHandle"><applied>1</applied></action>
+         </reference>
+         <reference name="head">
+             <action method="removeItem"><type>skin_css</type><name>css/responsive.css</name></action>
+diff --git a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+index bff9a54..dccf8d3 100644
+--- a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+@@ -42,6 +42,7 @@
+ <?php $_menu = $this->renderCategoriesMenuHtml(0,'level-top') ?>
+ <?php if($_menu): ?>
+ <div class="nav-container">
++    <div class="nav-top-title"><div class="icon"><span></span><span></span><span></span></div><a href="#"><?php echo $this->__('Navigation'); ?></a></div>
+     <ul id="nav">
+         <?php if (Mage::getStoreConfig('shoppersettings/navigation/home')): ?>
+         <li class="level0 level-top">
+@@ -62,9 +63,5 @@
+         }
+         ?>
+     </ul>
+-    <div class="nav-top-title"><?php echo $this->__('Navigation'); ?></div>
+-    <select id="navigation_select" name="navigation_select" onchange="if(this.value!='')window.location=this.value">
+-    <?php $m = new Queldorei_ShopperSettings_Block_Navigation(); echo $m->renderCategoriesSelectOptions(); ?>
+-    </select>
+ </div>
+ <?php endif ?>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/customer/form/login.phtml b/app/design/frontend/default/shopper/template/customer/form/login.phtml
+new file mode 100644
+index 0000000..0bab7ed
+--- /dev/null
++++ b/app/design/frontend/default/shopper/template/customer/form/login.phtml
+@@ -0,0 +1,106 @@
++<?php
++/**
++ * Magento
++ *
++ * NOTICE OF LICENSE
++ *
++ * This source file is subject to the Academic Free License (AFL 3.0)
++ * that is bundled with this package in the file LICENSE_AFL.txt.
++ * It is also available through the world-wide-web at this URL:
++ * http://opensource.org/licenses/afl-3.0.php
++ * If you did not receive a copy of the license and are unable to
++ * obtain it through the world-wide-web, please send an email
++ * to license@magentocommerce.com so we can send you a copy immediately.
++ *
++ * DISCLAIMER
++ *
++ * Do not edit or add to this file if you wish to upgrade Magento to newer
++ * versions in the future. If you wish to customize Magento for your
++ * needs please refer to http://www.magentocommerce.com for more information.
++ *
++ * @category    design
++ * @package     base_default
++ * @copyright   Copyright (c) 2012 Magento Inc. (http://www.magentocommerce.com)
++ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
++ */
++?>
++<?php
++/**
++ * Customer login form template
++ *
++ * @see Mage_Customer_Block_Form_Login
++ */
++?>
++
++<div class="account-login">
++
++    <div class="block block-login">
++        <div class="block-slider">
++            <ul class="slides">
++                <li>
++                    <div class="block-title">
++                        <strong><span><?php echo $this->__('Sign In') ?></span></strong>
++                    </div>
++                    <div class="block-content">
++
++                        <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
++                        <?php /* Extensions placeholder */ ?>
++                        <?php echo $this->getChildHtml('customer.form.login.extra')?>
++
++                        <form action="<?php echo $this->getPostActionUrl() ?>" method="post" id="login-form">
++                            <ul class="form-list">
++                                <li>
++                                    <label for="email" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
++                                    <div class="input-box">
++                                        <input type="text" name="login[username]" value="<?php echo $this->htmlEscape($this->getUsername()) ?>" id="email" class="input-text required-entry validate-email" title="<?php echo $this->__('Email Address') ?>" />
++                                    </div>
++                                </li>
++                                <li>
++                                    <label for="pass" class="required"><em>*</em><?php echo $this->__('Password') ?></label>
++                                    <div class="input-box">
++                                        <input type="password" name="login[password]" class="input-text required-entry validate-password" id="pass" title="<?php echo $this->__('Password') ?>" />
++                                    </div>
++                                </li>
++                                <?php echo $this->getChildHtml('form.additional.info'); ?>
++                            </ul>
++
++                            <button type="submit" class="button" title="<?php echo $this->__('Login') ?>" name="send" id="send2"><span><span><?php echo $this->__('Login') ?></span></span></button>
++                            <a href="<?php echo $this->getForgotPasswordUrl() ?>" class="forgot-password" id="forgot-password"><?php echo $this->__('Forgot Your Password?') ?></a>
++
++                        </form>
++                    </div>
++                </li>
++                <li>
++                    <div class="block-title">
++                        <strong><span><?php echo $this->__('Forgot Your Password?') ?></span></strong>
++                    </div>
++                    <div class="block-content">
++                        <form action="<?php echo $this->getUrl('*/*/forgotpasswordpost') ?>" method="post" id="form-validate">
++                            <ul class="form-list">
++                                <li>
++                                    <label for="email" class="required"><?php echo $this->__('Email Address') ?></label>
++                                    <div class="input-box">
++                                        <input type="text" name="email" alt="email" id="email_address" class="input-text required-entry validate-email" value="<?php echo $this->htmlEscape($this->getEmailValue()) ?>" />
++                                    </div>
++                                </li>
++                                <?php echo $this->getChildHtml('form.additional.info'); ?>
++                            </ul>
++                            <button type="submit" class="button" title="<?php echo $this->__('Submit') ?>"><span><span><?php echo $this->__('Submit') ?></span></span></button>
++                            <a href="<?php echo $this->getForgotPasswordUrl() ?>" class="forgot-password" id="back-login"><?php echo $this->__('Back to Login?'); ?></a>
++                        </form>
++                    </div>
++                </li>
++            </ul>
++        </div>
++        <div class="new-users">
++            <button type="button" title="<?php echo $this->__('Create an Account') ?>" class="button invert" onclick="window.location='<?php echo $this->getCreateAccountUrl() ?>';"><span><span><?php echo $this->__('Create an Account') ?></span></span></button>
++        </div>
++    </div>
++
++    <script type="text/javascript">
++        //<![CDATA[
++        var dataForm = new VarienForm('login-form', true);
++        var dataForgetForm = new VarienForm('form-validate', true);
++        //]]>
++    </script>
++</div>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+index c820c17..3631ace 100644
+--- a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+@@ -34,6 +34,7 @@
+ <?php $_menu = $this->getHtml('level-top') ?>
+ <?php if($_menu): ?>
+ <div class="nav-container">
++    <div class="nav-top-title"><div class="icon"><span></span><span></span><span></span></div><a href="#"><?php echo $this->__('Navigation'); ?></a></div>
+     <ul id="nav">
+         <?php if (Mage::getStoreConfig('shoppersettings/navigation/home')): ?>
+         <li class="level0 level-top">
+@@ -54,9 +55,5 @@
+         }
+         ?>
+     </ul>
+-    <div class="nav-top-title"><?php echo $this->__('Navigation'); ?></div>
+-    <select id="navigation_select" name="navigation_select" onchange="if(this.value!='')window.location=this.value">
+-        <?php $m = new Queldorei_ShopperSettings_Block_Navigation(); echo $m->renderCategoriesSelectOptions(); ?>
+-    </select>
+ </div>
+ <?php endif ?>
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml b/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
+index e0b0277..983d87f 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
+@@ -17,6 +17,7 @@
+ <?php $_menu = $this->renderCategoriesMenuHtml(0, 'level-top', 'sub-wrapper' ) ?>
+ <?php if($_menu): ?>
+ <nav class="queldorei">
++    <div class="nav-top-title"><div class="icon"><span></span><span></span><span></span></div><a href="#"><?php echo $this->__('Navigation'); ?></a></div>
+     <ul id="queldoreiNav">
+ 	    <?php if (Mage::getStoreConfig('shoppersettings/navigation/home')): ?>
+          <li class="level0 level-top">
+@@ -37,10 +38,6 @@
+         }
+         ?>
+     </ul>
+-    <div class="nav-top-title"><?php echo $this->__('Navigation'); ?></div>
+-    <select id="navigation_select" name="navigation_select" onchange="if(this.value!='')window.location=this.value">
+-        <?php $m = new Queldorei_ShopperSettings_Block_Navigation(); echo $m->renderCategoriesSelectOptions(); ?>
+-    </select>
+ </nav>
+ <?php endif ?>
+ <!-- navigation EOF -->
+\ No newline at end of file
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index 76a88f8..f359ce9 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -27,8 +27,8 @@ foreach ($_filters as $_filter) {
+     </div>
+     <div class="block-content">
+         <div id="slider"></div>
+-        <div class="f-left" id="slider-min"><?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol() . $slider_min; ?></div>
+-        <div class="f-right" id="slider-max"><?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol() . $slider_max; ?></div>
++        <div class="f-left" id="slider-min"><?php echo $this->helper('core')->currency($slider_min, true, false) ; ?></div>
++        <div class="f-right" id="slider-max"><?php echo $this->helper('core')->currency($slider_max, true, false) ; ?></div>
+         <div class="clearer"></div>
+     </div>
+ </div>
+diff --git a/skin/frontend/default/shopper/css/animation.css b/skin/frontend/default/shopper/css/animation.css
+index b63ec2b..823ae14 100644
+--- a/skin/frontend/default/shopper/css/animation.css
++++ b/skin/frontend/default/shopper/css/animation.css
+@@ -24,7 +24,10 @@ a:hover{
+ .product-tabs a,
+ .footer-banners a img, .homepage-banners a img,
+ footer .footer-subscribe button.button span,
+-.quick-view{
++.quick-view,
++nav .nav-top-title, .nav-container .nav-top-title,
++nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span,
++#queldoreiNav>li>a>span, #nav>li>a>span{
+ transition: all 400ms ease-in-out;
+ -webkit-transition: all 400ms ease-in-out;
+ -moz-transition: all 400ms ease-in-out;
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 2ad83e4..2600fee 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -447,8 +447,16 @@ footer address{ margin-left:10px; }
+ 
+ /********** < Navigation */
+ .nav-container {width:100%; margin:0 auto; position:relative; z-index:10010; }
+-#navigation_select{display:none; min-width:100% }
+-nav .nav-top-title, .nav-container .nav-top-title{font-family:'Myriad Pro', sans-serif; font-size:16px; text-align:center; margin:0; display:none !important; }
++#navigation_select{display:none; min-width:100%}
++nav .nav-top-title, .nav-container .nav-top-title{ cursor:pointer; font-family:'Myriad Pro', sans-serif; font-size:16px; text-align:left; width:220px; margin:0 auto 3px; padding:0 10px; line-height:36px; background:#eee; color:#000; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; display:none;  }
++nav .nav-top-title a, .nav-container .nav-top-title a{color:#000; text-decoration:none; }
++nav .nav-top-title div.icon, .nav-container .nav-top-title div.icon {float:left; width:15px; margin:11px 10px 0 0;}
++nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span {display:block; height:3px; margin:0 0 2px;}
++nav .nav-top-title:hover, .nav-container .nav-top-title:hover {}
++nav .nav-top-title:hover a, .nav-container .nav-top-title:hover a,
++nav .nav-top-title.active a, .nav-container .nav-top-title.active a {color:#fff; }
++nav .nav-top-title:hover div.icon span, .nav-container .nav-top-title:hover div.icon span,
++nav .nav-top-title.active div.icon span, .nav-container .nav-top-title.active div.icon span {background:#fff; }
+ 
+ nav.queldorei {width:100%; margin:0 auto; position:relative; z-index:10010; }
+ #queldoreiNav { width:780px; margin:31px 0 34px 46px; padding:0; position:relative; border:none; float:left; }
+@@ -972,7 +980,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ 
+ .top-opc { width:1170px; }
+ .top-opc li{float:left; width:150px; margin:0 40px 30px 0;}
+-.top-opc li .number{dislpay:block; float:left; width:54px; height:54px; margin:0 10px 0 0; background:#dbdbdb; line-height:52px; font-family:"Myriad Pro",serif; font-size:30px; font-weight:300; color:#fff; text-align:center; border-radius:100%; -moz-border-radius:100%; -webkit-border-radius:100%; }
++.top-opc li .number{display:block; float:left; width:54px; height:54px; margin:0 10px 0 0; background:#dbdbdb; line-height:52px; font-family:"Myriad Pro",serif; font-size:30px; font-weight:300; color:#fff; text-align:center; border-radius:100%; -moz-border-radius:100%; -webkit-border-radius:100%; }
+ .top-opc li h2{overflow:hidden; margin:11px 0 0; line-height:16px; font-size:16px; font-weight:300; color:#dbdbdb;}
+ .top-opc li.allow {cursor:pointer;}
+ .top-opc li.allow .number{background:#322c29;}
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 049331c..dc55390 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -137,9 +137,19 @@ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:
+ .jcarousel-next-horizontal:hover,
+ .product-view .box-up-sell .jcarousel-next-horizontal:hover,
+ .product-view .box-up-sell .jcarousel-prev-horizontal:hover,
+-.quick-view
++.quick-view,
++nav .nav-top-title:hover, .nav-container .nav-top-title:hover,
++nav .nav-top-title.active, .nav-container .nav-top-title.active,
++nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span
+ {background-color:<?php echo $config['appearance']['color']; ?>}
+ 
++/***** iPad Smaller than 959px *****/
++@media only screen and (max-width: 959px) {
++    #queldoreiNav>li>a:hover, #nav>li>a:hover,
++    #queldoreiNav>li.over>a, #nav>li.over>a,
++    #queldoreiNav>li.active>a, #nav>li.active>a {background-color:<?php echo $config['appearance']['color']; ?>; color:#fff; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;}
++}
++
+ .footer-info a,
+ .footer-info .information ul li:before,
+ .price-box .price,
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index df0fa4e..4ba254c 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -113,9 +113,19 @@
+     footer address{ margin:15px 0 0;}
+     .footer-info .grid_3 {width:356px; margin-bottom:30px; }
+ 
+-    #queldoreiNav, #nav{display:none; }
+-    #navigation_select{display:block; width:240px; min-width:240px; height:auto; margin:0 auto;}
+     nav .nav-top-title, .nav-container .nav-top-title{display:block; }
++    #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    #queldoreiNav>li, #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    #queldoreiNav>li>a, #nav>li>a { float:none; padding:0; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
++    #queldoreiNav>li>a>span, #nav>li>a>span{padding:0px 10px; border:none;}
++    #queldoreiNav>li:hover, #nav>li:hover,
++    #queldoreiNav>li.over, #nav>li.over,
++    #queldoreiNav>li.active, #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    #queldoreiNav>li>a:hover>span, #nav>li>a:hover>span,
++    #queldoreiNav>li.over>a>span, #nav>li.over>a>span,
++    #queldoreiNav>li.active>a>span, #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    #queldoreiNav>li ul, #nav>li ul { display:none !important;}
++    #queldoreiNav>li.custom-block, #nav>li.custom-block { display:none !important;}
+ 
+     .homepage-banners {width:600px !important;}
+     .homepage-banners .grid_6{width:270px !important; margin:0 15px;}
+@@ -264,9 +274,19 @@
+     .search-top-container .search-top, .search-top-container .search-form-border{display:none; }
+     .search-top-container .search-form{display:block; position:relative; top:0; left:0; margin:0 auto; padding:0 0 8px 0; box-shadow:none; -webkit-box-shadow:none; -moz-box-shadow:none; }
+ 
+-    #queldoreiNav, #nav{display:none; }
+-    #navigation_select{display:block; width:240px; min-width:240px; height:auto; margin:0 auto;}
+     nav .nav-top-title, .nav-container .nav-top-title{display:block; }
++    #queldoreiNav, #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    #queldoreiNav>li, #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    #queldoreiNav>li>a, #nav>li>a { float:none; padding:0; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
++    #queldoreiNav>li>a>span, #nav>li>a>span{padding:0px 10px; border:none;}
++    #queldoreiNav>li:hover, #nav>li:hover,
++    #queldoreiNav>li.over, #nav>li.over,
++    #queldoreiNav>li.active, #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    #queldoreiNav>li>a:hover>span, #nav>li>a:hover>span,
++    #queldoreiNav>li.over>a>span, #nav>li.over>a>span,
++    #queldoreiNav>li.active>a>span, #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    #queldoreiNav>li ul, #nav>li ul { display:none !important;}
++    #queldoreiNav>li.custom-block, #nav>li.custom-block { display:none !important;}
+ 
+     .homepage-banners a .content{margin:14px;}
+     .homepage-banners a .content .border{margin:5px 10px; }
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index ecf7e6f..8bee6e9 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -618,6 +618,12 @@ jQuery(function($){
+     });
+     $('.product-tabs-accordion h2.active').next().slideToggle();
+ 
++    //mobile navigation
++    $('nav .nav-top-title, .nav-container .nav-top-title').click(function(){
++        $(this).toggleClass('active').next().toggle();
++        $(".header-wrapper").height($("header").height());
++    });
++
+ });
+ 
+ 
+-- 
+1.7.10.msysgit.1
+

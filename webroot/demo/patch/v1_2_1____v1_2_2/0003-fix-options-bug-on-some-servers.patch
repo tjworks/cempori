@@ -1,0 +1,38 @@
+From 3afa4691556e8804158bfb45c8c910a6cdf7dfaa Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Fri, 19 Oct 2012 18:16:05 +0300
+Subject: [PATCH 3/4] fix options bug on some servers
+
+---
+ skin/frontend/default/shopper/css/options.css.php |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index a6d55e7..2e8a6b9 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -1,16 +1,15 @@
+ <?php
+-define('MAGENTO_ROOT', (dirname(__FILE__).'../../../../../../'));
++define('MAGENTO_ROOT', (dirname(__FILE__).'/../../../../..'));
+ $mageFilename = MAGENTO_ROOT . '/app/Mage.php';
+ require_once $mageFilename;
+ 
+ umask(0);
+ 
+-$params = Mage::app()->getFrontController()->getRequest()->getParams();
+-if ( empty($params['store']) ) {
+-    $params['store'] = '';
++if ( empty($_GET['store']) ) {
++    $_GET['store'] = '';
+ }
+-Mage::app( $params['store'] );
+-$config = Mage::getStoreConfig('shoppersettings', $params['store']);
++Mage::app( $_GET['store'] );
++$config = Mage::getStoreConfig('shoppersettings', $_GET['store']);
+ $color_helper = Mage::helper('shoppersettings/color');
+ 
+ //check if category override theme options
+-- 
+1.7.10.msysgit.1
+

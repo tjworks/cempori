@@ -1,0 +1,33 @@
+From e4ca8be0d6e06663814c353f7e856ede097e0872 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 29 Oct 2012 19:45:15 +0200
+Subject: [PATCH 10/11] fix labels
+
+---
+ app/code/local/Queldorei/ShopperSettings/Helper/Data.php |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+index bb53eaf..9a47c9a 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
++++ b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+@@ -40,7 +40,7 @@ class Queldorei_ShopperSettings_Helper_Data extends Mage_Core_Helper_Abstract
+     {
+         $today = strtotime(
+             Mage::app()->getLocale()->date()
+-            ->setTime('23:59:59')
++            ->setTime('00:00:00')
+             ->toString(Varien_Date::DATETIME_INTERNAL_FORMAT)
+         );
+ 
+@@ -48,6 +48,7 @@ class Queldorei_ShopperSettings_Helper_Data extends Mage_Core_Helper_Abstract
+             return false;
+         }
+         if ($to && $today > $to) {
++            echo $to . ' < '. $today;
+             return false;
+         }
+         if (!$to && !$from) {
+-- 
+1.7.10.msysgit.1
+

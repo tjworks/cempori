@@ -1,0 +1,25 @@
+From 4ac3036fdc8ca66595e7e891f34754ede1cefb02 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 17 Dec 2012 17:04:33 +0200
+Subject: [PATCH 07/34] fix lightbox issue for products with single image
+
+---
+ .../template/queldorei/lightbox/media.phtml        |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml b/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
+index f0bff62..e229db2 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
+@@ -99,7 +99,7 @@
+             var n = $('#shopper_gallery_carousel > li').length;
+             var w = $('#shopper_gallery_carousel > li').outerWidth(true);
+             $('#shopper_gallery_carousel').width(n*w);
+-            myCarousel.scroll(0);
++            if ( myCarousel ) myCarousel.scroll(0);
+         });
+ 
+     });
+-- 
+1.7.9.msysgit.0
+

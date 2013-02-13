@@ -1,0 +1,25 @@
+From 36eff348a5ccc6557c915b9bd71e822da16dee51 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Wed, 28 Nov 2012 18:09:39 +0200
+Subject: [PATCH 17/17] update version to 1.3.3
+
+---
+ app/code/local/Queldorei/ShopperSettings/etc/system.xml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 374f581..f76ce8d 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -17,7 +17,7 @@
+ 			<groups>
+ 				<appearance translate="label">
+ 					<label>Appearance</label>
+-                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.3.2]]></comment>
++                    <comment><![CDATA[<a href="//Queldorei.com">Queldorei.com</a> Shopper v1.3.3]]></comment>
+ 					<frontend_type>text</frontend_type>
+ 					<sort_order>10</sort_order>
+ 					<show_in_default>1</show_in_default>
+-- 
+1.7.10.msysgit.1
+

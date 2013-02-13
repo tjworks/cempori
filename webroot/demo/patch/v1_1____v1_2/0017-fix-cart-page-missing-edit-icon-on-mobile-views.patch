@@ -1,0 +1,24 @@
+From 31dc80c1a76db8746f35cb461361bb725132ceba Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Thu, 11 Oct 2012 13:47:43 +0300
+Subject: [PATCH 17/24] fix cart page - missing edit icon on mobile views
+
+---
+ skin/frontend/default/shopper/css/local.css |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index e39a6d1..9509aab 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -2033,6 +2033,7 @@ html[xmlns] .slides {display: block;}
+     .data-table td.td-image a {text-align:center; }
+     .data-table td.td-image img {width:200px;}
+     .data-table td.td-edit, .data-table .btn-remove {display:none;}
++    .data-table .td-actions .btn-remove, .data-table .td-actions .btn-edit {display:inline-block;}
+     .data-table td.td-price {padding:10px; background:#fafafa;}
+     .data-table td.td-qty {padding:0 10px; background:#fafafa;}
+     .data-table td.td-delete {background:#fafafa; text-align:center !important;}
+-- 
+1.7.10.msysgit.1
+

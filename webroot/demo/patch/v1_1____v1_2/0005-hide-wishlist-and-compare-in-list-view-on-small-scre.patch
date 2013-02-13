@@ -1,0 +1,35 @@
+From ce159ca532aafe84366e3203254538a837e7de8e Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 13:22:36 +0300
+Subject: [PATCH 05/24] hide wishlist and compare in list view on small
+ screens.
+
+---
+ skin/frontend/default/shopper/css/local.css |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index e8ceefc..d181d78 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1894,7 +1894,7 @@ html[xmlns] .slides {display: block;}
+     .toolbar-switch select { display:inline; height:auto; }
+ 
+     .products-list {margin: 0 15px; }
+-    .products-list .add-to-links {float:none; clear:both;}
++    .products-list .add-to-links {display:none;}
+     .products-list .price-box {float:none}
+     .products-list .ratings {float:none; margin:5px 0;}
+     .products-list .add-to-links li:first-child span {display:none}
+@@ -2054,7 +2054,7 @@ html[xmlns] .slides {display: block;}
+ 
+     .products-list .product-image, .products-list .f-left {float:none !important;}
+     .products-list li.item {padding: 0 15px 30px;}
+-    .products-list .add-to-links {float:none; clear:both;}
++    .products-list .add-to-links {display:none;}
+     .products-list .price-box {float:none}
+     .products-list .ratings {float:none; margin:5px 0;}
+     .products-list .add-to-links li:first-child span {display:none}
+-- 
+1.7.10.msysgit.1
+

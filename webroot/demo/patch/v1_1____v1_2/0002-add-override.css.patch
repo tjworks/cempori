@@ -1,0 +1,28 @@
+From bd7810d31ca058079d507fc42da81d4bf2edb151 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 8 Oct 2012 18:50:03 +0300
+Subject: [PATCH 02/24] add override.css
+
+---
+ app/design/frontend/default/shopper/layout/local.xml |    1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 skin/frontend/default/shopper/css/override.css
+
+diff --git a/app/design/frontend/default/shopper/layout/local.xml b/app/design/frontend/default/shopper/layout/local.xml
+index 610049c..8a33eab 100644
+--- a/app/design/frontend/default/shopper/layout/local.xml
++++ b/app/design/frontend/default/shopper/layout/local.xml
+@@ -30,6 +30,7 @@
+ 			<action method="addCss"><stylesheet>css/local.css</stylesheet></action>
+ 			<action method="addCss"><stylesheet>css/mobile.css</stylesheet></action>
+ 			<action method="addCss"><stylesheet>css/animation.css</stylesheet></action>
++			<action method="addCss"><stylesheet>css/override.css</stylesheet></action>
+ 
+             <action method="addItem"><type>js</type><name>queldorei/html5shiv.js</name><params/><if>lt IE 9</if></action>
+ 			<action method="addJs"><script>queldorei/jquery-1.8.2.min.js</script></action>
+diff --git a/skin/frontend/default/shopper/css/override.css b/skin/frontend/default/shopper/css/override.css
+new file mode 100644
+index 0000000..e69de29
+-- 
+1.7.10.msysgit.1
+

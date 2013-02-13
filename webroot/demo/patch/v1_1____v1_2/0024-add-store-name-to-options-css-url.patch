@@ -1,0 +1,46 @@
+From 0e8dc534050c5b858e89c1e36beb0c77912800f7 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 15 Oct 2012 17:51:21 +0300
+Subject: [PATCH 24/24] add store name to options css url
+
+---
+ .../frontend/default/shopper/template/page/html/head.phtml     |    2 +-
+ skin/frontend/default/shopper/css/options.css.php              |    8 ++++++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/page/html/head.phtml b/app/design/frontend/default/shopper/template/page/html/head.phtml
+index 0ba999b..12c69d8 100644
+--- a/app/design/frontend/default/shopper/template/page/html/head.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/head.phtml
+@@ -49,7 +49,7 @@
+     <link href='//fonts.googleapis.com/css?family=<?php echo str_replace(' ', '+', $config['price_font']); ?>:300,400,700' rel='stylesheet' type='text/css'>
+     <?php endif; ?>
+ <?php endif; ?>
+-<link href='<?php echo $this->getSkinUrl('css/options.css.php'); if ($cat = Mage::registry('current_category')) { echo '?cat='.$cat->getId(); }  ?>' rel='stylesheet' type='text/css'>
++<link href='<?php echo $this->getSkinUrl('css/options.css.php'); echo '?store='.Mage::app()->getStore()->getCode();  if ($cat = Mage::registry('current_category')) { echo '&cat='.$cat->getId(); }  ?>' rel='stylesheet' type='text/css'>
+ <?php echo $this->getChildHtml() ?>
+ <?php echo $this->helper('core/js')->getTranslatorScript() ?>
+ <?php echo $this->getIncludes() ?>
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index afc6d11..a6d55e7 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -4,9 +4,13 @@ $mageFilename = MAGENTO_ROOT . '/app/Mage.php';
+ require_once $mageFilename;
+ 
+ umask(0);
+-Mage::app();
+ 
+-$config = Mage::getStoreConfig('shoppersettings');
++$params = Mage::app()->getFrontController()->getRequest()->getParams();
++if ( empty($params['store']) ) {
++    $params['store'] = '';
++}
++Mage::app( $params['store'] );
++$config = Mage::getStoreConfig('shoppersettings', $params['store']);
+ $color_helper = Mage::helper('shoppersettings/color');
+ 
+ //check if category override theme options
+-- 
+1.7.10.msysgit.1
+

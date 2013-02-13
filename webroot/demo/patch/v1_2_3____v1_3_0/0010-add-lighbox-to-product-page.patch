@@ -1,0 +1,295 @@
+From 32d0d7c50c9fa658090cd975eeb9265ac53e14ce Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 9 Nov 2012 18:12:32 +0200
+Subject: [PATCH 10/25] add lighbox to product page
+
+---
+ .../Queldorei/ShopperSettings/Block/Media.php      |   11 +-
+ .../ShopperSettings/Model/Config/Zoom.php          |   26 +++++
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |   12 +++
+ .../frontend/default/shopper/layout/ajax.xml       |   10 +-
+ .../shopper/layout/queldorei/shoppersettings.xml   |    2 +
+ .../template/queldorei/lightbox/media.phtml        |  106 ++++++++++++++++++++
+ .../shopper/js/fancybox/jquery.fancybox-1.3.4.css  |    2 +-
+ 8 files changed, 162 insertions(+), 8 deletions(-)
+ create mode 100644 app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom.php
+ create mode 100644 app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Block/Media.php b/app/code/local/Queldorei/ShopperSettings/Block/Media.php
+index a936827..4cfb456 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Block/Media.php
++++ b/app/code/local/Queldorei/ShopperSettings/Block/Media.php
+@@ -10,9 +10,16 @@ class Queldorei_ShopperSettings_Block_Media extends Mage_Catalog_Block_Product_V
+ 
+     protected function _beforeToHtml()
+     {
+-        if (Mage::getStoreConfig('shoppersettings/cloudzoom/enabled'))
++        if (Mage::getStoreConfig('shoppersettings/images/zoom', Mage::app()->getStore()->getId()) == 'default') {
++            return;
++        }
++        if (Mage::getStoreConfig('shoppersettings/images/zoom', Mage::app()->getStore()->getId()) == 'lightbox') {
++            $this->setTemplate('queldorei/lightbox/media.phtml');
++        }
++        if (Mage::getStoreConfig('shoppersettings/images/zoom', Mage::app()->getStore()->getId()) == 'cloud_zoom'
++            && Mage::getStoreConfig('shoppersettings/cloudzoom/enabled', Mage::app()->getStore()->getId())) {
+             $this->setTemplate('queldorei/cloudzoom/media.phtml');
+-
++        }
+         return $this;
+     }
+ }
+\ No newline at end of file
+diff --git a/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom.php b/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom.php
+new file mode 100644
+index 0000000..1ca6bfd
+--- /dev/null
++++ b/app/code/local/Queldorei/ShopperSettings/Model/Config/Zoom.php
+@@ -0,0 +1,26 @@
++<?php
++/**
++ * @version   1.0 12.0.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++class Queldorei_ShopperSettings_Model_Config_Zoom
++{
++
++    public function toOptionArray()
++    {
++        return array(
++            array(
++	            'value'=>'default',
++	            'label' => Mage::helper('shoppersettings')->__('Magento Default')),
++            array(
++	            'value'=>'cloud_zoom',
++	            'label' => Mage::helper('shoppersettings')->__('CloudZoom')),
++            array(
++	            'value'=>'lightbox',
++	            'label' => Mage::helper('shoppersettings')->__('Lightbox')),
++        );
++    }
++
++}
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 0268aa7..8022f3e 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -239,6 +239,7 @@
+                 <smooth_move>3</smooth_move>
+             </cloudzoom>
+             <images>
++                <zoom>cloud_zoom</zoom>
+                 <width></width>
+                 <height></height>
+                 <keep_ratio>1</keep_ratio>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 973657b..f90482b 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -723,6 +723,18 @@
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <fields>
++                        <zoom translate="label">
++                            <label>Zoom method for Product page</label>
++                            <comment>
++                                <![CDATA[If you use cloudZoom you still need to enable it in CloudZoom section ]]>
++                            </comment>
++                            <frontend_type>select</frontend_type>
++                            <source_model>shoppersettings/config_zoom</source_model>
++                            <sort_order>30</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </zoom>
+                         <width translate="label">
+                             <label>Main Product Image Width (px)</label>
+                             <comment>
+diff --git a/app/design/frontend/default/shopper/layout/ajax.xml b/app/design/frontend/default/shopper/layout/ajax.xml
+index f597190..f98e6da 100644
+--- a/app/design/frontend/default/shopper/layout/ajax.xml
++++ b/app/design/frontend/default/shopper/layout/ajax.xml
+@@ -4,7 +4,7 @@
+     <cms_page>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+-            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
+             <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
+         </reference>
+@@ -13,7 +13,7 @@
+     <catalog_category_default>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+-            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
+             <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
+         </reference>
+@@ -22,7 +22,7 @@
+     <catalog_category_layered>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+-            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
+             <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
+         </reference>
+@@ -31,7 +31,7 @@
+     <catalogsearch_advanced_result>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+-            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
+             <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
+         </reference>
+@@ -40,7 +40,7 @@
+     <catalogsearch_result_index>
+     	<reference name="head">
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>js</type><name>queldorei/jquery-1.8.2.min.js</name></action>
+-            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.js</name></action>
++            <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+             <action method="addItem" ifconfig="shoppersettings/ajax/cart"><type>skin_js</type><name>js/ajaxcart/ajaxcart.js</name></action>
+             <action method="addCss" ifconfig="shoppersettings/ajax/cart"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
+         </reference>
+diff --git a/app/design/frontend/default/shopper/layout/queldorei/shoppersettings.xml b/app/design/frontend/default/shopper/layout/queldorei/shoppersettings.xml
+index 4209e63..6465358 100644
+--- a/app/design/frontend/default/shopper/layout/queldorei/shoppersettings.xml
++++ b/app/design/frontend/default/shopper/layout/queldorei/shoppersettings.xml
+@@ -5,6 +5,8 @@
+             <action method="addItem"><type>skin_css</type><name>css/cloud-zoom.css</name></action>
+             <action method="addJs"><script>queldorei/jquery-1.8.2.min.js</script></action>
+             <action method="addJs"><script>queldorei/cloud-zoom.1.0.2.min.js</script></action>
++            <action method="addCss"><stylesheet>js/fancybox/jquery.fancybox-1.3.4.css</stylesheet></action>
++            <action method="addItem"><type>skin_js</type><name>js/fancybox/jquery.fancybox-1.3.4.pack.js</name></action>
+         </reference>
+     </default>
+ 	<catalog_product_view>
+diff --git a/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml b/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
+new file mode 100644
+index 0000000..85d49d8
+--- /dev/null
++++ b/app/design/frontend/default/shopper/template/queldorei/lightbox/media.phtml
+@@ -0,0 +1,106 @@
++<?php
++/**
++ * @var $this		Mage_Catalog_Block_Product_View_Media
++ * @var $product	Mage_Catalog_Model_Product
++ */
++?>
++<?php
++	$product = $this->getProduct();
++	$outputHelper = $this->helper('catalog/output');
++	$helper = $this->helper('shoppersettings/image');
++    $config = Mage::getStoreConfig('shoppersettings');
++
++    list($defaultImgX, $defaultImgY) = $helper->getDefaultSize();
++    list($imgX, $imgY) = $helper->getMainSize();
++    if ( $imgX > 800 ) {
++        $imgX = 800;
++        $imgY = $helper->calculateHeight($imgX);
++    }
++    list($thumbX, $thumbY) = $helper->getThumbSize();
++?>
++
++<?php if ($product->getImage() != 'no_selection' && $product->getImage()): ?>
++
++	<p class="product-image">
++        <a href="<?php echo $this->helper('catalog/image')->init($product, 'image'); ?>" rel="lighbox-zoom-gallery" >
++            <img src="<?php echo $this->helper('catalog/image')->init($product, 'image')->resize($imgX, $imgY); ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($product, 'image')->resize($imgX*2, $imgY*2); ?>" alt="<?php echo $this->escapeHtml($this->getImageLabel());?>" title="<?php echo $this->escapeHtml($this->getImageLabel());?>" width="<?php echo $imgX;?>" height="<?php echo $imgY;?>" />
++        </a>
++    </p>
++    
++<?php else: ?>
++
++    <p class="product-image">
++        <?php
++            $_img = '<img src="'.$this->helper('catalog/image')->init($product, 'image')->resize($imgX, $imgY).'" data-srcX2="'.$this->helper('catalog/image')->init($product, 'image')->resize($imgX*2, $imgY*2).'" alt="'.$this->escapeHtml($this->getImageLabel()).'" title="'.$this->escapeHtml($this->getImageLabel()).'" width="'.$imgX.'" height="'.$imgY.'" />';
++            echo $outputHelper->productAttribute($product, $_img, 'image');
++        ?>
++    </p>
++
++<?php endif; ?>
++
++<?php if (count($this->getGalleryImages()) > 0): ?>
++<div class="more-views">
++    <ul id="shopper_gallery_carousel" class="jcarousel-skin-tango clearfix">
++    <?php foreach ($this->getGalleryImages() as $_image): ?>
++    	<?php //Skip, if no image
++        	if ($_image->getFile() == NULL)
++			continue; ?>
++        <li>
++            <a href='<?php echo $this->helper('catalog/image')->init($product, 'image', $_image->getFile()); ?>' rel='lighbox-zoom-gallery' title='<?php echo $this->escapeHtml($_image->getLabel()) ?>' >
++            <img src="<?php echo $this->helper('catalog/image')->init($product, 'thumbnail', $_image->getFile())->resize($thumbX, $thumbY); ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($product, 'thumbnail', $_image->getFile())->resize($thumbX*2, $thumbY*2); ?>" width="<?php echo $thumbX; ?>" height="<?php echo $thumbY; ?>" alt="<?php echo $this->escapeHtml($_image->getLabel()) ?>"/>
++            </a>
++        </li>
++    <?php endforeach; ?>
++    </ul>
++    <div class="jcarousel-controls">
++        <a href="#" class="jcarousel-prev-horizontal" id="shopper_gallery_prev"></a>
++        <a href="#" class="jcarousel-next-horizontal" id="shopper_gallery_next"></a>
++    </div>
++</div>
++<script type="text/javascript">
++    jQuery(document).ready(function($) {
++
++        $('a[rel="lighbox-zoom-gallery"]').fancybox({
++            titleShow:false,
++            hideOnContentClick:true
++        });
++
++        myCarousel = null; // This will be the carousel object
++
++        function mycarousel_initCallback(carousel, state) {
++            if (state == 'init') {
++                myCarousel = carousel;
++            }
++            $('#shopper_gallery_next').bind('click', function() {
++                carousel.next();
++                return false;
++            });
++            $('#shopper_gallery_prev').bind('click', function() {
++                carousel.prev();
++                return false;
++            });
++
++            $('.product-view .product-img-box .more-views .jcarousel-skin-tango .jcarousel-container-horizontal').width(<?php echo ($thumbX+8)*3;?>);
++            $('.product-view .product-img-box .more-views .jcarousel-skin-tango .jcarousel-clip-horizontal').width(<?php echo ($thumbX+8)*3;?>);
++            $('.product-view .product-img-box .more-views .jcarousel-skin-tango .jcarousel-item').width(<?php echo $thumbX;?>);
++            $('#shopper_gallery_prev, #shopper_gallery_next').css({marginTop:-<?php echo ($thumbX)/2+17;?>});
++
++        };
++
++        $('#shopper_gallery_carousel').jcarousel({
++            scroll: 1,
++            initCallback: mycarousel_initCallback,
++            buttonNextHTML: null,
++            buttonPrevHTML: null
++        });
++
++        $(window).resize(function(){
++            var n = $('#shopper_gallery_carousel > li').length;
++            var w = $('#shopper_gallery_carousel > li').outerWidth(true);
++            $('#shopper_gallery_carousel').width(n*w);
++            myCarousel.scroll(0);
++        });
++
++    });
++</script>
++<?php endif; ?>
+diff --git a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+index fd42357..6ea4ef1 100644
+--- a/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
++++ b/skin/frontend/default/shopper/js/fancybox/jquery.fancybox-1.3.4.css
+@@ -1 +1 @@
+-/* * FancyBox - jQuery Plugin * Simple and fancy lightbox alternative * * Examples and documentation at: http://fancybox.net *  * Copyright (c) 2008 - 2010 Janis Skarnelis * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated. *  * Version: 1.3.4 (11/11/2010) * Requires: jQuery v1.3+ * * Dual licensed under the MIT and GPL licenses: *   http://www.opensource.org/licenses/mit-license.php *   http://www.gnu.org/licenses/gpl.html */#fancybox-loading {	position: fixed;	top: 50%;	left: 50%;	width: 40px;	height: 40px;	margin-top: -20px;	margin-left: -20px;	cursor: pointer;	overflow: hidden;	z-index: 11040;	display: none;}#fancybox-loading div {	position: absolute;	top: 0;	left: 0;	width: 40px;	height: 480px;	background-image: url('fancybox.png');}#fancybox-overlay {	position: absolute;	top: 0;	left: 0;	width: 100%;	z-index: 11000;	display: none;}#fancybox-tmp {	padding: 0;	margin: 0;	border: 0;	overflow: auto;	display: none;}#fancybox-wrap {	position: absolute;	top: 0;	left: 0;	padding: 20px;	z-index: 11010;	outline: none;	display: none;}#fancybox-outer {	position: relative;	width: 100%;	height: 100%;	background: #fff;}#fancybox-content {	width: 0;	height: 0;	padding: 0;	outline: none;	position: relative;	overflow: hidden;	z-index: 11020;	border: 0px solid #fff;    background: url('loader.gif') 50% 50% no-repeat;}#fancybox-hide-sel-frame {	position: absolute;	top: 0;	left: 0;	width: 100%;	height: 100%;	background: transparent;	z-index: 11010;}#fancybox-close {	position: absolute;	top: -15px;	right: -15px;	width: 30px;	height: 30px;	background: transparent url('fancybox.png') -40px 0px;	cursor: pointer;	z-index: 11030;	display: none;}#fancybox-error {	color: #444;	font: normal 12px/20px Arial;	padding: 14px;	margin: 0;}#fancybox-img {	width: 100%;	height: 100%;	padding: 0;	margin: 0;	border: none;	outline: none;	line-height: 0;	vertical-align: top;}#fancybox-frame {	width: 100%;	height: 100%;	border: none;	display: block;}#fancybox-left, #fancybox-right {	position: absolute;	bottom: 0px;	height: 100%;	width: 35%;	cursor: pointer;	outline: none;	background: transparent url('blank.gif');	z-index: 11020;	display: none;}#fancybox-left {	left: 0px;}#fancybox-right {	right: 0px;}#fancybox-left-ico, #fancybox-right-ico {	position: absolute;	top: 50%;	left: -9999px;	width: 30px;	height: 30px;	margin-top: -15px;	cursor: pointer;	z-index: 11020;	display: block;}#fancybox-left-ico {	background-image: url('fancybox.png');	background-position: -40px -30px;}#fancybox-right-ico {	background-image: url('fancybox.png');	background-position: -40px -60px;}#fancybox-left:hover, #fancybox-right:hover {	visibility: visible; /* IE6 */}#fancybox-left:hover span {	left: 20px;}#fancybox-right:hover span {	left: auto;	right: 20px;}.fancybox-bg {	position: absolute;	padding: 0;	margin: 0;	border: 0;	width: 20px;	height: 20px;	z-index: 10010;}#fancybox-bg-n {	top: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');}#fancybox-bg-ne {	top: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -162px;}#fancybox-bg-e {	top: 0;	right: -20px;	height: 100%;	background-image: url('fancybox-y.png');	background-position: -20px 0px;}#fancybox-bg-se {	bottom: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -182px; }#fancybox-bg-s {	bottom: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');	background-position: 0px -20px;}#fancybox-bg-sw {	bottom: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -142px;}#fancybox-bg-w {	top: 0;	left: -20px;	height: 100%;	background-image: url('fancybox-y.png');}#fancybox-bg-nw {	top: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -122px;}#fancybox-title {	font-family: Helvetica;	font-size: 12px;	z-index: 11020;}.fancybox-title-inside {	padding-bottom: 10px;	text-align: center;	color: #333;	background: #fff;	position: relative;}.fancybox-title-outside {	padding-top: 10px;	color: #fff;}.fancybox-title-over {	position: absolute;	bottom: 0;	left: 0;	color: #FFF;	text-align: left;}#fancybox-title-over {	padding: 10px;	background-image: url('fancy_title_over.png');	display: block;}.fancybox-title-float {	position: absolute;	left: 0;	bottom: -20px;	height: 32px;}#fancybox-title-float-wrap {	border: none;	border-collapse: collapse;	width: auto;}#fancybox-title-float-wrap td {	border: none;	white-space: nowrap;}#fancybox-title-float-left {	padding: 0 0 0 15px;	background: url('fancybox.png') -40px -90px no-repeat;}#fancybox-title-float-main {	color: #FFF;	line-height: 29px;	font-weight: bold;	padding: 0 0 3px 0;	background: url('fancybox-x.png') 0px -40px;}#fancybox-title-float-right {	padding: 0 0 0 15px;	background: url('fancybox.png') -55px -90px no-repeat;}/* IE6 */.fancybox-ie6 #fancybox-close { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_close.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-left-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-right-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-over { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }.fancybox-ie6 #fancybox-title-float-left { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-main { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_main.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-right { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-bg-w, .fancybox-ie6 #fancybox-bg-e, .fancybox-ie6 #fancybox-left, .fancybox-ie6 #fancybox-right, #fancybox-hide-sel-frame {	height: expression(this.parentNode.clientHeight + "px");}#fancybox-loading.fancybox-ie6 {	position: absolute; margin-top: 0;	top: expression( (-20 + (document.documentElement.clientHeight ? document.documentElement.clientHeight/2 : document.body.clientHeight/2 ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop )) + 'px');}#fancybox-loading.fancybox-ie6 div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_loading.png', sizingMethod='scale'); }/* IE6, IE7, IE8 */.fancybox-ie .fancybox-bg { background: transparent !important; }.fancybox-ie #fancybox-bg-n { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_n.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-ne { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-e { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_e.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-se { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_se.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-s { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_s.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-sw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-w { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_w.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-nw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
+\ No newline at end of file
++/* * FancyBox - jQuery Plugin * Simple and fancy lightbox alternative * * Examples and documentation at: http://fancybox.net *  * Copyright (c) 2008 - 2010 Janis Skarnelis * That said, it is hardly a one-person project. Many people have submitted bugs, code, and offered their advice freely. Their support is greatly appreciated. *  * Version: 1.3.4 (11/11/2010) * Requires: jQuery v1.3+ * * Dual licensed under the MIT and GPL licenses: *   http://www.opensource.org/licenses/mit-license.php *   http://www.gnu.org/licenses/gpl.html */#fancybox-loading {	position: fixed;	top: 50%;	left: 50%;	width: 40px;	height: 40px;	margin-top: -20px;	margin-left: -20px;	cursor: pointer;	overflow: hidden;	z-index: 11040;	display: none;}#fancybox-loading div {	position: absolute;	top: 0;	left: 0;	width: 40px;	height: 480px;	background-image: url('fancybox.png');}#fancybox-overlay {	position: absolute;	top: 0;	left: 0;	width: 100%;	z-index: 11000;	display: none;}#fancybox-tmp {	padding: 0;	margin: 0;	border: 0;	overflow: auto;	display: none;}#fancybox-wrap {	position: absolute;	top: 0;	left: 0;	padding: 20px;	z-index: 11010;	outline: none;	display: none;}#fancybox-outer {	position: relative;	width: 100%;	height: 100%;	background: #fff;}#fancybox-content {	width: 0;	height: 0;	padding: 0;	outline: none;	position: relative;	overflow: hidden;	z-index: 11020;	border: 0px solid #fff;    background: url('loader.gif') 50% 50% no-repeat;}#fancybox-hide-sel-frame {	position: absolute;	top: 0;	left: 0;	width: 100%;	height: 100%;	background: transparent;	z-index: 11010;}#fancybox-close {	position: absolute;	top: -15px;	right: -15px;	width: 30px;	height: 30px;	background: transparent url('fancybox.png') -40px 0px;	cursor: pointer;	z-index: 11030;	display: none;}#fancybox-error {	color: #444;	font: normal 12px/20px Arial;	padding: 14px;	margin: 0;}#fancybox-img {	width: 100%;	height: 100%;	padding: 0;	margin: 0;	border: none;	outline: none;	line-height: 0;	vertical-align: top;}#fancybox-frame {	width: 100%;	height: 100%;	border: none;	display: block;}#fancybox-left, #fancybox-right {	position: absolute;	bottom: 0px;	height: 100%;	width: 35%;	cursor: pointer;	outline: none;	background: transparent url('blank.gif');	z-index: 11020;	display: none;}#fancybox-left {	left: 0px;}#fancybox-right {	right: 0px;}#fancybox-left-ico, #fancybox-right-ico {	position: absolute;	top: 50%;	width: 30px;	height: 30px;	margin-top: -15px;	cursor: pointer;	z-index: 11020;	display: block;}#fancybox-left-ico {	background-image: url('fancybox.png');	background-position: -40px -30px;}#fancybox-right-ico {	background-image: url('fancybox.png');	background-position: -40px -60px;}#fancybox-left:hover, #fancybox-right:hover {	visibility: visible; /* IE6 */}#fancybox-left span {    left: 20px;}#fancybox-right span {    left: auto;    right: 20px;}#fancybox-left:hover span {	left: 20px;}#fancybox-right:hover span {	left: auto;	right: 20px;}.fancybox-bg {	position: absolute;	padding: 0;	margin: 0;	border: 0;	width: 20px;	height: 20px;	z-index: 10010;}#fancybox-bg-n {	top: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');}#fancybox-bg-ne {	top: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -162px;}#fancybox-bg-e {	top: 0;	right: -20px;	height: 100%;	background-image: url('fancybox-y.png');	background-position: -20px 0px;}#fancybox-bg-se {	bottom: -20px;	right: -20px;	background-image: url('fancybox.png');	background-position: -40px -182px; }#fancybox-bg-s {	bottom: -20px;	left: 0;	width: 100%;	background-image: url('fancybox-x.png');	background-position: 0px -20px;}#fancybox-bg-sw {	bottom: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -142px;}#fancybox-bg-w {	top: 0;	left: -20px;	height: 100%;	background-image: url('fancybox-y.png');}#fancybox-bg-nw {	top: -20px;	left: -20px;	background-image: url('fancybox.png');	background-position: -40px -122px;}#fancybox-title {	font-family: Helvetica;	font-size: 12px;	z-index: 11020;}.fancybox-title-inside {	padding-bottom: 10px;	text-align: center;	color: #333;	background: #fff;	position: relative;}.fancybox-title-outside {	padding-top: 10px;	color: #fff;}.fancybox-title-over {	position: absolute;	bottom: 0;	left: 0;	color: #FFF;	text-align: left;}#fancybox-title-over {	padding: 10px;	background-image: url('fancy_title_over.png');	display: block;}.fancybox-title-float {	position: absolute;	left: 0;	bottom: -20px;	height: 32px;}#fancybox-title-float-wrap {	border: none;	border-collapse: collapse;	width: auto;}#fancybox-title-float-wrap td {	border: none;	white-space: nowrap;}#fancybox-title-float-left {	padding: 0 0 0 15px;	background: url('fancybox.png') -40px -90px no-repeat;}#fancybox-title-float-main {	color: #FFF;	line-height: 29px;	font-weight: bold;	padding: 0 0 3px 0;	background: url('fancybox-x.png') 0px -40px;}#fancybox-title-float-right {	padding: 0 0 0 15px;	background: url('fancybox.png') -55px -90px no-repeat;}/* IE6 */.fancybox-ie6 #fancybox-close { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_close.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-left-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-right-ico { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_nav_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-over { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }.fancybox-ie6 #fancybox-title-float-left { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_left.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-main { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_main.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-title-float-right { background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_title_right.png', sizingMethod='scale'); }.fancybox-ie6 #fancybox-bg-w, .fancybox-ie6 #fancybox-bg-e, .fancybox-ie6 #fancybox-left, .fancybox-ie6 #fancybox-right, #fancybox-hide-sel-frame {	height: expression(this.parentNode.clientHeight + "px");}#fancybox-loading.fancybox-ie6 {	position: absolute; margin-top: 0;	top: expression( (-20 + (document.documentElement.clientHeight ? document.documentElement.clientHeight/2 : document.body.clientHeight/2 ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop )) + 'px');}#fancybox-loading.fancybox-ie6 div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_loading.png', sizingMethod='scale'); }/* IE6, IE7, IE8 */.fancybox-ie .fancybox-bg { background: transparent !important; }.fancybox-ie #fancybox-bg-n { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_n.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-ne { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-e { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_e.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-se { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_se.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-s { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_s.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-sw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-w { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_w.png', sizingMethod='scale'); }.fancybox-ie #fancybox-bg-nw { filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

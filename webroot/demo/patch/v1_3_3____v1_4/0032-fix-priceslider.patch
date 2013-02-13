@@ -1,0 +1,106 @@
+From cc87e6c23f62d9c641db6f78972346ab8af13ba6 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Thu, 10 Jan 2013 10:08:51 +0200
+Subject: [PATCH 32/34] fix priceslider
+
+---
+ .../local/Queldorei/Priceslider/Block/Slider.php   |   11 +++++++-
+ .../queldorei/priceslider/slider_layered_nav.phtml |   23 ++++++++++++++-----
+ js/queldorei/jquery.priceslider.js                 |    4 +-
+ 3 files changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/app/code/local/Queldorei/Priceslider/Block/Slider.php b/app/code/local/Queldorei/Priceslider/Block/Slider.php
+index 0f8e147..34a2190 100644
+--- a/app/code/local/Queldorei/Priceslider/Block/Slider.php
++++ b/app/code/local/Queldorei/Priceslider/Block/Slider.php
+@@ -121,8 +121,15 @@ class Queldorei_Priceslider_Block_Slider extends Mage_Catalog_Block_Product_Abst
+             $this->prepareSortableFieldsByCategory($layer->getCurrentCategory());
+ 
+             if ( isset($urlVar['min']) && isset($urlVar['max']) ) {
+-                $max=intval($urlVar['max']);
+-                $min=intval($urlVar['min']);
++                $max = intval($urlVar['max']);
++                $min = intval($urlVar['min']);
++                $baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode();
++                $currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
++                if ( $baseCurrencyCode != $currentCurrencyCode ) {
++                    $rate = Mage::helper('directory')->currencyConvert(1, $baseCurrencyCode, $currentCurrencyCode);
++                    $max = $max / $rate;
++                    $min = $min / $rate;
++                }
+                 $this->_productCollection->getSelect()->where(" IF ( type_id = 'grouped', (min_price <= $max and min_price>=$min), (final_price <= $max and final_price>=$min) ) ");
+             }
+ 
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index ea615b6..c3162a5 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -2,17 +2,27 @@
+ ob_start();
+ if ($this->canShowBlock()):
+ 
++$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
+ $requestParams = $this->getRequest()->getParams();
+ $category_id = $requestParams['id'];
+ $max = Mage::getModel('catalog/layer_filter_price');
+ $slider_max = $maxPrice = $max->getMaxPriceInt()+1;
+ $slider_min = 0;
+-if ( isset($_COOKIE['queldorei_priceslider_min_'.$category_id]) && $_COOKIE['queldorei_priceslider_min_'.$category_id] > $slider_min ) {
+-    $slider_min = $_COOKIE['queldorei_priceslider_min_'.$category_id];
++if ( isset($_COOKIE['queldorei_priceslider_min_'.$currentCurrencyCode.$category_id]) && $_COOKIE['queldorei_priceslider_min_'.$currentCurrencyCode.$category_id] > $slider_min ) {
++    $slider_min = $_COOKIE['queldorei_priceslider_min_'.$currentCurrencyCode.$category_id];
+ }
+-if ( isset($_COOKIE['queldorei_priceslider_max_'.$category_id]) && $_COOKIE['queldorei_priceslider_max_'.$category_id] > $slider_min && $_COOKIE['queldorei_priceslider_max_'.$category_id] < $slider_max ) {
+-    $slider_max = $_COOKIE['queldorei_priceslider_max_'.$category_id];
++if ( isset($_COOKIE['queldorei_priceslider_max_'.$currentCurrencyCode.$category_id]) && $_COOKIE['queldorei_priceslider_max_'.$currentCurrencyCode.$category_id] > $slider_min && $_COOKIE['queldorei_priceslider_max_'.$currentCurrencyCode.$category_id] < $slider_max ) {
++    $slider_max = $_COOKIE['queldorei_priceslider_max_'.$currentCurrencyCode.$category_id];
+ }
++
++$baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode();
++$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
++if ( $baseCurrencyCode != $currentCurrencyCode ) {
++    $rate = Mage::helper('directory')->currencyConvert(1, $baseCurrencyCode, $currentCurrencyCode);
++    $max = $slider_max / $rate;
++    $min = $slider_min / $rate;
++}
++
+ $priceFilterExist = false;
+ $_filters = $this->getFilters();
+ foreach ($_filters as $_filter) {
+@@ -27,8 +37,8 @@ foreach ($_filters as $_filter) {
+     </div>
+     <div class="block-content">
+         <div id="slider"></div>
+-        <div class="f-left" id="slider-min"><?php echo $this->helper('core')->currency($slider_min, true, false) ; ?></div>
+-        <div class="f-right" id="slider-max"><?php echo $this->helper('core')->currency($slider_max, true, false) ; ?></div>
++        <div class="f-left" id="slider-min"><?php echo $this->helper('core')->currency($min, true, false) ; ?></div>
++        <div class="f-right" id="slider-max"><?php echo $this->helper('core')->currency($max, true, false) ; ?></div>
+         <div class="clearer"></div>
+     </div>
+ </div>
+@@ -39,6 +49,7 @@ foreach ($_filters as $_filter) {
+ var Queldorei_Priceslider = {
+     request_params : '<?php unset($requestParams['id']); echo http_build_query($requestParams); ?>',
+     currency : '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
++    currency_code : '<?php echo $currentCurrencyCode; ?>',
+     category_id: <?php echo $category_id; ?>,
+     slider_min: <?php echo $slider_min; ?>,
+     slider_max: <?php echo $slider_max; ?>
+diff --git a/js/queldorei/jquery.priceslider.js b/js/queldorei/jquery.priceslider.js
+index 67df720..83b1810 100644
+--- a/js/queldorei/jquery.priceslider.js
++++ b/js/queldorei/jquery.priceslider.js
+@@ -56,8 +56,8 @@ jQuery(function($){
+             },
+         create:function (event, ui) { reloadProducts(); },
+         stop:function (event, ui) {
+-            $.cookie("queldorei_priceslider_min_"+Queldorei_Priceslider.category_id, ui.values[0], { path: '/' });
+-            $.cookie("queldorei_priceslider_max_"+Queldorei_Priceslider.category_id, ui.values[1], { path: '/' });
++            $.cookie("queldorei_priceslider_min_"+Queldorei_Priceslider.currency_code+Queldorei_Priceslider.category_id, ui.values[0], { path: '/' });
++            $.cookie("queldorei_priceslider_max_"+Queldorei_Priceslider.currency_code+Queldorei_Priceslider.category_id, ui.values[1], { path: '/' });
+             reloadProducts();
+         }
+     });
+-- 
+1.7.9.msysgit.0
+

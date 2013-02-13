@@ -1,0 +1,24 @@
+From 31725aafda473768b3a79b1e70e9345ec8975e8f Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Fri, 23 Nov 2012 15:58:21 +0200
+Subject: [PATCH 07/17] fix language/currency switch on ipad
+
+---
+ skin/frontend/default/shopper/js/script.js |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index adb0319..ccc7d1d 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -55,7 +55,6 @@ jQuery(window).on("load", function() {
+         jQuery('.header-switch, .toolbar-switch').on({
+             click: function (e) {
+                 jQuery(this).addClass('over');
+-                return false;
+             }
+         });
+ 
+-- 
+1.7.10.msysgit.1
+

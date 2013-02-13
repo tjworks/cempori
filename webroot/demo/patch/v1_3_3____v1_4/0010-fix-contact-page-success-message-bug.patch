@@ -1,0 +1,28 @@
+From 1210da55145987c4ff33250c3483043683bc5073 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Wed, 19 Dec 2012 17:49:39 +0200
+Subject: [PATCH 10/34] fix contact page success message bug
+
+---
+ .../default/shopper/template/contacts/form.phtml   |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/contacts/form.phtml b/app/design/frontend/default/shopper/template/contacts/form.phtml
+index ccde4cb..c89aa93 100644
+--- a/app/design/frontend/default/shopper/template/contacts/form.phtml
++++ b/app/design/frontend/default/shopper/template/contacts/form.phtml
+@@ -24,10 +24,10 @@
+  * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+  */
+ ?>
+-<div id="messages_product_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+ <div class="page-title">
+     <h1><?php echo Mage::helper('contacts')->__('Contact Us') ?></h1>
+ </div>
++<div id="messages_product_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+ <form action="<?php echo $this->getFormAction(); ?>" id="contactForm" method="post">
+     <div class="fieldset">
+         <h2 class="legend"><?php echo Mage::helper('contacts')->__('Contact Information') ?></h2>
+-- 
+1.7.9.msysgit.0
+

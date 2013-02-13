@@ -1,0 +1,25 @@
+From 949d4b83dd576dd77da199bbe43463542fe3f700 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 29 Oct 2012 17:18:12 +0200
+Subject: [PATCH 08/11] update cart dropdown checkout url
+
+---
+ .../frontend/default/shopper/template/checkout/cart/cart-top.phtml   |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+index 87222f2..337452c 100644
+--- a/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
++++ b/app/design/frontend/default/shopper/template/checkout/cart/cart-top.phtml
+@@ -63,7 +63,7 @@
+         </div>
+         <div class="buttons clearfix">
+             <button type="button" title="<?php echo $this->__('View Cart') ?>" class="button btn-continue" onclick="setLocation('<?php echo $this->getUrl('checkout/cart') ?>')"><span><span><?php echo $this->__('View Cart') ?></span></span></button>
+-            <button type="button" title="<?php echo $this->__('Checkout') ?>" class="button btn-checkout" onclick="setLocation('<?php echo $this->getUrl('checkout') ?>')"><span><span><?php echo $this->__('Continue to Checkout') ?></span></span></button>
++            <button type="button" title="<?php echo $this->__('Checkout') ?>" class="button btn-checkout" onclick="setLocation('<?php echo $this->getCheckoutUrl() ?>')"><span><span><?php echo $this->__('Continue to Checkout') ?></span></span></button>
+         </div>
+         <?php else: ?>
+         <p class="a-center"><?php echo $this->__('You have no items in your shopping cart.') ?></p>
+-- 
+1.7.10.msysgit.1
+

@@ -1,0 +1,220 @@
+From 2e9f3241e9c2b3d75ef00dfe20be51616f173c9e Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Tue, 9 Oct 2012 13:19:39 +0300
+Subject: [PATCH 04/24] add email to a fried link on product details page
+
+---
+ .../default/shopper/template/catalog/product/view/addto.phtml    |    3 +++
+ skin/frontend/default/shopper/css/local.css                      |    2 ++
+ skin/frontend/default/shopper/css/mobile.css                     |    6 ++++--
+ skin/frontend/default/shopper/images/icon_email.png              |  Bin 0 -> 3011 bytes
+ skin/frontend/default/shopper/images/icon_email@2x.png           |  Bin 0 -> 3155 bytes
+ 5 files changed, 9 insertions(+), 2 deletions(-)
+ create mode 100644 skin/frontend/default/shopper/images/icon_email.png
+ create mode 100644 skin/frontend/default/shopper/images/icon_email@2x.png
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml b/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
+index e3d39d6..f9d7b22 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/view/addto.phtml
+@@ -36,4 +36,7 @@
+ <?php if($_compareUrl) : ?>
+     <li class="compare"><span class="icon"></span><a href="<?php echo $_compareUrl ?>" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
+ <?php endif; ?>
++<?php if ($this->canEmailToFriend()): ?>
++    <li class="email-friend"><span class="icon"></span><a href="<?php echo $this->helper('catalog/product')->getEmailToFriendUrl($_product) ?>"><?php echo $this->__('Email to a Friend') ?></a></li>
++<?php endif; ?>
+ </ul>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 8fc46b5..e8ceefc 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1264,6 +1264,7 @@ a.product-image {display:block;position:relative;}
+ .product-view .add-to-links li a{display:block; color:#322c29; font-size:14px;}
+ .product-view .add-to-links li span.icon {display:block; float:left; overflow:hidden; margin-left:-53px; width:38px; height:38px; background:#322c29 url("../images/icon_wishlist.png") 50% 50% no-repeat; -webkit-border-radius:100% !important; -moz-border-radius:100% !important; border-radius:100% !important; text-indent:-999px; }
+ .product-view .add-to-links li.compare span.icon {background-image:url('../images/icon_compare.png');}
++.product-view .add-to-links li.email-friend span.icon {background-image:url('../images/icon_email.png');}
+ .product-view .add-to-links li a:hover {text-decoration:none }
+ .product-view .add-to-links li:hover span.icon {background-color:#97d2c9}
+ 
+@@ -1874,6 +1875,7 @@ html[xmlns] .slides {display: block;}
+     .product-view .product-img-box {float:none; margin:0 auto 20px;}
+     .product-view .product-shop-info .add-to-links {float:left; clear:none; margin:0;}
+     .product-view .product-shop-info .add-to-links li{float:left; margin:8px 0 0 20px;}
++    .product-view .product-shop-info .add-to-links li.wishlist{margin-left:0}
+     .main .slider-container {width:600px; margin-left:0 }
+     .main .slider-container h3 {width:500px; }
+     .jcarousel-skin-tango .jcarousel-clip-horizontal,
+diff --git a/skin/frontend/default/shopper/css/mobile.css b/skin/frontend/default/shopper/css/mobile.css
+index ce7e429..41899df 100644
+--- a/skin/frontend/default/shopper/css/mobile.css
++++ b/skin/frontend/default/shopper/css/mobile.css
+@@ -13,11 +13,12 @@ button.btn-proceed-checkout span span {background-size:44px 20px;  }
+ .cart-top > a, .cart-top-container .details .cart-top-title a span.icon { background-size:24px 20px}
+ .products-grid .hover .button-container button.button span span em { background-size:24px 19px}
+ .product-view .add-to-cart button.button span span { background-size:41px 20px}
++.product-view .add-to-links li span.icon { background-size:17px 16px}
+ .product-view .add-to-links li.compare span.icon { background-size:13px 16px}
++.product-view .add-to-links li.email-friend span.icon { background-size:18px 13px}
+ .search-top, .search-top-container .search-form .search-top-title span.icon { background-size:18px 18px}
+ .data-table .btn-remove2 { background-size:16px 17px}
+ .footer-info ul.twitterList li span.tweet-icon { background-size:13px 10px}
+-.product-view .add-to-links li span.icon { background-size:17px 16px}
+ .product-prev span, .product-next span { background-size:26px 54px}
+ .rating-box, .rating-box .rating { background-size:11px 20px}
+ .block-layered-price .ui-widget-content .ui-state-default { background-size:19px 18px}
+@@ -66,11 +67,12 @@ only screen and (min-device-pixel-ratio: 1.5) {
+     .cart-top > a, .cart-top-container .details .cart-top-title a span.icon { background-image:url(../images/icon_cart@2x.png);}
+     .products-grid .hover .button-container button.button span span em { background-image:url(../images/icon_cart_listing_mask@2x.png);}
+     .product-view .add-to-cart button.button span span { background-image:url(../images/icon_cart_product@2x.png);}
++    .product-view .add-to-links li span.icon {background-image:url(../images/icon_wishlist@2x.png);}
+     .product-view .add-to-links li.compare span.icon { background-image:url(../images/icon_compare@2x.png);}
++    .product-view .add-to-links li.email-friend span.icon { background-image:url(../images/icon_email@2x.png);}
+     .search-top, .search-top-container .search-form .search-top-title span.icon {background-image:url(../images/icon_search@2x.png);}
+     .data-table .btn-remove2 {background-image:url(../images/icon_trash@2x.png);}
+     .footer-info ul.twitterList li span.tweet-icon {background-image:url(../images/icon_twitter@2x.png);}
+-    .product-view .add-to-links li span.icon {background-image:url(../images/icon_wishlist@2x.png);}
+     .product-prev span, .product-next span {background-image:url(../images/prev_next@2x.png);}
+     .rating-box, .rating-box .rating {background-image:url(../images/rating@2x.png);}
+     .block-layered-price .ui-widget-content .ui-state-default {background-image:url(../images/slider_handle@2x.png);}
+diff --git a/skin/frontend/default/shopper/images/icon_email.png b/skin/frontend/default/shopper/images/icon_email.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d4b9cb9a4357d14e2b11c9c1428f1c9bde8ff020
+GIT binary patch
+literal 3011
+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
+FV1i}FlBWOw
+
+literal 0
+HcmV?d00001
+
+diff --git a/skin/frontend/default/shopper/images/icon_email@2x.png b/skin/frontend/default/shopper/images/icon_email@2x.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..1e958c99b698e2afac89ba1a9d247db4dce57862
+GIT binary patch
+literal 3155
+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
+
+literal 0
+HcmV?d00001
+
+-- 
+1.7.10.msysgit.1
+

@@ -1,0 +1,24 @@
+From 8888d224687669fcee90dfbea7938d534d36ebff Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 29 Oct 2012 20:15:48 +0200
+Subject: [PATCH 11/11] fix labels
+
+---
+ app/code/local/Queldorei/ShopperSettings/Helper/Data.php |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+index 9a47c9a..3cb14f1 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
++++ b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+@@ -48,7 +48,6 @@ class Queldorei_ShopperSettings_Helper_Data extends Mage_Core_Helper_Abstract
+             return false;
+         }
+         if ($to && $today > $to) {
+-            echo $to . ' < '. $today;
+             return false;
+         }
+         if (!$to && !$from) {
+-- 
+1.7.10.msysgit.1
+

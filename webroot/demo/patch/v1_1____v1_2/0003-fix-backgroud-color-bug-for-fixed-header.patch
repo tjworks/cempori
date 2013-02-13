@@ -1,0 +1,255 @@
+From a584109fe6859f20613ce70faa11f1534d31078a Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Mon, 8 Oct 2012 19:22:42 +0300
+Subject: [PATCH 03/24] fix backgroud color bug for fixed header. add
+ menu_text_color option to overide navigation main
+ links color
+
+---
+ .../local/Queldorei/ShopperSettings/etc/config.xml |    1 +
+ .../local/Queldorei/ShopperSettings/etc/system.xml |   10 ++++
+ .../Adminhtml/Shoppercategories/Edit/Tab/Form.php  |    5 ++
+ .../Queldorei/Shoppercategories/etc/config.xml     |    2 +-
+ .../mysql4-upgrade-0.1.0-0.1.1.php                 |   11 ++++
+ skin/frontend/default/shopper/css/options.css.php  |   62 +++++++++++---------
+ 6 files changed, 62 insertions(+), 29 deletions(-)
+ create mode 100644 app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.0-0.1.1.php
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/config.xml b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+index 6122ff1..8034e52 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/config.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/config.xml
+@@ -156,6 +156,7 @@
+ 				<title_color></title_color>
+ 
+                 <header_bg>#ffffff</header_bg>
++                <menu_text_color>#373230</menu_text_color>
+                 <slideshow_bg>#f4f4f2</slideshow_bg>
+                 <content_bg>#FAFAFA</content_bg>
+                 <content_link>#322C29</content_link>
+diff --git a/app/code/local/Queldorei/ShopperSettings/etc/system.xml b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+index 4359df7..df8f90b 100644
+--- a/app/code/local/Queldorei/ShopperSettings/etc/system.xml
++++ b/app/code/local/Queldorei/ShopperSettings/etc/system.xml
+@@ -125,6 +125,16 @@
+                             <show_in_website>1</show_in_website>
+                             <show_in_store>1</show_in_store>
+                         </header_bg>
++                        <menu_text_color translate="label comment">
++                            <label>Navigation Color: </label>
++                            <comment>This color will be used for Navigation links</comment>
++                            <frontend_type>text</frontend_type>
++                            <frontend_model>shoppersettings/adminhtml_system_config_form_field_color</frontend_model>
++                            <sort_order>65</sort_order>
++                            <show_in_default>1</show_in_default>
++                            <show_in_website>1</show_in_website>
++                            <show_in_store>1</show_in_store>
++                        </menu_text_color>
+ 
+                         <slideshow_bg translate="label comment">
+                             <label>Slideshow Background Color: </label>
+diff --git a/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php b/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
+index 0bb40c0..d4619c7 100644
+--- a/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
++++ b/app/code/local/Queldorei/Shoppercategories/Block/Adminhtml/Shoppercategories/Edit/Tab/Form.php
+@@ -107,6 +107,11 @@ class Queldorei_Shoppercategories_Block_Adminhtml_Shoppercategories_Edit_Tab_For
+           'required'  => false,
+           'name'      => 'header_bg',
+       ));
++      $fieldset->addField('menu_text_color', 'queldorei_color', array(
++          'label'     => Mage::helper('shoppercategories')->__('Navigation Color'),
++          'required'  => false,
++          'name'      => 'menu_text_color',
++      ));
+       $fieldset->addField('slideshow_bg', 'queldorei_color', array(
+           'label'     => Mage::helper('shoppercategories')->__('Slideshow bg Color'),
+           'required'  => false,
+diff --git a/app/code/local/Queldorei/Shoppercategories/etc/config.xml b/app/code/local/Queldorei/Shoppercategories/etc/config.xml
+index 974b102..6f4ebd0 100644
+--- a/app/code/local/Queldorei/Shoppercategories/etc/config.xml
++++ b/app/code/local/Queldorei/Shoppercategories/etc/config.xml
+@@ -2,7 +2,7 @@
+ <config>
+     <modules>
+         <Queldorei_Shoppercategories>
+-            <version>0.1.0</version>
++            <version>0.1.1</version>
+         </Queldorei_Shoppercategories>
+     </modules>
+     <admin>
+diff --git a/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.0-0.1.1.php b/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.0-0.1.1.php
+new file mode 100644
+index 0000000..e2eef5d
+--- /dev/null
++++ b/app/code/local/Queldorei/Shoppercategories/sql/shoppercategories_setup/mysql4-upgrade-0.1.0-0.1.1.php
+@@ -0,0 +1,11 @@
++<?php
++/**
++ * @version   1.0 06.08.2012
++ * @author    Queldorei http://www.queldorei.com <mail@queldorei.com>
++ * @copyright Copyright (C) 2010 - 2012 Queldorei
++ */
++
++$installer = $this;
++$installer->startSetup();
++$installer->getConnection()->addColumn($installer->getTable('shoppercategories/scheme'), 'menu_text_color', 'char(7) NOT NULL after `header_bg`');
++$installer->endSetup();
+\ No newline at end of file
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 8b250e6..71df9a4 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -104,7 +104,7 @@ nav .nav-top-title, .nav-container .nav-top-title,
+ .block-slider .slides > li strong,
+ .cms-index-index .block-slider .slides > li strong {font-family:"<?php echo $config['appearance']['font']; ?>"}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['color'] ) : ?>
++<?php if ( !empty($config['appearance']['color']) ) : ?>
+ /**~~ Theme Color ~~**/
+ button.button span,
+ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:hover span, .cart-coupon button:hover span,
+@@ -173,7 +173,7 @@ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:
+ .data-table td a:hover{color:<?php echo $config['appearance']['color']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['title_color'] ) : ?>
++<?php if ( !empty($config['appearance']['title_color']) ) : ?>
+ h1, h2, h3,
+ .std h1, .std h2, .std h3, .std h4,
+ .page-title h1, .page-title h2,
+@@ -190,18 +190,22 @@ h1, h2, h3,
+ {color:<?php echo $config['appearance']['title_color']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['header_bg'] ) : ?>
+-.header-container {background-color:<?php echo $config['appearance']['header_bg']; ?>}
++<?php if ( !empty($config['appearance']['header_bg']) ) : ?>
++.header-container, header.fixed {background-color:<?php echo $config['appearance']['header_bg']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['slideshow_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['menu_text_color']) ) : ?>
++#queldoreiNav > li > a, #nav > li > a {color:<?php echo $config['appearance']['menu_text_color']; ?>}
++<?php endif; ?>
++
++<?php if ( !empty($config['appearance']['slideshow_bg']) ) : ?>
+ .slider {background-color:<?php echo $config['appearance']['slideshow_bg']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['content_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['content_bg']) ) : ?>
+ .main-container {background-color:<?php echo $config['appearance']['content_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['content_link'] ) : ?>
++<?php if ( !empty($config['appearance']['content_link']) ) : ?>
+ .block .block-content a, .block .block-content li a, .block .block-content li.item a,
+ .cms-index-index .block .block-content a, .cms-index-index .block .block-content li a, .cms-index-index .block .block-content li.item a,
+ .block-layered-nav .block-content dd li a,
+@@ -209,7 +213,7 @@ h1, h2, h3,
+ .product-view .box-up-sell .product-name,
+ .data-table td a{color:<?php echo $config['appearance']['content_link']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['content_link_hover'] ) : ?>
++<?php if ( !empty($config['appearance']['content_link_hover']) ) : ?>
+ .block .block-content a:hover, .block .block-content li a:hover, .block .block-content li.item a:hover,
+ .cms-index-index .block .block-content a:hover, .cms-index-index .block .block-content li a:hover, .cms-index-index .block .block-content li.item a:hover,
+ .block-layered-nav .block-content dd li a:hover,
+@@ -219,71 +223,73 @@ h1, h2, h3,
+ <?php endif; ?>
+ 
+ 
+-<?php if ( $config['appearance']['page_title_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['page_title_bg']) ) : ?>
+ .page-title-bg {background-color:<?php echo $config['appearance']['page_title_bg']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['slider_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['slider_bg']) ) : ?>
+ .slider-container {background-color:<?php echo $config['appearance']['slider_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['slider_border'] ) : ?>
++<?php if ( !empty($config['appearance']['slider_border']) ) : ?>
+ .slider-container {border-top-color:<?php echo $config['appearance']['slider_border']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['toolbar_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['toolbar_bg']) ) : ?>
+ .top-switch-bg {background-color:<?php echo $config['appearance']['toolbar_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['toolbar_color'] ) : ?>
++<?php if ( !empty($config['appearance']['toolbar_color']) ) : ?>
+ .header-switch span.current {color:<?php echo $config['appearance']['toolbar_color']; ?>}
+ .header-container .links li a, .header-switch span {color:rgba(<?php echo $color_helper->hex2RGB($config['appearance']['toolbar_color'], 1); ?>, 0.65)}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['toolbar_hover_color'] ) : ?>
++<?php if ( !empty($config['appearance']['toolbar_hover_color']) ) : ?>
+ .header-container .links li a:hover {color:<?php echo $config['appearance']['toolbar_hover_color'] ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['footer_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_bg']) ) : ?>
+ .footer-container {background-color:<?php echo $config['appearance']['footer_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_color']) ) : ?>
+ .footer-container, footer a, footer ul.links li a {color:<?php echo $config['appearance']['footer_color']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_hover_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_hover_color']) ) : ?>
+ footer a:hover, footer ul.links li a:hover {color:<?php echo $config['appearance']['footer_hover_color'] ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_banners_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_banners_bg']) ) : ?>
+ .footer-banners {background-color:<?php echo $config['appearance']['footer_banners_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_bg'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_bg']) ) : ?>
+ .footer-info {background-color:<?php echo $config['appearance']['footer_info_bg']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_border'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_border']) ) : ?>
+ .footer-info {border-top-color:<?php echo $config['appearance']['footer_info_border']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_title_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_title_color']) ) : ?>
+ .footer-info h4 {color:<?php echo $config['appearance']['footer_info_title_color']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_color']) ) : ?>
+ .footer-info, .footer-info ul.twitterList li {color:<?php echo $config['appearance']['footer_info_color']; ?>}
+ .footer-info ul.twitterList li span.time-ago {color:rgba(<?php echo $color_helper->hex2RGB($config['appearance']['footer_info_color'], 1); ?>, 0.85)}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_link_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_link_color']) ) : ?>
+ .footer-info a {color:<?php echo $config['appearance']['footer_info_link_color']; ?>}
+ <?php endif; ?>
+-<?php if ( $config['appearance']['footer_info_link_hover_color'] ) : ?>
++<?php if ( !empty($config['appearance']['footer_info_link_hover_color']) ) : ?>
+ .footer-info a:hover {color:<?php echo $config['appearance']['footer_info_link_hover_color']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['enable_font'] && $config['appearance']['price_font'] ) : ?>
++<?php if ( $config['appearance']['enable_font'] && !empty($config['appearance']['price_font']) ) : ?>
+ .price-box .price {font-family:"<?php echo $config['appearance']['price_font']; ?>"}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['price_color'] ) : ?>
++<?php if ( !empty($config['appearance']['price_color']) ) : ?>
+ .price-box .price {color:<?php echo $config['appearance']['price_color']; ?>}
+ .products-grid .hover .price-box {background-color:<?php echo $config['appearance']['price_color']; ?>}
+ <?php endif; ?>
+ 
+-<?php if ( $config['appearance']['price_circle_color'] ) : ?>
++<?php if ( !empty($config['appearance']['price_circle_color']) ) : ?>
+ .products-grid .hover .price-box {background-color:<?php echo $config['appearance']['price_circle_color']; ?>}
+ <?php endif; ?>
+ 
+-button.invert span, button.btn-continue span, .cart-shipping button span, .cart-coupon button span {background-color:#393431;}
+\ No newline at end of file
++button.invert span, button.btn-continue span, .cart-shipping button span, .cart-coupon button span {background-color:#393431;}
++#queldoreiNav > li > a:hover, #queldoreiNav > li.active > a, #queldoreiNav > li.over > a,
++#nav > li > a:hover, #nav > li.active > a, #nav > li.over > a {color:#373230}
+\ No newline at end of file
+-- 
+1.7.10.msysgit.1
+

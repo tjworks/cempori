@@ -1,0 +1,137 @@
+From 1e3531deeeb60552c4bab2ef8ba4635987832c6d Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 5 Nov 2012 19:33:08 +0200
+Subject: [PATCH 01/25] tabs changed to accordion on mobile view
+
+---
+ .../shopper/template/catalog/product/view/tabs.phtml |   18 ++++++++++++++++--
+ skin/frontend/default/shopper/css/local.css          |   14 ++++++++++++++
+ skin/frontend/default/shopper/css/options.css.php    |    3 ++-
+ skin/frontend/default/shopper/css/responsive.css     |    4 ++--
+ skin/frontend/default/shopper/js/script.js           |   16 ++++++++++++++++
+ 5 files changed, 50 insertions(+), 5 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/product/view/tabs.phtml b/app/design/frontend/default/shopper/template/catalog/product/view/tabs.phtml
+index f24eaf0..83e1bfb 100644
+--- a/app/design/frontend/default/shopper/template/catalog/product/view/tabs.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/product/view/tabs.phtml
+@@ -43,12 +43,26 @@
+ </ul>
+ <?php foreach ($this->getTabs() as $_index => $_tab): ?>
+     <?php if($this->getChildHtml($_tab['alias'])): ?>
+-        <div class="product-tabs-content" id="product_tabs_<?php echo $_tab['alias'] ?>_contents"><?php echo $this->getChildHtml($_tab['alias']) ?></div>
++        <div class="product-tabs-content tabs-content" id="product_tabs_<?php echo $_tab['alias'] ?>_contents"><?php echo $this->getChildHtml($_tab['alias']) ?></div>
+     <?php endif; ?>
+ <?php endforeach; ?>
+ <?php if($custom_tab->getIsActive()): ?>
+-    <div class="product-tabs-content" id="product_tabs_custom_contents"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_custom_tab')->toHtml() ?></div>
++    <div class="product-tabs-content tabs-content" id="product_tabs_custom_contents"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_custom_tab')->toHtml() ?></div>
+ <?php endif; ?>
++
++<div class="product-tabs-accordion clearfix">
++    <?php foreach ($this->getTabs() as $_index => $_tab): ?>
++    <?php if($this->getChildHtml($_tab['alias'])): ?>
++        <h2 id="product_acc_<?php echo $_tab['alias'] ?>" class="tab-heading <?php echo !$_index?' active ':''; ?>"><a href="#"><?php echo $_tab['title']?></a></h2>
++        <div class="product-tabs-content accordion-content"><?php echo $this->getChildHtml($_tab['alias']) ?></div>
++        <?php endif; ?>
++    <?php endforeach; ?>
++    <?php if($custom_tab->getIsActive()): ?>
++    <h2 id="product_acc_<?php echo $_tab['alias'] ?>" class="tab-heading"><a href="#"><?php echo $custom_tab->getTitle();?></a></h2>
++    <div class="product-tabs-content accordion-content"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_custom_tab')->toHtml() ?></div>
++    <?php endif; ?>
++</div>
++
+ <script type="text/javascript">
+ //<![CDATA[
+ Varien.Tabs = Class.create();
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index d127d20..f9e0c3c 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1201,6 +1201,20 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .product-tabs-content ul.disc {}
+ .product-tabs-content ul.disc li { width:auto; float:none; background:transparent url("../images/arrow_item.gif") no-repeat 10px 8px !important;; line-height: 22px; padding: 0 10px 0 20px;}
+ 
++.product-tabs-accordion {display:none; margin:25px 0 30px; border:0; }
++.product-tabs-accordion h2.tab-heading { border:1px solid #e1e1e1; height:43px; line-height:43px; margin:-1px 0 0; position:relative; background: #f5f5f5; }
++.product-tabs-accordion h2.tab-heading:hover { background-color:#fff; }
++.product-tabs-accordion h2.tab-heading a { display:block; height:43px; padding:0px 20px; color:#000; color:rgba(0,0,0,0.67); font-size:16px; font-family:"Myriad Pro", serif; }
++.product-tabs-accordion h2.tab-heading a:hover { text-decoration:none; }
++.product-tabs-accordion h2.active {border:none; border-top:4px solid #97D2C9; background:#fff;
++    border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;
++    -webkit-box-shadow:1px -1px 6px -1px rgba(0, 0, 0, 0.15);
++    -moz-box-shadow:1px -1px 6px -1px rgba(0, 0, 0, 0.15);
++    box-shadow:1px -1px 6px -1px rgba(0, 0, 0, 0.15);}
++.product-tabs-accordion h2.active a,
++.product-tabs-accordion h2.active a:hover { background-color:#fff; }
++.accordion-content {display:none; margin:0;}
++
+ .product-view {}
+ .product-view .buttons-set .back-link  {float:right; margin:-60px 0 0;}
+ .product-view h1 {font-size:30px; font-family:"Myriad Pro",serif; font-weight:400; color:#322c29; letter-spacing:-1px}
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 349157b..049331c 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -95,6 +95,7 @@ nav .nav-top-title, .nav-container .nav-top-title,
+ .block-poll .question,
+ .block-layered-nav dt,
+ .product-tabs a,
++.product-tabs-accordion h2.tab-heading a,
+ .product-category-title,
+ .product-view h1,
+ .product-view h2,
+@@ -165,7 +166,7 @@ button.invert:hover span, button.btn-continue:hover span, .cart-shipping button:
+ .cms-index-index .block,
+ .block-login,
+ .cart .cart-collaterals .cart-block,
+-.product-tabs li.active {border-top-color:<?php echo $config['appearance']['color']; ?>;}
++.product-tabs li.active, .product-tabs-accordion h2.active {border-top-color:<?php echo $config['appearance']['color']; ?>;}
+ 
+ /** links hover color **/
+ .header-container .links li a:hover,
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index a62b13f..df0fa4e 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -318,8 +318,8 @@
+     .product-view .product-img-box .more-views .jcarousel-skin-tango .jcarousel-item img {display:block; width:140px; height:auto; margin:0 auto;}
+     .product-view .product-shop-info .add-to-links {float:left; clear:none; margin:0;}
+     .product-view .product-shop-info .add-to-links li{float:left; margin:8px 0 0 0px;}
+-    .product-tabs li {float:none; margin:0;}
+-    .product-tabs-content {margin-top:0; }
++    .product-tabs, .tabs-content {display:none}
++    .product-tabs-accordion {display:block}
+     .product-view .box-tags .form-add .input-box {width:167px;}
+     .product-view .box-tags .form-add input.input-text {width:167px;}
+ 
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 419eed2..ecf7e6f 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -602,6 +602,22 @@ jQuery(function($){
+         }
+         $(window).scroll(positionFooter).resize(positionFooter).load(positionFooter);
+     }
++
++    //product accordion
++    $('.product-tabs-accordion h2.tab-heading a').click(function () {
++        that = $(this).parent();
++        if($(that).is('.active')) {
++            $(that).toggleClass('active');
++            $(that).next().slideToggle();
++        } else {
++            $('.product-tabs-accordion h2.active').toggleClass('active').next().slideToggle();
++            $(that).toggleClass('active');
++            $(that).next().slideToggle();
++        }
++        return false;
++    });
++    $('.product-tabs-accordion h2.active').next().slideToggle();
++
+ });
+ 
+ 
+-- 
+1.7.10.msysgit.1
+

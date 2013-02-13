@@ -1,0 +1,27 @@
+From 6473fbd5f80be0909f73821c86527b3cee808ee8 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Fri, 12 Oct 2012 17:06:50 +0300
+Subject: [PATCH 20/24] fix - update twitter api url
+
+---
+ skin/frontend/default/shopper/js/script.js |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index bc5bcdd..0b92463 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -602,8 +602,8 @@ function getTweets(el, utils){
+         el.twitterList.find("li").eq(0).html("You need to specify a username");
+     }else{
+         jQuery.ajax({
+-            url			: "https://twitter.com/statuses/user_timeline/"+utils.username+".json?callback=?",
+-            dataType	: "json",
++            url			: "//api.twitter.com/1/statuses/user_timeline.json?screen_name="+utils.username,
++            dataType	: "jsonp",
+             timeout		: 15000,
+             success		: function(data){
+                 var li = '';
+-- 
+1.7.10.msysgit.1
+

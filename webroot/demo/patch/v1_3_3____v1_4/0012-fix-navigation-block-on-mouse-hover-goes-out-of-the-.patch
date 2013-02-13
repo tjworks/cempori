@@ -1,0 +1,36 @@
+From 63bf86371bc5249641b9e1dc10404c97da543950 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 24 Dec 2012 18:16:00 +0200
+Subject: [PATCH 12/34] fix - navigation block on  mouse hover goes out of the
+ right side of browser.
+
+---
+ skin/frontend/default/shopper/js/script.js |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index 21b3d58..df734cd 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -220,11 +220,15 @@ jQuery(function($){
+ 
+     $('#queldoreiNav li').hover(
+         function(){
+-            $(this).addClass('over');
++            var docWidth = $(document).width();
+             var div = $(this).children('div');
++            var divWidth = div.actual('width') + parseInt(div.css('padding')) + 30;
++
++            $(this).addClass('over');
+             div.addClass('shown-sub');
+-            if ( div.actual('width') + $(this).offset().left > $(document).width()  ) {
+-                div.css('left', -($(this).offset().left + div.actual('width') + 5 - $(document).width())+'px' );
++
++            if ( divWidth + $(this).offset().left > docWidth  ) {
++                div.css('left', -($(this).offset().left + divWidth - docWidth)+'px' );
+             } else {
+                 div.css('left', '0px');
+             }
+-- 
+1.7.9.msysgit.0
+

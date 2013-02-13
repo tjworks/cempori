@@ -1,0 +1,30 @@
+From 2e4febc29bd9dff27f4409b6c5e70226e36dc6c9 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 29 Oct 2012 18:17:07 +0200
+Subject: [PATCH 09/11] fix new/sale labels
+
+---
+ app/code/local/Queldorei/ShopperSettings/Helper/Data.php |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+index 599a016..bb53eaf 100644
+--- a/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
++++ b/app/code/local/Queldorei/ShopperSettings/Helper/Data.php
+@@ -38,8 +38,11 @@ class Queldorei_ShopperSettings_Helper_Data extends Mage_Core_Helper_Abstract
+ 
+     protected function _checkDate($from, $to)
+     {
+-        $date = new Zend_Date();
+-        $today = strtotime($date->__toString());
++        $today = strtotime(
++            Mage::app()->getLocale()->date()
++            ->setTime('23:59:59')
++            ->toString(Varien_Date::DATETIME_INTERNAL_FORMAT)
++        );
+ 
+         if ($from && $today < $from) {
+             return false;
+-- 
+1.7.10.msysgit.1
+

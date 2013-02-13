@@ -1,0 +1,68 @@
+From dc2be5bd64082dced278cd5c13096fa2e858f70f Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Mon, 12 Nov 2012 19:04:32 +0200
+Subject: [PATCH 15/25] add show/hide to layered navigation for large amount
+ of options
+
+---
+ .../queldorei/priceslider/slider_layered_nav.phtml    |    2 +-
+ skin/frontend/default/shopper/css/local.css           |    1 +
+ skin/frontend/default/shopper/js/script.js            |   17 +++++++++++++++++
+ 3 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+index f359ce9..c975589 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/priceslider/slider_layered_nav.phtml
+@@ -53,7 +53,7 @@ foreach ($_filters as $_filter) {
+     if ( $_filter->getType() == 'catalog/layer_filter_price' ) continue;
+     if ($_filter->getType() == "catalog/layer_filter_category" && !Mage::getStoreConfig('shoppersettings/catalog/categories_filter') ) continue;
+     if ($_filter->getItemsCount()) {
+-        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'</dd>';
++        $filtersHtml .= '<dt>'.$this->__($_filter->getName()).'</dt><dd>'.$_filter->getHtml().'<a href="#" class="shopby_more">'.$this->__('show more...').'</a></dd>';
+     }
+ }
+ ?>
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 5ad7be0..679dcbc 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -1173,6 +1173,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
+ .block-layered-nav .block-content dd li {margin:0 0 0 3px; padding:0 0 0 13px; line-height:20px; background: url("../images/arrow_item.gif") 0 8px no-repeat  }
+ .block-layered-nav .block-content dd li:last-child {border:0; }
+ .block-layered-nav .block-content dd li a:hover {color:#999; }
++.block-layered-nav .shopby_more {display:none}
+ 
+ .block-layered-price {}
+ .block-layered-price .ui-slider-horizontal { height:6px; border:1px solid #e6e6e6; background:#fefefe; margin:0 0 10px; border-radius:0; -webkit-border-radius:0; -moz-border-radius:0;
+diff --git a/skin/frontend/default/shopper/js/script.js b/skin/frontend/default/shopper/js/script.js
+index d2995c4..8b1ce7c 100644
+--- a/skin/frontend/default/shopper/js/script.js
++++ b/skin/frontend/default/shopper/js/script.js
+@@ -627,6 +627,23 @@ jQuery(function($){
+         $(".header-wrapper").height($("header").height());
+     });
+ 
++    //show more in layered nav
++    if ( $('.block-layered-nav').length ) {
++        $('.block-layered-nav ol').each(function(i,v){
++            //console.log($('li', this).length);
++            if ( $('li', this).length > 5 ) {
++                var that = this;
++                $('li:gt(4)', this).hide();
++                $(this).next()
++                    .show()
++                    .click(function(){
++                        $('li:gt(4)', that).toggle();
++                        return false;
++                    });
++            }
++        });
++    }
++
+ });
+ 
+ 
+-- 
+1.7.10.msysgit.1
+

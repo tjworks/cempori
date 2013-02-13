@@ -1,0 +1,321 @@
+From 40918d1b3e99676170a6b0883566dd4cb007b9f8 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@queldorei.com>
+Date: Sat, 29 Dec 2012 15:53:22 +0200
+Subject: [PATCH 21/34] fix mobile navigation
+
+---
+ .../shopper/template/catalog/navigation/top.phtml  |    2 +-
+ .../shopper/template/page/html/header.phtml        |   20 +++++-
+ .../shopper/template/page/html/topmenu.phtml       |    2 +-
+ skin/frontend/default/shopper/css/animation.css    |   16 ++---
+ skin/frontend/default/shopper/css/local.css        |   43 +++++++++++++
+ skin/frontend/default/shopper/css/options.css.php  |   16 +++--
+ skin/frontend/default/shopper/css/responsive.css   |   67 ++++++++++----------
+ 7 files changed, 111 insertions(+), 55 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+index 3fc3536..80c70a1 100644
+--- a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+@@ -44,7 +44,7 @@
+ <?php $config = Mage::getStoreConfig('shoppersettings', Mage::app()->getStore()->getId()); ?>
+ <div class="nav-container">
+     <div class="nav-top-title"><div class="icon"><span></span><span></span><span></span></div><a href="#"><?php echo $this->__('Navigation'); ?></a></div>
+-    <ul id="nav">
++    <ul id="<?php echo Mage::registry('shopperPrefix');?>nav">
+ 	    <?php if ($config['navigation']['home']): ?>
+         <li class="level0 level-top">
+             <a href="<?php echo $this->getBaseUrl(); ?>"><span><?php echo $this->__('Home'); ?></span></a>
+diff --git a/app/design/frontend/default/shopper/template/page/html/header.phtml b/app/design/frontend/default/shopper/template/page/html/header.phtml
+index 3f2d675..238c630 100644
+--- a/app/design/frontend/default/shopper/template/page/html/header.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/header.phtml
+@@ -60,7 +60,13 @@ if ( $config['design']['below_logo'] ) {
+ 			        <?php else:?>
+                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
+ 			        <?php endif?>
+-	                <div class="mobile-nav"><?php echo $this->getChildHtml('topMenu'); ?></div>
++	                <div class="mobile-nav">
++                        <?php
++                        Mage::register('shopperPrefix', 'mobile-');
++                        echo $this->getChildHtml('topMenu');
++                        Mage::unregister('shopperPrefix');
++                        ?>
++                    </div>
+                     <div class="top-dropdowns">
+ 				        <?php echo $this->getChildHtml('cartTop') ?>
+ 				        <?php echo $this->getChildHtml('compareTop') ?>
+@@ -76,7 +82,7 @@ if ( $config['design']['below_logo'] ) {
+ 	                if ( !$config['navigation']['use_wide_navigation'] && $config['navigation']['use_navigation'] ) {
+ 		                echo $this->getChildHtml('topShopperMenu');
+ 	                } else {
+-		                echo $this->getChildHtml('topMenu');
++		                echo $this->getChildHtml('topMenu', false);
+ 	                }
+ 	                ?>
+                     <!-- NAVIGATION EOF -->
+@@ -92,12 +98,18 @@ if ( $config['design']['below_logo'] ) {
+                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
+                     <?php endif; ?>
+                     <!-- NAVIGATION -->
+-                    <div class="mobile-nav"><?php echo $this->getChildHtml('topMenu'); ?></div>
++                    <div class="mobile-nav">
++                        <?php
++                        Mage::register('shopperPrefix', 'mobile-');
++                        echo $this->getChildHtml('topMenu');
++                        Mage::unregister('shopperPrefix');
++                        ?>
++                    </div>
+ 	                <?php
+                         if ( !$config['navigation']['use_wide_navigation'] && $config['navigation']['use_navigation'] ) {
+                             echo $this->getChildHtml('topShopperMenu');
+                         } else {
+-                            echo $this->getChildHtml('topMenu');
++                            echo $this->getChildHtml('topMenu', false);
+                         }
+                     ?>
+                     <!-- NAVIGATION EOF -->
+diff --git a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+index 672df30..0b02cb9 100644
+--- a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+@@ -36,7 +36,7 @@
+ <?php $config = Mage::getStoreConfig('shoppersettings', Mage::app()->getStore()->getId()); ?>
+ <div class="nav-container">
+     <div class="nav-top-title"><div class="icon"><span></span><span></span><span></span></div><a href="#"><?php echo $this->__('Navigation'); ?></a></div>
+-    <ul id="nav">
++    <ul id="<?php echo Mage::registry('shopperPrefix');?>nav">
+         <?php if ($config['navigation']['home']): ?>
+         <li class="level0 level-top">
+             <a href="<?php echo $this->getBaseUrl(); ?>"><span><?php echo $this->__('Home'); ?></span></a>
+diff --git a/skin/frontend/default/shopper/css/animation.css b/skin/frontend/default/shopper/css/animation.css
+index 6b0debb..297373d 100644
+--- a/skin/frontend/default/shopper/css/animation.css
++++ b/skin/frontend/default/shopper/css/animation.css
+@@ -67,21 +67,17 @@ transition: background 200ms ease-in-out;
+ -o-transition: background 200ms ease-in-out;
+ }
+ 
+-#nav>li>a,
+-#nav ul li a,
+-#queldoreiNav>li>a,
+-#queldoreiNav ul li a,
+-#queldoreiNav>li>a>span, #nav>li>a>span {
++#nav>li>a, #nav ul li a, #nav>li>a>span,
++#mobile-nav>li>a, #mobile-nav ul li a,  #mobile-nav>li>a>span,
++#queldoreiNav>li>a, #queldoreiNav ul li a, #queldoreiNav>li>a>span {
+     transition: all 600ms ease-in-out;
+     -webkit-transition: all 600ms ease-in-out;
+     -moz-transition: all 600ms ease-in-out;
+     -o-transition: all 600ms ease-in-out;
+ }
+-#nav>li>a:hover,
+-#nav ul li a:hover,
+-#queldoreiNav>li>a:hover,
+-#queldoreiNav ul li a:hover,
+-#queldoreiNav>li>a:hover>span, #nav>li>a:hover>span{
++#nav>li>a:hover, #nav ul li a:hover, #nav>li>a:hover>span,
++#mobile-nav>li>a:hover, #mobile-nav ul li a:hover, #mobile-nav>li>a:hover>span,
++#queldoreiNav>li>a:hover, #queldoreiNav ul li a:hover, #queldoreiNav>li>a:hover>span {
+     transition: all 100ms ease-in-out;
+     -webkit-transition: all 100ms ease-in-out;
+     -moz-transition: all 100ms ease-in-out;
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index 33bb1f3..9dec44e 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -639,6 +639,49 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
+ #nav li.custom-block ul li>ul { position:static; width:auto; border:none; background:#fff; top:0; margin:0; padding:0; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
+ #nav li.custom-block ul li>ul>li { width:auto; float:none; background:transparent url("../images/arrow_item.gif") no-repeat 10px 8px !important;; line-height: 22px; padding: 0 10px 0 20px;}
+ 
++#mobile-nav { padding:0; position:relative; border:none; float:left; }
++/* All Levels */
++#mobile-nav li { text-align:left; position: static; }
++#mobile-nav li.over { z-index:998; }
++#mobile-nav li.parent {}
++#mobile-nav li a { display:block; text-decoration:none; font-weight:300; }
++#mobile-nav li a:hover { text-decoration:none; }
++#mobile-nav li a span { display:block; white-space:nowrap; cursor:pointer; }
++#mobile-nav li ul a span { white-space:normal; }
++
++/* 1st Level */
++#mobile-nav>li { float:left; position:relative; margin:0 3px 3px;}
++#mobile-nav>li>a { position:relative; float:left; padding:0; color:#373230; font-size:14px; font-family:"Myriad Pro",sans-serif; font-weight:700; line-height:36px; letter-spacing:-0.1em; text-transform:uppercase; }
++#mobile-nav>li>a>span{padding:0px 10px; border-top:3px solid transparent; background:#fff;}
++#mobile-nav>li:hover,
++#mobile-nav>li.over,
++#mobile-nav>li.active{}
++#mobile-nav>li>a:hover, #mobile-nav>li.over>a{z-index:1000;}
++#mobile-nav>li>a:hover>span,
++#mobile-nav>li.over>a>span,
++#mobile-nav>li.active>a>span{border-top:3px solid #97d2c9;}
++#mobile-nav>li.custom-block>a, #mobile-nav>li.custom-block>a>span {cursor:default;}
++
++/* 2nd Level */
++/*#mobile-nav ul,*/
++#mobile-nav ul { position:absolute; z-index:999; width:auto; padding:16px; margin:39px 0 0; left:-10000px; border:none; background:#fff;}
++
++/* 3rd+ leven */
++/*#mobile-nav ul ul,*/
++#mobile-nav ul ul { top:-5px; margin:0; padding:0; width:auto; border:none;}
++#mobile-nav ul ul{ padding:16px; width:auto; }
++#mobile-nav ul li { float:none; border:none; width:210px; line-height:28px; position:relative; }
++#mobile-nav ul li.last {}
++#mobile-nav ul li a {float:none; padding:0; font-family:Arial, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
++#mobile-nav ul li.active > a {background:#322c29 !important; color:#fff !important; }
++#mobile-nav ul li.over > a, #mobile-nav ul li a:hover {background:#f5f4f4; }
++
++/* Show menu */
++#mobile-nav li ul.shown-sub,
++#mobile-nav li div.shown-sub { left:0px; z-index:999; }
++#mobile-nav li .shown-sub ul.shown-sub,
++#mobile-nav li .shown-sub li div.shown-sub { left:15px; }
++
+ /********** Navigation > */
+ /* ======================================================================================= */
+ 
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index 23c2b37..4a46162 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -41,7 +41,7 @@ header("Content-type: text/css; charset: UTF-8");
+ nav .nav-top-title, .nav-container .nav-top-title,
+ #queldoreiNav>li>a,
+ #queldoreiNav li.custom-block div.sub-wrapper strong,
+-#nav>li>a,
++#nav>li>a, #mobile-nav>li>a,
+ #nav li.custom-block ul li strong,
+ .wide-navigation #nav ul.level0 > li > a,
+ .homepage-banners a .content strong,
+@@ -118,9 +118,9 @@ nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span
+ 
+ /***** iPad Smaller than 959px *****/
+ @media only screen and (max-width: 959px) {
+-    #queldoreiNav>li>a:hover, #nav>li>a:hover,
+-    #queldoreiNav>li.over>a, #nav>li.over>a,
+-    #queldoreiNav>li.active>a, #nav>li.active>a {background-color:<?php echo $config['appearance']['color']; ?>; color:#fff; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;}
++    #queldoreiNav>li>a:hover, #nav>li>a:hover, #mobile-nav>li>a:hover,
++    #queldoreiNav>li.over>a, #nav>li.over>a, #mobile-nav>li.over>a,
++    #queldoreiNav>li.active>a, #nav>li.active>a, #mobile-nav>li.active>a {background-color:<?php echo $config['appearance']['color']; ?>; color:#fff; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;}
+ }
+ 
+ .footer-info a,
+@@ -144,6 +144,9 @@ nav .nav-top-title div.icon span, .nav-container .nav-top-title div.icon span
+ #nav>li>a:hover>span,
+ #nav>li.over>a>span,
+ #nav>li.active>a>span,
++#mobile-nav>li>a:hover>span,
++#mobile-nav>li.over>a>span,
++#mobile-nav>li.active>a>span,
+ .cart .cart-collaterals .cart-block,
+ .opc .step,
+ .block,
+@@ -184,7 +187,7 @@ h1, h2, h3,
+ <?php endif; ?>
+ 
+ <?php if ( !empty($config['appearance']['menu_text_color']) ) : ?>
+-#queldoreiNav > li > a, #nav > li > a {color:<?php echo $config['appearance']['menu_text_color']; ?>}
++#queldoreiNav > li > a, #nav > li > a, #mobile-nav > li > a {color:<?php echo $config['appearance']['menu_text_color']; ?>}
+ <?php endif; ?>
+ 
+ <?php if ( !empty($config['appearance']['slideshow_bg']) ) : ?>
+@@ -288,7 +291,8 @@ footer a:hover, footer ul.links li a:hover {color:<?php echo $config['appearance
+ 
+ button.invert span, button.btn-continue span, .cart-shipping button span, .cart-coupon button span {background-color:#393431;}
+ #queldoreiNav > li > a:hover, #queldoreiNav > li.active > a, #queldoreiNav > li.over > a,
+-#nav > li > a:hover, #nav > li.active > a, #nav > li.over > a {color:#373230}
++#nav > li > a:hover, #nav > li.active > a, #nav > li.over > a,
++#mobile-nav > li > a:hover, #mobile-nav > li.active > a, #mobile-nav > li.over > a {color:#373230}
+ 
+ <?php if ( isset($config['design']['top_compare']) && $config['design']['top_compare'] == 0 ) : ?>
+ .compare-top-container {display:none}
+diff --git a/skin/frontend/default/shopper/css/responsive.css b/skin/frontend/default/shopper/css/responsive.css
+index 50dd0e3..53dac62 100644
+--- a/skin/frontend/default/shopper/css/responsive.css
++++ b/skin/frontend/default/shopper/css/responsive.css
+@@ -172,27 +172,24 @@
+     footer address{ margin:15px 0 0;}
+     .footer-info .grid_3 {width:356px; margin-bottom:30px; }
+ 
+-    nav.queldorei, .nav-container {display:none; }
++    nav.queldorei, .nav-container, .below-logo .nav-container {display:none; }
+     .mobile-nav, .mobile-nav  .nav-container, .mobile-nav  .nav-container .nav-top-title {display:block; }
+-    .mobile-nav #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+-    .mobile-nav #nav li { float:none; position:relative; width:240px; margin:0 auto 3px;}
+-    .mobile-nav #nav li a { float:none; padding:0; }
+-    .mobile-nav #nav li a span{padding:0px 10px; border:none;}
+-    .mobile-nav #nav li:hover,
+-    .mobile-nav #nav li.over,
+-    .mobile-nav #nav li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
+-    .mobile-nav #nav>li>a:hover>span,
+-    .mobile-nav #nav>li.over>a>span,
+-    .mobile-nav #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
+-    .mobile-nav #nav>li>a:hover>em,
+-    .mobile-nav #nav>li.over>a>em,
+-    .mobile-nav #nav>li.active>a>em{color:#fff; }
+-    .mobile-nav #nav li.custom-block { display:none !important;}
+-    .mobile-nav #nav ul { display:none; position:static; margin:0; padding:5px 0 10px 5px; -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none; }
+-    .mobile-nav #nav ul li {width:auto; }
+-    /*.mobile-nav #nav ul li a:hover {background:#fefefe; }
+-    .mobile-nav #nav ul li a:hover>span {color:#000;}*/
+-
++    #mobile-nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    #mobile-nav li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    #mobile-nav li a { float:none; padding:0; }
++    #mobile-nav li a span {padding:0px 10px; border:none;}
++    #mobile-nav li:hover,
++    #mobile-nav li.over,
++    #mobile-nav li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    #mobile-nav>li>a:hover>span,
++    #mobile-nav>li.over>a>span,
++    #mobile-nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    #mobile-nav>li>a:hover>em,
++    #mobile-nav>li.over>a>em,
++    #mobile-nav>li.active>a>em{color:#fff; }
++    #mobile-nav li.custom-block { display:none !important;}
++    #mobile-nav ul, #mobile-nav ul ul { display:none; position:static; margin:0; padding:5px 0 10px 5px; -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none; }
++    #mobile-nav ul li {width:auto; }
+ 
+     .homepage-banners {width:600px !important;}
+     .homepage-banners .grid_6{width:270px !important; margin:0 15px;}
+@@ -391,20 +388,24 @@
+     .search-field #search {width:224px}
+     .search-field #search_mini_form .form-search button {margin-left:216px}
+ 
+-    nav.queldorei, .nav-container {display:none; }
++    nav.queldorei, .nav-container, .below-logo .nav-container {display:none; }
+     .mobile-nav, .mobile-nav  .nav-container, .mobile-nav  .nav-container .nav-top-title {display:block; }
+-    .mobile-nav #nav{float:none; width:240px; margin:0 auto 10px; display:none;}
+-    .mobile-nav #nav>li { float:none; position:relative; width:240px; margin:0 auto 3px;}
+-    .mobile-nav #nav>li>a { float:none; padding:0; }
+-    .mobile-nav #nav>li>a>span{padding:0px 10px; border:none;}
+-    .mobile-nav #nav>li:hover,
+-    .mobile-nav #nav>li.over,
+-    .mobile-nav #nav>li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
+-    .mobile-nav #nav>li>a:hover>span,
+-    .mobile-nav #nav>li.over>a>span,
+-    .mobile-nav #nav>li.active>a>span{border:none; background:transparent; color:#fff; }
+-    /*.mobile-nav #nav>li ul { display:none !important;}*/
+-    .mobile-nav #nav>li.custom-block { display:none !important;}
++    #mobile-nav{float:none; width:240px; margin:0 auto 10px; display:none;}
++    #mobile-nav li { float:none; position:relative; width:240px; margin:0 auto 3px;}
++    #mobile-nav li a { float:none; padding:0; }
++    #mobile-nav li a span {padding:0px 10px; border:none;}
++    #mobile-nav li:hover,
++    #mobile-nav li.over,
++    #mobile-nav li.active{ -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none;}
++    #mobile-nav>li>a:hover>span,
++    #mobile-nav>li.over>a>span,
++    #mobile-nav>li.active>a>span{border:none; background:transparent; color:#fff; }
++    #mobile-nav>li>a:hover>em,
++    #mobile-nav>li.over>a>em,
++    #mobile-nav>li.active>a>em{color:#fff; }
++    #mobile-nav li.custom-block { display:none !important;}
++    #mobile-nav ul, #mobile-nav ul ul { display:none; position:static; margin:0; padding:5px 0 10px 5px; -webkit-box-shadow:none; -moz-box-shadow:none; box-shadow:none; }
++    #mobile-nav ul li {width:auto; }
+ 
+     .homepage-banners a .content{margin:14px;}
+     .homepage-banners a .content .border{margin:5px 10px; }
+-- 
+1.7.9.msysgit.0
+

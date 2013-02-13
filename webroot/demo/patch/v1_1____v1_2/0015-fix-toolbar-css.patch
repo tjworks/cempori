@@ -1,0 +1,25 @@
+From 421e5060f1a1ebcb6406909ef4f72575a1ba1368 Mon Sep 17 00:00:00 2001
+From: queldorei <mail@queldorei.com>
+Date: Wed, 10 Oct 2012 19:24:27 +0300
+Subject: [PATCH 15/24] fix toolbar css
+
+---
+ skin/frontend/default/shopper/css/local.css |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/skin/frontend/default/shopper/css/local.css b/skin/frontend/default/shopper/css/local.css
+index e56225f..e39a6d1 100644
+--- a/skin/frontend/default/shopper/css/local.css
++++ b/skin/frontend/default/shopper/css/local.css
+@@ -730,7 +730,7 @@ a.product-image {display:block;position:relative;}
+ .toolbar-switch .toolbar-dropdown { display:none; }
+ .toolbar-switch select { display:none; }
+ .toolbar-switch .current { color:#434343; }
+-.toolbar-switch .toolbar-title {position:relative; z-index:2; padding:0 40px 0 0; background:transparent url('../images/selectbox_arrow.png') 100% 7px no-repeat;}
++.toolbar-switch .toolbar-title {position:relative; z-index:4; padding:0 40px 0 0; background:transparent url('../images/selectbox_arrow.png') 100% 7px no-repeat;}
+ .over .toolbar-title {background-color:#fff; height:30px; margin:0 -1px; border-left:1px solid #e1e1e1; border-right:1px solid #e1e1e1; }
+ 
+ .toolbar-dropdown {background:#fff; padding:11px 22px; display:none; position:absolute; z-index:3; margin:-1px; border:1px solid #e1e1e1; -webkit-box-shadow:1px 1px 2px 0px rgba(0, 0, 0, 0.05); -moz-box-shadow:1px 1px 2px 0px rgba(0, 0, 0, 0.05); box-shadow:1px 1px 2px 0px rgba(0, 0, 0, 0.05);}
+-- 
+1.7.10.msysgit.1
+

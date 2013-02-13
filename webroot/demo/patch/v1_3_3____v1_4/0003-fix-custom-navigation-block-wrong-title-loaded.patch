@@ -1,0 +1,59 @@
+From f1933826e67d57ccf53ee007187424efe136f5be Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 13 Dec 2012 12:27:56 +0200
+Subject: [PATCH 03/34] fix custom navigation block - wrong title loaded
+
+---
+ .../shopper/template/catalog/navigation/top.phtml  |    4 +++-
+ .../shopper/template/page/html/topmenu.phtml       |    4 +++-
+ .../template/queldorei/navigation/top.phtml        |    4 +++-
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+index dccf8d3..477d0d5 100644
+--- a/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
++++ b/app/design/frontend/default/shopper/template/catalog/navigation/top.phtml
+@@ -51,7 +51,9 @@
+         <?php endif; ?>
+         <?php
+         echo $_menu;
+-        $custom_tab = Mage::getModel('cms/block')->load('shopper_navigation_block');
++        $custom_tab = Mage::getModel('cms/block')
++		    ->setStoreId( Mage::app()->getStore()->getId() )
++		    ->load('shopper_navigation_block');
+         if($custom_tab->getIsActive()) {
+             echo '
+             <li class="level0 level-top parent custom-block">
+diff --git a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+index 3631ace..bb62f55 100644
+--- a/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
++++ b/app/design/frontend/default/shopper/template/page/html/topmenu.phtml
+@@ -43,7 +43,9 @@
+         <?php endif; ?>
+         <?php
+         echo $_menu;
+-        $custom_tab = Mage::getModel('cms/block')->load('shopper_navigation_block');
++	    $custom_tab = Mage::getModel('cms/block')
++		    ->setStoreId( Mage::app()->getStore()->getId() )
++		    ->load('shopper_navigation_block');
+         if($custom_tab->getIsActive()) {
+             echo '
+             <li class="level0 level-top parent custom-block">
+diff --git a/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml b/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
+index 983d87f..638428a 100644
+--- a/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
++++ b/app/design/frontend/default/shopper/template/queldorei/navigation/top.phtml
+@@ -26,7 +26,9 @@
+      <?php endif; ?>
+         <?php
+         echo $_menu;
+-        $custom_tab = Mage::getModel('cms/block')->load('shopper_navigation_block');
++        $custom_tab = Mage::getModel('cms/block')
++	        ->setStoreId( Mage::app()->getStore()->getId() )
++	        ->load('shopper_navigation_block');
+         if($custom_tab->getIsActive()) {
+             echo '
+             <li class="level0 level-top parent custom-block">
+-- 
+1.7.9.msysgit.0
+

@@ -1,0 +1,25 @@
+From caba9f20a1c3e3c9d5a26bd77c449df6de6397d6 Mon Sep 17 00:00:00 2001
+From: altairus <altairus@quedoreil.com>
+Date: Thu, 3 Jan 2013 15:47:42 +0200
+Subject: [PATCH 24/34] fix "enable google font" option for category schemes
+
+---
+ skin/frontend/default/shopper/css/options.css.php |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/skin/frontend/default/shopper/css/options.css.php b/skin/frontend/default/shopper/css/options.css.php
+index c3da8da..2f1f3b3 100644
+--- a/skin/frontend/default/shopper/css/options.css.php
++++ b/skin/frontend/default/shopper/css/options.css.php
+@@ -30,7 +30,7 @@ if (!empty($_GET['cat'])) {
+ 
+ header("Content-type: text/css; charset: UTF-8");
+ ?>
+-<?php if ( $config['appearance']['enable_font'] ) : ?>
++<?php if ( $config['appearance']['enable_font'] == 1 ) : ?>
+ /**~~ Theme Font ~~**/
+ .std h1, .std h2, .std h3, .std h4,
+ .page-title h1, .page-title h2,
+-- 
+1.7.9.msysgit.0
+
