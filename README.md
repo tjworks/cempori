@@ -14,6 +14,9 @@ Cempori Dev
 7. 唐测试软件试用，如有bug，开新的Github Issue给小李 （类别：Bug)，小李fix bug
 8. 如系统没有bug，使用正常，唐支付账单 
 
+注解：
+  功能性的Bug不计时收费
+
 Hardware/Software Requirements  
 ============================
 - CentOS 6.3
