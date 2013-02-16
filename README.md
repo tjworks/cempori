@@ -15,7 +15,7 @@ Cempori Dev
 8. 如系统没有bug，使用正常，唐支付账单 
 
 注解：
-  功能性的Bug不计时收费
+  功能性的Bug不计时不收费
 
 Hardware/Software Requirements  
 ============================
