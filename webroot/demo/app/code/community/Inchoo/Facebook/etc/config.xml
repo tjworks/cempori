@@ -14,7 +14,6 @@
              <version>1.0.0</version>
         </Inchoo_Facebook>
     </modules>
-    
     <global>
         <models>
             <inchoo_facebook>
@@ -36,15 +35,11 @@
 			<inchoo_facebook>
                 <class>Inchoo_Facebook_Block</class>
             </inchoo_facebook>
-			
 			  <adminhtml>
 			 	<rewrite>
 					 <customer_grid>Inchoo_Facebook_Block_Adminhtml_Customer_Grid</customer_grid>
-					 
-					 
 				</rewrite>
 			 </adminhtml>
-			
         </blocks>
         <helpers>
 			<inchoo_facebook>
@@ -52,7 +47,6 @@
             </inchoo_facebook>
         </helpers>
     </global>
-    
     <frontend>
 		<routers>
             <inchoo_facebook>
@@ -80,7 +74,6 @@
             </modules>
         </translate>
     </frontend>
-    
     <adminhtml>
         <translate>
             <modules>
@@ -92,7 +85,6 @@
             </modules>
         </translate>    
     </adminhtml>
-    
     <default>
     	<customer>
     		<facebook>
@@ -100,5 +92,4 @@
     		</facebook>
     	</customer>
     </default>
-    
 </config>
