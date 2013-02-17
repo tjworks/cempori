@@ -1226,4 +1226,5 @@ tr.summary-details-excluded { font-style:italic; }
 
 
 /* ========================Custom Style========================= */
-.facebook-login{float:left}
+.facebook-login{width: 300px;float: left;margin-left: 200px;background: white;}
+.facebook-button{background: url(../images/facebook-login-button.jpg);border: none;width: 261px;height: 58px;}
