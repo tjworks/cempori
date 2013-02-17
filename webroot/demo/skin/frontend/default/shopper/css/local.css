@@ -266,7 +266,7 @@ body.non-responsive {min-width:1200px;}
 .contacts-index-index .form-list li.wide textarea {width:90%}
 .customer-account-login {}
 .customer-account-login .main-container {-webkit-box-shadow:inset 0px 4px 10px -5px rgba(0, 0, 0, 0.15); -moz-box-shadow:inset 0px 4px 10px -5px rgba(0, 0, 0, 0.15); box-shadow:inset 0px 4px 10px -5px rgba(0, 0, 0, 0.15);}
-.customer-account-login .account-login {padding:30px 0 90px;}
+.customer-account-login .account-login {padding:30px;}
 .customer-account-login h2 {margin:0 0 10px;}
 .customer-account-create .account-create {padding:30px 0;}
 .customer-account-create .account-create h2.legend { margin:25px 0 0; }
