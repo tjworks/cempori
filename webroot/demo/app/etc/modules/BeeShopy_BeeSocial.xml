@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <BeeShopy_BeeSocial>
+            <active>true</active>
+            <codePool>community</codePool>
+        </BeeShopy_BeeSocial>
+    </modules>
+</config> 

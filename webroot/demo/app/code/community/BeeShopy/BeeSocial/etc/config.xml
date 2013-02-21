@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <BeeShopy_BeeSocial>
+            <version>0.0.4</version>
+        </BeeShopy_BeeSocial>
+    </modules>
+    <global>
+        <helpers>
+            <beesocial>
+                <class>BeeShopy_BeeSocial_Helper</class>
+            </beesocial>
+        </helpers>
+        <blocks>
+          <beesocial>
+            <class>BeeShopy_BeeSocial_Block</class>
+          </beesocial>
+        </blocks>
+        <models>
+          <beesocial>
+              <class>BeeShopy_BeeSocial_Model</class>
+          </beesocial>   
+        </models>
+    </global>
+    <adminhtml>
+      <acl>
+        <resources>
+          <admin>
+            <children>
+              <system>
+                <children>
+                  <config>
+                    <children>
+                      <beesocial_options>
+                          <title>Beetailer social widget configuration section</title>
+                      </beesocial_options>
+                    </children>
+                  </config>
+                </children>
+              </system>
+            </children>
+          </admin>
+        </resources>
+      </acl>
+    </adminhtml>
+  <default>
+    <beesocial_options>
+     <general translate="general" module="beesocial">
+       <color>light</color>
+       <style>padding-top: 20px;</style>
+       <disable_fb_like>0</disable_fb_like>
+       <disable_twitter>0</disable_twitter>
+       <disable_comments>0</disable_comments>
+       <disable_plusone>0</disable_plusone>
+     </general>
+     <fb_comments translate="Facebook comments" module="beesocial">
+       <width>525</width>
+       <number>10</number>
+     </fb_comments>
+     <twitter translate="Facebook comments" module="beesocial">
+       <text>Check it out!</text>
+     </twitter>
+   </beesocial_options>
+  </default>
+</config> 

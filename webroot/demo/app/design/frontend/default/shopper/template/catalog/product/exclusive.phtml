@@ -40,10 +40,8 @@ margin:10px auto;
 }
 
 .product-exclusive .info {
-  float:left;
   background-color:#333;
   height:352;
-  overflow:auto;
   color:white;
   text-align:center;
   padding:10px 0px;
@@ -85,8 +83,10 @@ margin:10px auto;
                 </td>  <!-- end image div -->
 
 
-                 <td class="info" width="648"> 
-                    <h1> PLACEHOLDER</h1>
+                 <td class="info" width="648">
+                    <div style="width:100%"> 
+                    <div style="background-color:#E36222;padding:0px 5px;width:100px;color:white;font-weight:bold;font-size:2.5em;font-family:Edwardian Script ITC">Exclusive</div>
+		    </div>
                     <h2>
                     <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
 <!--                    <a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>"> -->
@@ -94,9 +94,15 @@ margin:10px auto;
 <?php echo $_helper->productAttribute($_product, $_product->getName() , 'name'); ?>
 
                     </h2>
- <span style="font-size:2em;padding:30px" > 
+
+ <div style="font-size:1.5em;padding:30px" > 
   <?php echo $_helper->productAttribute($_product, ($_product->getShortDescription()), 'short_description') ?>
-                    </span> 
+                    </div> 
+
+                    <div style="width:100%"> 
+                    <div style="float:right;background-color:#CDD19F;padding:0px 5px;width:100px;color:black;font-size:2em;"><a href="<?php echo $_product->getProductUrl() ?>">SHOP</a></div>
+		    </div>
+
                  </td>
   </tr>
 <!--
