@@ -26,3 +26,7 @@ webroot/demo/media/catalog/product/cache
 
 
 
+
+*.swp
+
+webroot/demo/app/etc/local.xml

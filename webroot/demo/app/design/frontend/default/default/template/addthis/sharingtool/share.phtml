@@ -20,11 +20,13 @@
 	$plugin_enabled   	  = $this->getPluginEnabledStatus();
 	$pubid 			  	  = $this->getPubId();
 	
-/**Custom Share*/		
-	$custom_url 	     = $this->getCustomUrl();
-	$custom_title 	     = $this->getCustomTitle();	
-	$custom_description  = $this->getCustomDescription();
-	$custom_share		 = "addthis:url='".$custom_url."' addthis:title='".$custom_title."' addthis:description='".$custom_description."'";			
+    /**Custom Share*/
+    $currentPid          = Mage::registry('current_product');
+	$custom_url 	     = !empty($currentPid) ?  $currentPid->getName() : $this->getCustomUrl();
+	$custom_title 	     = !empty($currentPid) ?  $currentPid->getProductUrl() : $this->getCustomTitle();	
+    $custom_description  = !empty($currentPid) ?  $currentPid->getShortDescription() : $this->getCustomDescription();
+    $custom_image        = !empty($currentPid) ? $currentPid->getImageUrl() : '';
+	$custom_share		 = "addthis:url='".$custom_url."' addthis:title='".$custom_title."' addthis:description='".$custom_description."' addthis:image='".$custom_image."'";			
 	
 /**API COnfig Options*/	
 	$services_exclude 	  = $this->getExcludeServices();
@@ -151,7 +153,8 @@ var addthis_config 	= {
 <div class="addthis_toolbox addthis_default_style " <?php echo $custom_share?>>
 <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
 <a class="addthis_button_tweet"></a>
-<a class="addthis_counter addthis_pill_style"></a>
+<a class="addthis_button_pinterest_pinit"></a>
+<!--<a class="addthis_counter addthis_pill_style"></a>-->
 </div>
 <?php
  	break; 	
