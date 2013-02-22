@@ -22,8 +22,8 @@
 	
     /**Custom Share*/
     $currentPid          = Mage::registry('current_product');
-	$custom_url 	     = !empty($currentPid) ?  $currentPid->getName() : $this->getCustomUrl();
-	$custom_title 	     = !empty($currentPid) ?  $currentPid->getProductUrl() : $this->getCustomTitle();	
+	$custom_url 	     = !empty($currentPid) ?  $currentPid->getProductUrl() : $this->getCustomUrl();
+	$custom_title 	     = !empty($currentPid) ?  $currentPid->getName() : $this->getCustomTitle();	
     $custom_description  = !empty($currentPid) ?  $currentPid->getShortDescription() : $this->getCustomDescription();
     $custom_image        = !empty($currentPid) ? $currentPid->getImageUrl() : '';
 	$custom_share		 = "addthis:url='".$custom_url."' addthis:title='".$custom_title."' addthis:description='".$custom_description."' addthis:image='".$custom_image."'";			
