@@ -46,8 +46,21 @@
         <?php if($_tab['alias'] == 'review_tabbed'):?>
 <div class="product-tabs-content tabs-content" id="product_tabs_<?php echo $_tab['alias']?>_contents">
 <div class="fbCommentsContainer" style="min-height:160px;">
-	<div class="fb-comments" data-href="<?php echo $this->helper('core/url')->getCurrentUrl();?>" data-num-posts="prod_bottom" data-width="505" data-colorscheme="light"></div>
+	<div class="fb-comments" data-href="<?php echo $this->helper('core/url')->getCurrentUrl();?>" data-num-posts="5" data-width="505" data-colorscheme="light"></div>
 </div>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({appId: '430825856991585', status: true, cookie: true, xfbml: true});
+  };
+  (function() {
+    var e = document.createElement('script'); e.async = true;
+    e.src = document.location.protocol +
+      '//connect.facebook.net/en_US/all.js';
+    document.getElementById('fb-root').appendChild(e);
+  }());
+</script>
+
 </div>
 <?php else:?>
         <div class="product-tabs-content tabs-content" id="product_tabs_<?php echo $_tab['alias'] ?>_contents"><?php echo $this->getChildHtml($_tab['alias']) ?></div>
