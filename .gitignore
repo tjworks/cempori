@@ -23,12 +23,7 @@ webroot/demo/var/cache/
 webroot/demo/var/session/
 webroot/demo/var/locks/
 webroot/demo/media/catalog/product/cache
-
-
-
-
 *.swp
+webroot/demo/media/catalog/product/T/R/TRC101-001.jpg
 
 webroot/demo/app/etc/local.xml
-
-webroot/demo/media/catalog/product/T/R/TRC101-001.jpg
