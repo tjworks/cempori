@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<widgets>
-    <beesocial_iframe type="beesocial/iframe">
-        <name>BeeSocial: Facebook and Twitter widget</name>
-        <description type="desc">Facebook and Twitter widget for your products</description>
-    </beesocial_iframe>
-</widgets> 

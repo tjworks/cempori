@@ -1,6 +1,0 @@
-== Module changelog ==
-
-===  1.2.0 (12-24-12) ===
-
-* Url in store rewrite
-
