@@ -34,10 +34,10 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
         <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_footer_banners')->toHtml(); ?>
     </div>
     <div class="footer-info">
-        <div class="row clearfix">
+        <div class="row clearfix" style="display:none">
 
             <div class="grid_3">
-            <?php if ( empty($config['facebook_replace']) ) { ?>
+            <?php if ( 0 && empty($config['facebook_replace']) ) { ?>
                 <h4><?php echo $this->__('Facebook');?></h4>
                 <div class="block-content">
                 <fb:fan profileid="<?php echo $config['facebook'] ?>" stream="0" connections="6" logobar="0" height="260"
@@ -66,7 +66,7 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
             </div>
 
             <div class="grid_3">
-            <?php if ( empty($config['twitter_replace']) ) { ?>
+            <?php if (0 &&  empty($config['twitter_replace']) ) { ?>
                 <h4><?php echo $this->__('From Twitter');?></h4>
                 <div class="block-content">
                 <div class="twitterWidget" data-user="<?php echo $config['twitter'] ?>">

@@ -30,10 +30,14 @@
     </div>
     <div class="block-content">
         <ul>
+            <?php $whitelist = array("Account Dashboard", "Account Information", "My Orders", "Newsletter Subscriptions"); ?>
             <?php $_links = $this->getLinks(); ?>
             <?php $_index = 1; ?>
             <?php $_count = count($_links); ?>
-            <?php foreach ($_links as $_link): ?>
+            <?php foreach ($_links as $_link): 
+                  if(! (in_array($_link->getLabel(), $whitelist))) 
+                    continue;
+                ?>               
                 <?php $_last = ($_index++ >= $_count); ?>
                 <?php if ($this->isActive($_link)): ?>
                     <li class="current<?php echo ($_last ? ' last' : '') ?>"><strong><?php echo $_link->getLabel() ?></strong></li>
