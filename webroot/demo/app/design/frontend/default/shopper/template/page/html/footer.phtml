@@ -30,12 +30,14 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
 <!-- footer BOF -->
 <div class="footer-container">
     <?php if ( !($route == 'customer' && ($action == 'login' || $action == 'forgotpassword' || $action == 'create')) ) : ?>
+    <!--
     <div class="footer-banners">
         <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_footer_banners')->toHtml(); ?>
     </div>
-    <div class="footer-info">
-        <div class="row clearfix" style="display:none">
-
+    -->
+    
+    <div class="footer-info" style="display:none">
+        <div class="row clearfix" >
             <div class="grid_3">
             <?php if ( 0 && empty($config['facebook_replace']) ) { ?>
                 <h4><?php echo $this->__('Facebook');?></h4>
@@ -107,13 +109,81 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
         </div>
     </div>
     <?php endif; // ( !($route == 'customer' && $action == 'login') ) : ?>
-    <footer class="row clearfix">
-        <div class="grid_6">
+    <style>
+      footer div.col {
+         width:25%;float:left;height:150px;padding-top:15px;
+      }
+      footer h1 {
+        color:#EEE;
+        font-style:italic;
+        
+      }
+      footer li {
+        line-height:30px;
+      }
+      footer li.followus {
+        background-repeat:no-repeat; padding-left:35px;
+        margin:5px 0px;
+        background-size:25px 23px;
+      }
+      footer ul {
+        text-align:justify
+      }
+      footer span {
+        font-size:2.5em; color:#EEE;font-weight:bold;
+      }
+    </style>
+    <footer >
+        <div style="width:30%;float:left;text-align:center;padding-top:50px">
+            <!--  -->
+            
+            <span>LEGACY ROW</span>
+            
             <address><?php echo $this->getCopyright(); ?></address>
+            
         </div>
-        <div class="grid_6">
-            <?php echo $this->getChildHtml('shopper_footer_links'); ?>
-        </div>
+        <div style="width:70%;float:left;"> 
+            <div class="col">
+                <!-- <address><?php echo $this->getCopyright(); ?></address> -->
+                <h1>Company</h1>
+                <ul>
+                  <li><a href="about">About Us</a></li>
+                  <li><a href="">FAQ</a></li>
+                  <li><a href="">Press</a></li>
+                  <li><a href="">Become a Vendor</a></li>
+                </ul>
+            </div>
+            
+            <div class="col">
+                <!-- <address><?php echo $this->getCopyright(); ?></address> -->
+                <h1>Customer Service</h1>
+                <ul>
+                  <li><a href="">Contact Us</a></li>
+                  <li><a href="">Return Policy</a></li>
+                  <li><a href="">Shipping</a></li>
+                </ul>
+            </div>
+            <div class="col">
+                <!-- <address><?php echo $this->getCopyright(); ?></address> -->
+                <h1>Policies</h1>
+                <ul>
+                  <li><a href="">Terms and Conditions</a></li>
+                  <li><a href="">Privacy</a></li>
+                  <li><a href="">Secure Shopping</a></li>
+                </ul>
+            </div>
+            <div class="col">
+                <h1>Follow Us</h1>
+                <ul>
+                  <li class="followus" style="background-image:url('media/site/followus_facebook.png') ;"><a href="http://www.facebook.com/ShopLegacyRow">Facebook</a></li>
+                  <li class="followus" style="background-image:url('media/site/followus_twitter.png') ;"><a href="http://www.twitter.com/LegacyRow">Twitter</a></li>
+                  <li class="followus" style="background-image:url('media/site/followus_pinterest.png') ;"><a href="http://www.pinterest.com/legacyrow">Pinterest</a></li>
+                </ul>
+                
+                
+            </div>   
+        </div>     
     </footer>
+    <div style="clear:both"></div>
 </div>
 <!-- footer EOF -->
