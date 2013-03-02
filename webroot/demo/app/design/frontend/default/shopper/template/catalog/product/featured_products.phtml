@@ -6,7 +6,11 @@
  */
 ?>
 <?php
-$_productCollection=$this->getLoadedProductCollection();
+//$_productCollection=$this->getLoadedProductCollection();
+
+// list all products
+$_productCollection = Mage::getResourceModel('catalog/product_collection');
+
 $_helper = $this->helper('catalog/output');
 $helper = $this->helper('shoppersettings/image');
 
