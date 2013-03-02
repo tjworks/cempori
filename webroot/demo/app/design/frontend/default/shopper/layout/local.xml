@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <layout>
+  
+   <helloworld_index_index>
+        <block type="page/html" name="root" output="toHtml" template="magentotutorial/helloworld/simple_page.phtml" >
+          <block type="customer/form_register" name="customer_form_register" template="customer/form/register.phtml"/>
+                  <block type="page/template_links" name="top.links"/>
+
+        </block>
+    </helloworld_index_index>
+    
 	<default>
 
 		<reference name="root">
@@ -208,10 +217,12 @@
             <action method="unsetChild" ><name>product_tag_list</name></action>
 			<block type="catalog/product_view_tabs" name="product.info.tabs" as="info_tabs">
                 <action method="setTemplate" ><template>catalog/product/view/tabs.phtml</template></action>
+                <action method="addTab" translate="title" module="review" ><alias>review_tabbed</alias><title>Comments</title><block>review/product_view_list</block><template>review/product_info_review.phtml</template></action>
                 <action method="addTab" translate="title" module="catalog" ><alias>description_tabbed</alias><title>Description</title><block>catalog/product_view_description</block><template>catalog/product/view/description.phtml</template></action>
                 <action method="addTab" translate="title" module="catalog" ><alias>additional_tabbed</alias><title>Additional</title><block>catalog/product_view_attributes</block><template>catalog/product/view/attributes.phtml</template></action>
-                <action method="addTab" translate="title" module="tag" ><alias>tags_tabbed</alias><title>Tags</title><block>tag/product_list</block><template>tag/list.phtml</template></action>
-                <action method="addTab" translate="title" module="review" ><alias>review_tabbed</alias><title>Reviews</title><block>review/product_view_list</block><template>review/product_info_review.phtml</template></action>
+               
+               <!-- <action method="addTab" translate="title" module="tag" ><alias>tags_tabbed</alias><title>Tags</title><block>tag/product_list</block><template>tag/list.phtml</template></action> -->
+                
             </block>
 		</reference>
 
