@@ -49,7 +49,11 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
 <?php } ?>
 <?php else: ?>
 <div class="category-products">
-    <?php echo $this->getToolbarHtml() ?>
+    <?php
+      // disable toolbar 
+      //echo $this->getToolbarHtml() 
+    ?>
+    
     <?php // List mode ?>
     <?php if($this->getMode()!='grid'): ?>
     <?php $_iterator = 0; ?>
