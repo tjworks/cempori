@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+$service = $this->getCurrentService();
+
+?>
+
+<div id="test"></div>
+<div class="adm-stw-top">
+	<div class="adm-stw-top-left">
+		<h1><?php echo $this->__('%s friends', $service) ?></h1>
+	</div>
+	<?php if($this->canShowDiscountContainer()) { ?>
+	<?php if($this->getMode() == 'action_d_sen'){ ?>
+	<?php $discount_data = $this->getDiscountData('sender')?>
+	<div class="adm-stw-top-right">
+		<div class="adm-stw-top-info"><?php echo $this->__('Your discount is:'); ?> <span id="adm-stw-discount-sender"><?php echo $discount_data['discount']; ?></span>
+		</div>
+		<div class="adm-stw-top-description"><?php echo $discount_data['description']; ?></div>
+	</div>
+	<?php } ?>
+	<?php if ($this->getMode() == 'action_d_frd') { ?>
+	<?php $discount_data = $this->getDiscountData('friends')?>
+	<div class="adm-stw-top-right">
+		<div class="adm-stw-top-info"><?php echo $this->__('Your friends\' discount is:'); ?> <span id="adm-stw-discount-friends"><?php echo $discount_data['discount']; ?></span>
+		</div>
+		<div class="adm-stw-top-description"><?php echo $discount_data['description']; ?></div>
+	</div>
+	<?php } ?>
+	<?php if ($this->getMode() == 'action_d_all') { ?>
+	<?php $discount_sender = $this->getDiscountData('sender')?>
+	<?php $discount_friends = $this->getDiscountData('friends')?>
+	<div class="adm-stw-top-right" style="margin-top: -20px;">
+		<div class="adm-stw-top-info" style="margin-bottom: 5px;">
+		<?php echo $this->__('Your discount is:'); ?> <span id="adm-stw-discount-sender"><?php echo $discount_sender['discount']; ?></span> <span class="discount-separator">|</span>
+		<?php echo $this->__('Your friends\' discount is:'); ?> <span id="adm-stw-discount-friends"><?php echo $discount_friends['discount']; ?></span>
+		</div>
+		<div class="adm-stw-top-description action_d_all"><?php echo $discount_sender['description']; ?></div>
+		<div class="adm-stw-top-description action_d_all"><?php echo $discount_friends['description']; ?></div>
+	</div>
+	<?php } ?>
+	<?php } else { ?>
+	<div class="adm-stw-top-right">
+		<div class="adm-stw-top-description"><?php echo $this->__('Select all friends from the address book');  ?></div>
+		<div class="adm-stw-top-description"><?php echo $this->__('or select only the people you want to invite. That\'s it!');  ?></div>
+	</div>
+	<?php } ?>
+</div>
+<?php $this->_memConfig(); ?>
+<script type="text/javascript">
+function stwCountChecked()
+{
+	var selected_friends = $$("#adm-stw-selected-friends li").length;
+	$('adm-stw-control-selected').update(selected_friends);
+	<?php  echo $this->getDiscountJs(); ?>
+}
+</script>

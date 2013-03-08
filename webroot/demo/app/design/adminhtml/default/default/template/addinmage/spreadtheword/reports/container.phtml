@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     default_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+?>
+
+<?php $visualization = Mage::getStoreConfig('addinmage_spreadtheword/general/visualization', Mage::app()->getStore()); ?>
+
+<div class="content-header">
+	<table cellspacing="0">
+		<tr>
+			<td style="<?php echo $this->getHeaderWidth() ?>"><?php echo $this->getHeaderHtml() ?></td>
+			<td class="form-buttons"><?php echo $this->getButtonsHtml() ?></td>
+		</tr>
+	</table>
+</div>
+
+<div>
+    <?php if(!$this->isSingleStoreMode) echo $this->getChildHtml('store.switcher')?>
+</div>
+
+<?php if($visualization) { ?>
+<div id="adm-stw-visualization" style="<?php echo $this->getStyle();?> display:none;">
+	<div class="adm-stw-visualization-loading"></div>
+</div>
+<?php } ?>
+
+<div id="filter-box">
+    <?php echo $this->getChildHtml('grid.filter.form')?>
+</div>
+
+<?php if('rule_rating' == Mage::app()->getRequest()->getActionName()) { ?>
+<script type="text/javascript">
+function stwSwitchFilters(val){
+    if(val == 'invited' || val == 'returned'){
+		$('adm_stw_report_show_buyer_types').up(1).hide();
+		if($('adm_stw_report_show_buyer_types').value == 1)
+		$('adm_stw_report_show_buyer_types').up(1).next().hide();			
+	    $('adm_stw_report_show_order_statuses').up(1).hide();
+		if($('adm_stw_report_show_order_statuses').value == 1)
+		$('adm_stw_report_show_order_statuses').up(1).next().hide();
+		$('adm_stw_report_show_cutomer_types').up(1).show();
+		if($('adm_stw_report_show_cutomer_types').value == 1)
+		$('adm_stw_report_show_cutomer_types').up(1).next().show();	
+    }
+    else {
+    	$('adm_stw_report_show_buyer_types').up(1).show();
+	    if($('adm_stw_report_show_buyer_types').value == 1)
+		$('adm_stw_report_show_buyer_types').up(1).next().show();		
+	    $('adm_stw_report_show_order_statuses').up(1).show();
+	    if($('adm_stw_report_show_order_statuses').value == 1)
+		$('adm_stw_report_show_order_statuses').up(1).next().show();
+	    $('adm_stw_report_show_cutomer_types').up(1).hide();
+	    if($('adm_stw_report_show_cutomer_types').value == 1)
+		$('adm_stw_report_show_cutomer_types').up(1).next().hide();	
+    }  
+}
+var filter_condition = $F('adm_stw_report_rating_conditions');
+stwSwitchFilters(filter_condition);
+</script>
+<?php } ?>
+
+<div>
+    <?php echo $this->getGridHtml()?>
+</div>
+
+
+<div>
+<?php if($visualization) { ?>
+<script type="text/javascript">
+function stwFixChart(){Array.prototype.reduce=undefined}
+function stwFixJsControl(){if(!Array.prototype.reduce){Array.prototype.reduce=function a(a){var b,c=this.length,d;if(typeof a!=="function")throw new TypeError("First argument is not callable");if((c==0||c===null)&&arguments.length<=1)throw new TypeError("Array length is 0 and no second argument");if(arguments.length<=1){d=this[0];b=1}else{d=arguments[1]}for(b=b||0;b<c;++b){if(b in this)d=a.call(undefined,d,this[b],b,this)}return d}}}
+</script>
+<?php echo $this->getChildHtml('adm_stw.chart')?>
+<script type="text/javascript" src="http://www.google.com/jsapi?autoload=<?php echo urlencode('{"modules":[{"name":"visualization","version":"1"}]}' )?>"></script>
+<?php } ?>
+<script type="text/javascript">
+<?php if($visualization) { ?>
+google.setOnLoadCallback(stwDrawVisualization);
+<?php } else echo "$('filter-switcher').click();"?>
+function filterFormSubmit() {
+	var filters = $$('#filter_form input', '#filter_form select');
+	var elements = [];
+	for(var i in filters){
+		if(filters[i].value && filters[i].value.length && !filters[i].disabled) elements.push(filters[i]);
+	}
+	var validator  = new Validation('filter_form');
+	if (validator.validate()) {
+		setLocation('<?php echo $this->getFilterUrl(); ?>filter/'+encode_base64(Form.serializeElements(elements))+'/');
+	}
+}    
+</script>
+</div>

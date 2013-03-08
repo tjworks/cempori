@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+$service = $this->getService();
+
+?>
+<div id="<?php echo $service ?>-view" class="service-specific" style="display: none">
+	<div class="top-left">
+		<span id="service" class="<?php echo $service ?>"></span>
+	</div>
+	<div class="top-right"><?php echo $this->__('Address book file size limit: %s Mb.', $this->getMaxFileSize()) ?></div>
+	<div class="view-container">
+		<form method="post" enctype="multipart/form-data" action="<?php echo $this->getUrl('*/file') ?>" id="<?php echo $service ?>">
+			<div class="uploading-container">
+			<?php echo $this->__('Get your contact list by uploading %s address book file.', $service);?><br />
+				<div class="separator"></div>
+				<ul class="form-list">
+				<?php if (! Mage::getSingleton('customer/session')->isLoggedIn()) { ?>
+					<li class="fields">
+						<div class="field">
+							<label class="required" for="sender_name"><em>*</em><?php echo $this->__('Your Name:'); ?></label> <input type="text" name="sender_name" title="<?php echo $this->__('Your Name'); ?>" class="input-text" id="sender_name_<?php echo $service ?>">
+						</div>
+						<div class="field">
+							<label for="sender_email" class="required"><em>*</em><?php echo $this->__('Your Email Address:'); ?></label> <input type="text" class="input-text" id="sender_email_<?php echo $service ?>" title="<?php echo $this->__('Your Email Address:'); ?>" value="" name="sender_email">
+						</div>
+					</li>
+				<?php } else { ?>
+					<li class="fields">
+						<div class="field">
+							<label for="sender_name"><?php echo $this->__('Your Name:') ?></label> <span class="sender-data"><?php echo Mage::getSingleton('customer/session')->getCustomer()->getName(); ?></span>
+						</div>
+						<div class="field">
+							<label for="sender_email"><?php echo $this->__('Your Email Address:') ?></label> <span class="sender-data"><?php echo Mage::getSingleton('customer/session')->getCustomer()->getEmail(); ?></span>
+						</div>
+					</li>
+				<?php } ?>
+				</ul>
+				<div class="separator"></div>
+				<div class="uploading-container">
+					<table style="float: right">
+						<tbody>
+							<tr>
+								<td>
+									<div class="upload-book">
+										<input id="<?php echo $service ?>-select" onChange="this.removeClassName('validation-failed')" type="file" name="<?php echo $service ?>">
+									</div>
+								</td>
+								<td>
+									<div class="upload-book">
+										<button class="input-file" id="find-friends" onClick="stwValidateUpl('<?php echo $service ?>');" title="<?php echo $this->__('Upload') ?>" type="button">
+											<span><span><?php echo $this->__('Upload') ?></span></span>
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<input name="file_type" type="hidden" value="<?php echo $service ?>"> <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

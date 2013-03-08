@@ -1,0 +1,410 @@
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+#adm-stw-visualization {
+	margin-bottom: 10px;
+	position: relative
+}
+
+#spreadtheword_queue_grid {
+	position: relative
+}
+
+#stw-adminhtml-wait #stw-wait-container {
+	background-color: #4A4952;
+	border: 2px solid #fff;
+	color: #fff;
+	height: 125px;
+	left: 36%;
+	padding: 20px 40px;
+	position: fixed;
+	top: 40%;
+	width: 350px
+}
+
+#stw-adminhtml-wait #stw-wait-container #stw-progress-bar {
+	background-color: #A7C9E8;
+	display: block;
+	height: 15px;
+	width: 0
+}
+
+#stw-adminhtml-wait #stw-wait-container .stw-progress-bar-container {
+	border: 1px solid #999;
+	padding: 3px 4px;
+	width: 342px
+}
+
+#stw-adminhtml-wait .stw-overlay {
+	background-color: #6faac8;
+	filter: alpha(opacity =   47);
+	height: 100%;
+	left: 0;
+	opacity: .47;
+	position: fixed;
+	top: 0;
+	width: 100%
+}
+
+#stw-adminhtml-wait .timeout-notice {
+	height: auto !important
+}
+
+#stw-progress {
+	padding-top: 10px;
+	text-align: center
+}
+
+#stw-response-data {
+	padding-top: 10px
+}
+
+#stw-running-process {
+	height: 1px;
+	left: -100px;
+	position: absolute;
+	top: -100px;
+	width: 1px
+}
+
+#stw_store_switcher {
+	line-height: 22px
+}
+
+.adm-down {
+	background-image: url(down.png)
+}
+
+.adm-dynamics {
+	background-position: center;
+	background-repeat: no-repeat;
+	display: block;
+	height: 16px
+}
+
+.adm-eq {
+	background-image: url(equals.png)
+}
+
+.adm-stw-action {
+	color: #DE5C4B;
+	font-weight: 700;
+	text-decoration: none
+}
+
+.adm-stw-adminhtml-queue-control {
+	color: #777
+}
+
+.adm-stw-adminhtml-queue-control span {
+	background-color: #EEE;
+	margin: 0 5px;
+	padding: 4px
+}
+
+.adm-stw-adminhtml-queue-control span input[type=checkbox] {
+	margin-right: 10px;
+	vertical-align: text-top
+}
+
+.adm-stw-adminhtml-queue-control span input[type=radio] {
+	margin-top: -1px
+}
+
+.adm-stw-adminhtml-queue-control span input[type=text] {
+	height: 12px;
+	margin: 0 5px;
+	width: 5em !important
+}
+
+.adm-stw-grid-no {
+	background-color: #EEE;
+	border: 1px solid #DDD;
+	color: #777;
+	font-weight: 700;
+	padding: 1px 14px
+}
+
+.adm-stw-grid-noaction {
+	color: #666;
+	font-weight: 700;
+	padding: 2px
+}
+
+.adm-stw-grid-yes {
+	background-color: #79BC43;
+	color: #FFF;
+	font-weight: 700;
+	padding: 2px 12px
+}
+
+.adm-stw-report-order {
+	color: #0F7FA8;
+	font-weight: 700
+}
+
+.adm-stw-timeline-event {
+	font-size: 11px
+}
+
+.adm-stw-timeline-event .adm-stw-event-last {
+	border-bottom: none
+}
+
+.adm-stw-timeline-event div {
+	border-bottom: 1px solid #CDDDDD;
+	color: #058DC7;
+	font-weight: 700
+}
+
+.adm-stw-timeline-event div span {
+	color: #666;
+	font-weight: 400;
+	white-space: nowrap;
+}
+
+.adm-stw-timeline-event div span span {
+	color: #666;
+	font-weight: 700;
+	margin-left:5px;
+	padding:0 1px;
+	background-color: #E0E0E0;
+}
+
+.adm-stw-timeline-event div span span span {
+	color: #ED6502;
+	font-weight: 400
+}
+
+.adm-stw-timeline-event div.adm-stw-event-data span span span {
+	margin: 0
+}
+
+.adm-stw-timeline-event span.adm-stw-event-data {
+	margin-left: 5px
+}
+
+.adm-stw-visualization-loading {
+	background-image: url(loading.gif);
+	height: 64px;
+	left: 43%;
+	position: absolute;
+	top: 43%;
+	width: 64px
+}
+
+.adm-up {
+	background-image: url(up.png)
+}
+
+.filter-visible {
+	display: block !important
+}
+
+.head-adminhtml-discounts-discounts {
+	background-image: url(discounts.png)
+}
+
+.head-adminhtml-problems-problems {
+	background-image: url(problems.png)
+}
+
+.head-adminhtml-queue-queue {
+	background-image: url(queue.png)
+}
+
+.head-adminhtml-reports-general-timeline,.head-adminhtml-reports-service-treemap,.head-adminhtml-reports-visitors-visitors,.head-adminhtml-reports-general-performance,.head-adminhtml-reports-rule-rating,.head-adminhtml-reports-involvement-behavior
+	{
+	background-image: url(reports.png)
+}
+
+.head-adminhtml-rules-rules {
+	background-image: url(rules.png)
+}
+
+.reassign_discount_container {
+	border-bottom: 1px solid #EB5E00;
+	padding-bottom: 5px
+}
+
+.reassign_discount_container select {
+	margin: 0 4px;
+	min-width: 9em !important
+}
+
+.reassign_discount_container strong {
+	color: #1995D2;
+	padding-right: 5px
+}
+
+.reassign_discount_container table {
+	width: 100%
+}
+
+.reassigned {
+	color: #1995D2;
+	font-weight: 700
+}
+
+.rule-date {
+	margin-right: 5px
+}
+
+.rule-delete {
+	width: 33px
+}
+
+.rule-head {
+	width: 100px
+}
+
+.rule-head-auto {
+	width: auto
+}
+
+.rule-head-last {
+	text-align: right !important
+}
+
+.rule-number {
+	margin-right: 15px
+}
+
+.spreadtheword-adminhtml-report-rule-rating div#filter-box,.spreadtheword-adminhtml-report-involvement div#filter-box
+	{
+	margin-bottom: 10px
+}
+
+.stw-data {
+	border-top: 1px solid #666
+}
+
+.stw-data-value {
+	color: #A7C9E8
+}
+
+.stw-grid-discount {
+	color: #333;
+	font-weight: 700;
+	padding: 2px
+}
+
+.stw-left {
+	float: left
+}
+
+.stw-right {
+	float: right
+}
+
+.stw-switch {
+	margin-left: 15px
+}
+
+a.stw-adminhtml-switch-control {
+	color: #627AAD;
+	font-weight: 700;
+	text-decoration: none
+}
+
+button.adm-stw-clear span {
+	background-image: url(clear.png);
+	padding-left: 25px
+}
+
+button.adm-stw-now span {
+	background-image: url(message.png);
+	padding-left: 20px
+}
+
+button.adm-stw-retry span {
+	background-image: url(retry.png);
+	padding-left: 25px
+}
+
+button.reassign-discounts span {
+	background-image: url(reassign.png);
+	padding-left: 25px
+}
+
+button.rule-in-use span {
+	background-image: url(rule_in_use.png);
+	padding-left: 20px
+}
+
+div.chartclient-annotation-sel {
+	background-color: #E7EFEF !important
+}
+
+span.stw-data-title {
+	font-weight: 700
+}
+
+table.rule-data {
+	border-bottom: 0 !important;
+	margin-bottom: 5px
+}
+
+table.rule-data td#rule-settings {
+	background: url(sort_row_bg.gif) repeat-x scroll 0 50% !important
+}
+
+table.rule-data td#rule-settings span.rule-settings {
+	font-size: .9em;
+	font-weight: 700;
+	padding-right: 5px;
+	white-space: nowrap
+}
+
+table.rule-data td.next {
+	border-left: 1px solid #F9F9F9
+}
+
+table.rule-data td.prev {
+	border-right: 1px solid #D1CFCF
+}
+
+td.adm-stw-report-order-profit {
+	background-color: #E8F5E5
+}
+
+td.adm-stw-report-order-qty-ordered {
+	background-color: #FFF9E3
+}
+
+th.adm-stw-report-order-qty-ordered,th.adm-stw-report-order-profit {
+	background-color: #D7E5EF
+}
+
+tr.subtotals {
+	background-color: #EEEFFF !important;
+	color: #ED6502;
+	font-weight: 700
+}
+
+tr.subtotals td.adm-stw-report-order-profit {
+	background-color: #DAF2C9
+}
+
+tr.subtotals td.adm-stw-report-order-qty-ordered {
+	background-color: #FFF0B4
+}
