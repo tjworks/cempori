@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+
+$services = $this->getServices();
+$per_row = $this->getServicesPerRow();
+$per_line = $this->getServicesPerLine();
+$total_cells = (int) $per_row * $per_line;
+$collection_size = count($services);
+$pag = ($collection_size && $total_cells) ? ceil($collection_size / $total_cells) : false;
+
+?>
+
+<div class="services" id="services">
+	<div id="service-box" class="round">
+		<div id="back" style="display: none">
+			<a onclick="stwBackFrom()" href="javascript:void(0)"><?php echo $this->__('Back to services') ?></a>
+		</div>
+	<?php
+	
+	for($i = 1; $i <= $pag; $i ++) {
+		$limited_array = array_slice($services, ($i * $total_cells) - $total_cells, $total_cells);
+		
+		?>
+		<div id="container" class="round stw-services" <?php if($i>1) { ?> style="display: none" <?php } ?>>
+		<?php $tmp = array_chunk($limited_array, $per_line)?>
+		<?php $s=0; foreach ($tmp as $services_line) : ?>
+		<ul class="services">
+			<?php foreach ($services_line as $service) : $s++?>
+			<?php $service_data = $this->_services[$service]; ?>
+			<li class="item<?php echo (!next($services_line) && count($services_line) !==1) ? ' last' : ' first'; if($s > ($total_cells-$per_line)) echo ' last-line' ?>">
+			<?php if($this->isSpecific($service)) : ?>
+	    		<a href="javascript:void(0)" onclick="stwOpenView('<?php echo $service; ?>')" title="<?php echo $this->__('Take contacts from %s',$service_data['service_name']); ?>" class="round"> <span id="service" class="<?php echo $service ?>"></span>
+				</a>
+	    	<?php else : ?>
+				<a href="javascript:void(0)" onclick="<?php echo ($this->manualInvitationAllowed() && $service == 'manual') ?  $this->getOnclickManualAction() : $this->getOnclickAction($service); ?>" title="<?php echo ($this->manualInvitationAllowed() && $service == 'manual') ? $this->__('Manual Invitation') : $this->__('Take contacts from %s',$service_data['service_name']); ?>" class="round"> <span
+						id="service" class="<?php echo $service ?>"></span>
+				</a>
+			<?php endif; ?>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+		<?php endforeach; ?>
+		<?php foreach ($limited_array as $service) : ?>
+		<?php if($this->isSpecific($service)) {echo $this->getSpecificView($service);}?>
+		<?php endforeach; ?>
+		<?php if($this->manualInvitationAllowed() && $i==1) echo $this->getChildHtml('manual-invitation'); ?>
+		</div>
+	<?php } ?>
+	</div>
+
+	<?php if($pag >= 2) { ?>
+	<div id="services-pagination">
+		<?php for ($i= 1; $i<=$pag; $i++) { ?>
+		<?php if($i == 1) : ?>
+		<span id="service-page" onclick="stwNextSP('<?php echo $i ?>')" class="service-page-active round"><span class="round"></span></span>&nbsp;
+		<?php else : ?>
+		<span id="service-page" onclick="stwNextSP('<?php echo $i ?>')" class="round"><span class="round"></span></span>&nbsp;
+		<?php endif; ?>
+		<?php } ?>
+	</div>
+	<?php } ?>
+</div>

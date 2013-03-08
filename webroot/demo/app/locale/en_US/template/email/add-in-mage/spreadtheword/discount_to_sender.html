@@ -1,0 +1,66 @@
+<!--@subject Your Discount Code Information for {{var store.getFrontendName()}}. @-->
+<!--@vars
+{}
+@-->
+<!--@styles
+body,td { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
+@-->
+<body style="background: #F6F6F6; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; margin: 0; padding: 0;">
+	<div style="background: #F6F6F6; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; margin: 0; padding: 0;">
+		<table cellspacing="0" cellpadding="0" border="0" height="100%" width="100%">
+			<tr>
+				<td align="center" valign="top" style="padding: 20px 0 20px 0">
+					<!-- [ header starts here] -->
+
+					<table bgcolor="FFFFFF" cellspacing="0" cellpadding="10" border="0" width="650" style="border: 1px solid #E0E0E0;">
+						<tr>
+							<td valign="top"><a href="{{store url=""}}"><img src="{{skin url="images/logo_email.gif" _area='frontend'}}" alt="{{var store.getFrontendName()}}" style="margin-bottom: 10px;" border="0" /></a></td>
+						</tr>
+						<!-- [ middle starts here] -->
+						<tr>
+							<td valign="top"><h2 style="font-size: 18px; font-weight: normal; line-height: 22px; margin: 0 0 11px 0;"">Dear {{htmlescape var=$name}},</h2>
+								<p style="font-size: 12px; line-height: 16px; margin: 0 0 16px 0;">
+									Thank You for inviting your friends to <a href="{{store url=""}}" style="color: #1E7EC8;">{{var store.getFrontendName()}}</a>. Here is your discount information:
+								</p>
+								<p style="border: 1px solid #CADCEB; font-size: 12px; line-height: 16px; margin: 0; padding: 13px 18px; background: #f9f9f9;">
+									<strong>Discount Amount</strong>: <strong style="color: #E47349">{{htmlescape var=$amount}}</strong><br />
+									<strong>Discount Code</strong>: <strong style="color: #E47349">{{htmlescape var=$code}}</strong><br /> {{if coupon_expire}}<strong>Expiry Date</strong>: {{htmlescape var=$coupon_expire}}<br /> {{/if}} {{if discount_have_conditions}}<strong>Note</strong>: This discount is applied when certain conditions are met. Please contact store for more information.{{/if}}
+								</p> <br />
+								<p style="font-size: 12px; line-height: 16px; margin: 0;">
+									Please note that you need to apply the discount code to <a href="{{store url="checkout/cart/"}}" style="color: #1E7EC8;">Your Cart</a> before Checkout.
+								</p> <br />
+								<p style="font-size: 12px; line-height: 16px; margin: 0 0 16px 0;">Here is the summary of your invitation:</p>
+								<div style="border: 1px solid #CADCEB; font-size: 12px; line-height: 16px; margin: 0; padding: 13px 0px; background: #F9F9F9;">
+								<table width="100%" cellspacing="0" cellpadding="0" border="0">
+									<tr>
+										<td width="25%" style="color: #6F8FC8; font-size: 16px;" align="center" valign="top"><strong>{{var imported}}</strong></td> {{if not_manual}}
+										<td width="25%" style="color: #A6C475; font-size: 16px;" align="center" valign="top"><strong>{{var checked}}</strong></td>{{/if}}
+										<td width="25%" style="color: #E47349; font-size: 16px;" align="center" valign="top"><strong>{{if skipped}}{{var skipped}}{{else}}0{{/if}}</strong></td>
+										<td width="25%" style="color: #A6C475; font-size: 16px;" align="center" valign="top"><strong>{{var invited}}</strong></td>
+									</tr>
+									<tr>
+										<td style="font-size: 11px" align="center" valign="top">Imported</td> {{if not_manual}}
+										<td style="font-size: 11px" align="center" valign="top">Selected</td>{{/if}}
+										<td style="font-size: 11px" align="center" valign="top">Skipped</td>
+										<td style="font-size: 11px" align="center" valign="top">Invited</td>
+									</tr>
+								</table>
+								</div> <br /> {{if skipped}}
+								<p style="font-size: 12px; line-height: 16px; margin: 0;">Some of your friends were skipped for one of the following reasons: you invited them before, they are existing customers or they are in line for getting an invitation.</p> <br /> {{/if}}
+								<p style="font-size: 12px; line-height: 16px; margin: 0;">
+									If you have any questions about your discount or any other matter, please feel free to contact us at <a href="mailto:{{config path='trans_email/ident_support/email'}}" style="color: #1E7EC8;">{{config path='trans_email/ident_support/email'}}</a>{{if config path='general/store_information/phone'}} or by phone at {{config path='general/store_information/phone'}}{{/if}}.
+								</p></td>
+						</tr>
+						<tr>
+							<td bgcolor="#EAEAEA" align="center" style="background: #EAEAEA; text-align: center;"><center>
+									<p style="font-size: 12px; margin: 0;">
+										Thank you again, <strong>{{var store.getFrontendName()}}</strong>
+									</p>
+								</center></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>

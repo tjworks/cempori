@@ -1,0 +1,35 @@
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+.addinmage-message {
+	background: url("http://add-in-mage.com/support/stw-logo.png") no-repeat scroll 5px center #EAF0EE;
+	border: 1px solid #CCC;
+	margin-bottom: 10px;
+	padding: 10px 5px 5px 225px
+}
+li.add-in-mage-tab dt {
+	background: #D1DEDF url("add-in-mage-tab-bg.png") no-repeat 7px 7px;
+	padding: 7px 32px;
+}
+.addinmage-message h4,.addinmage-message p {
+	margin: 0
+}

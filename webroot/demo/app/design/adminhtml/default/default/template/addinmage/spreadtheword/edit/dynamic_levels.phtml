@@ -1,0 +1,142 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     default_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+$_htmlId = $this->getElement()->getHtmlId();
+$_htmlName = $this->getElement()->getName();
+$rules = Mage::helper('spreadtheword')->getDiscountRules($to_options = true, false, true);
+$target = $this->_to;
+?>
+
+
+<tr id="conf[rules][<?php echo $target ?>][dynamic_levels_discount]" style="display: none">
+	<td class="label"><?php echo $this->getElement()->getLabel() ?></td>
+	<td colspan="10" class="grid tier"><table cellspacing="0" class="data border" id="tiers_table_<?php echo $target; ?>">
+			<col width="294" />
+			<col width="170" />
+			<col width="1" />
+			<thead>
+				<tr class="headings">
+					<th><?php echo $this->__('Discount Rule') ?></th>
+					<th><?php echo $this->__('Condition') ?></th>
+					<th class="last a-right type-butt"></th>
+				</tr>
+			</thead>
+			<tbody id="<?php echo $_htmlId ?>_container">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="4" class="a-right"><?php echo $this->getAddButtonHtml() ?></td>
+				</tr>
+			</tfoot>
+		</table> <script type="text/javascript">
+//<![CDATA[
+
+if($('conf[rules][<?php echo $target ?>][amount_type]') && $F('conf[rules][<?php echo $target ?>][amount_type]') !== '0') 
+	$('conf[rules][<?php echo $target ?>][dynamic_levels_discount]').show();
+    	
+$('conf[rules][<?php echo $target ?>][discount_type]').observe("change", function(){
+	stwHandleLevels();
+	if($F('conf[rules][<?php echo $target ?>][discount_type]') !== 'dynamic_levels'){
+		$('conf[rules][<?php echo $target ?>][amount_type]').value = 0;
+		stwHideLevels('<?php echo $target ?>');
+	}
+});
+
+if($('conf[rules][<?php echo $target ?>][amount_type]')){
+	stwHandleLevels();
+	stwHandleDiscounts('<?php echo $target ?>',false);
+}
+
+function stwHandleLevels(){	
+	if($('conf[rules][<?php echo $target ?>][amount_type]')){
+		$('conf[rules][<?php echo $target ?>][amount_type]').observe("change", function(){
+			stwHandleDiscounts('<?php echo $target ?>',false);
+			$$('#discount_to_<?php echo $target ?> #tiers_table_<?php echo $target ?> select').each(function(o) {o.value = '';});
+			if($F('conf[rules][<?php echo $target ?>][amount_type]') !== '0') $('conf[rules][<?php echo $target ?>][dynamic_levels_discount]').show();
+			else stwHideLevels('<?php echo $target ?>');		
+		});
+	}
+	else stwHideLevels('<?php echo $target ?>');
+}
+
+var <?php echo $target ?>_level_RowTemplate = '<tr>'
+    + '<td><select class="required-option-select select-rule" name="<?php echo $_htmlName ?>[{{index}}][rule]" id="<?php echo $target ?>_dynamic_level_{{index}}_rule">'
+    <?php foreach ($rules as $rule): ?>
+    + '<option value="<?php echo $rule['value'] ?>"><?php echo $this->jsQuoteEscape($this->htmlEscape($rule['label'])) ?></option>'
+    <?php endforeach ?>
+    + '</select></td>'
+    + '<td><input style="width: 25px !important;" class="required-percent-level validate-greater-than-zero" type="text" name="<?php echo $_htmlName ?>[{{index}}][percent]" value="{{percent}}" id="dynamic_level_{{index}}_percent" />'
+    + ' <small class="nobr"><?php echo $this->__("% of friends selected") ?> </small></td>'
+    + '<td class="last a-right type-butt"><button title="<?php echo $this->__("Delete Level") ?>" type="button" class="scalable delete icon-btn delete-product-option" id="dynamic_level_{{index}}_delete_button" onclick="return <?php echo $target ?>_level_Control.deleteItem(event);">'
+    + '<span><?php echo $this->__("Delete") ?></span></button></td>'
+    + '</tr>';
+
+var <?php echo $target ?>_level_Control = {
+    template: new Template(<?php echo $target ?>_level_RowTemplate, new RegExp('(^|.|\\r|\\n)({{\\s*(\\w+)\\s*}})', "")),
+    itemsCount: 0,
+    addItem : function () {
+
+        var data = {
+            rule: '',
+            percent: '',
+            index: this.itemsCount++
+        };
+       
+            data.rule      = arguments[0];
+            data.percent   = arguments[1];
+
+        Element.insert($('<?php echo $_htmlId ?>_container'), {
+            bottom : this.template.evaluate(data)
+        });
+
+        $('<?php echo $target ?>_dynamic_level_' + data.index + '_rule').value = data.rule;
+        stwHandleDiscounts('<?php echo $target ?>',false);
+		if(!data.percent){
+			$('<?php echo $target ?>_dynamic_level_' + data.index + '_rule').value = '';
+		}			
+    },
+    deleteItem: function(event) {
+        var tr = Event.findElement(event, 'tr');
+        if (tr) {
+            Element.remove(tr);
+        }
+        return false;
+    }
+};
+<?php foreach ($this->getValues() as $_item): ?>
+<?php echo $target ?>_level_Control.addItem('<?php echo $_item['rule'] ?>', '<?php echo $_item['percent'] ?>');
+<?php endforeach; ?>
+//]]>
+</script></td>
+</tr>

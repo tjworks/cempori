@@ -1,0 +1,367 @@
+<?php
+
+/**
+ * Add In Mage::
+ *
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the EULA that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL: http://add-in-mage.com/support/presales/eula/
+ *
+ *
+ * PROPRIETARY DATA
+ * 
+ * This file contains trade secret data which is the property of Add In Mage:: Ltd. 
+ * This file is submitted to recipient in confidence.
+ * Information and source code contained herein may not be used, copied, sold, distributed, 
+ * sub-licensed, rented, leased or disclosed in whole or in part to anyone except as permitted by written
+ * agreement signed by an officer of Add In Mage:: Ltd.
+ * 
+ * 
+ * MAGENTO EDITION NOTICE
+ * 
+ * This software is designed for Magento Community edition.
+ * Add In Mage:: Ltd. does not guarantee correct work of this extension on any other Magento edition.
+ * Add In Mage:: Ltd. does not provide extension support in case of using a different Magento edition.
+ * 
+ * 
+ * @category    design
+ * @package     default_default
+ * @copyright   Copyright (c) 2012 Add In Mage:: Ltd. (http://www.add-in-mage.com)
+ * @license     http://add-in-mage.com/support/presales/eula/  End User License Agreement (EULA)
+ * @author      Add In Mage:: Team <team@add-in-mage.com>
+ */
+
+$id = $this->getFieldId();
+$name = $this->getFieldName();
+$target = $this->_rule;
+?>
+<script type="text/javascript">
+function <?php echo $target; ?>clndlsetup (from, to){
+            Calendar.setup({
+                inputField : from,
+                ifFormat : "%d/%m/%y",
+                button : from+"_trig",
+                align : "Bl",
+                singleClick : true
+            });
+            Calendar.setup({
+                inputField : to,
+                ifFormat : "%d/%m/%y",
+                button : to+"_trig",
+                align : "Bl",
+                singleClick : true
+            });
+}
+</script>
+<?php echo $this->getTemplatesHtml()?>
+<script type="text/javascript">
+//<![CDATA[
+
+<?php echo $target; ?>OptionTemplateAmountTitle = '<?php echo $this->__('Amount Type') ?> <span class="required">*</span>';		
+<?php echo $target; ?>OptionTemplateAmountSelect = '<?php echo $this->getAmountTypesSelectHtml();?>';
+
+var <?php echo $target; ?>firstStepTemplate = '<div class="option-box" id="<?php echo $target; ?>_option_{{id}}">'+
+            '<table id="<?php echo $id ?>_{{id}}" class="option-header" cellpadding="0" cellspacing="0">'+
+            '<input type="hidden" id="<?php echo $id ?>_{{id}}_previous_type" name="<?php echo $name ?>[{{id}}][previous_type]" value="" />'+
+            '<input type="hidden" id="<?php echo $id ?>_{{id}}_id" name="<?php echo $name ?>[{{id}}][id]" value="{{id}}" />'+
+            '<input type="hidden" id="<?php echo $id ?>_{{id}}_option_id" name="<?php echo $name ?>[{{id}}][option_id]" value="{{option_id}}" />'+
+            '<thead>'+
+                '<tr>'+
+                	'<th class="opt-title"><?php echo $this->__('Service') ?> <span class="required">*</span></th>'+
+                	'<th class="opt-title"><?php echo $this->__('Discount Type') ?> <span class="required">*</span></th>'+
+                	'<th class="opt-title" id="<?php echo $id ?>_{{id}}_amount_type_title"></th>'+
+                    '<th class="a-right"><span class="rule-number"><?php echo $this->__('Rule Exception #') ?>{{id}}</span><?php echo $this->jsQuoteEscape($this->getDeleteButtonHtml()) ?></th>'+
+                '</tr>'+
+            '</thead>'+
+            '<tr>'+
+                '<td><?php echo $this->getServicesSelectHtml();?></td>'+
+                '<td><?php echo $this->getDiscountTypesSelectHtml();?></td>'+
+                '<td id="<?php echo $id ?>_{{id}}_amount_type_select"></td>'+
+                '<td>&nbsp;</td>'+
+            '</tr></table></div>';
+
+var <?php echo $target; ?>serviceOption = {
+    div : $('rule_<?php echo $target; ?>_options_container_top'),
+    templateSyntax : /(^|.|\r|\n)({{(\w+)}})/,
+    templateText : <?php echo $target; ?>firstStepTemplate,
+    itemCount : 1,
+    add : function(data) {
+        this.template = new Template(this.templateText, this.templateSyntax);
+
+        if(!data.id){
+            data = {};
+            data.id  = this.itemCount;
+            data.service = '';
+            data.discount_type = '';
+            data.amount_type = '';
+            data.option_id = 0;
+        } else {
+            this.itemCount = data.item_count;
+        }
+
+        Element.insert(this.div, {'after':this.template.evaluate(data)});
+
+       
+        if (data.service) {
+            $A($('<?php echo $id ?>_'+data.id+'_service').options).each(function(option){
+                if (option.value==data.service) option.selected = true;
+            });
+        }
+        if (data.discount_type) {
+            $A($('<?php echo $id ?>_'+data.id+'_discount_type').options).each(function(option){
+                if (option.value==data.discount_type) option.selected = true;
+            });
+        }
+
+        if (data.amount_type) {
+        	this.secondTemplate = new Template(<?php echo $target; ?>OptionTemplateAmountTitle, this.templateSyntax);
+        	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_title').update(this.secondTemplate.evaluate(data));
+        	this.secondTemplate = new Template(<?php echo $target; ?>OptionTemplateAmountSelect, this.templateSyntax);
+        	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_select').update(this.secondTemplate.evaluate(data));
+        	$A($('<?php echo $id ?>_'+data.id+'_amount_type').options).each(function(option){
+        		if (option.value==data.amount_type) option.selected = true;
+        	});
+        }
+
+        this.itemCount++;
+        this.bindRemoveButtons();
+        <?php echo $target; ?>serviceOptionType.bindSelectInputType();
+    },
+    remove : function(event){
+        var element = $(Event.findElement(event, 'div'));
+        element.remove();
+       
+    },
+    bindRemoveButtons : function(){
+        var buttons = $$('div.rule-<?php echo $target; ?>-custom-options .delete-product-option');
+        for(var i=0;i<buttons.length;i++){
+            if(!$(buttons[i]).binded){
+                $(buttons[i]).binded = true;
+                Event.observe(buttons[i], 'click', function(){
+					this.remove.bind(this)					
+					this.up(4).remove();					
+				}
+				);
+            }
+        }
+        var inputs = $$('div.rule-<?php echo $target; ?>-custom-options button', 'div.rule-<?php echo $target; ?>-custom-options input', 'div.rule-<?php echo $target; ?>-custom-options select', 'div.rule-<?php echo $target; ?>-custom-options textarea');
+        
+        inputs.each(function(el) { Event.observe(el, 'change', el.setHasChanges.bind(el));  } )
+        
+    }
+}
+
+
+var <?php echo $target; ?>serviceOptionType = {
+    templateSyntax : /(^|.|\r|\n)({{(\w+)}})/,
+    loadStepTwo : function(event){
+        var element = $(Event.findElement(event, 'select'));
+
+        var group = '';
+        var previousGroupElm = $(element.readAttribute('id').sub('_discount_type', '_previous_type'));
+        var am = false;
+        switch(element.getValue()){
+            case 'fixed':
+                template = <?php echo $target; ?>OptionTemplateFixed;
+                group = 'fixed';
+                break;
+            case 'dynamic':
+                template = <?php echo $target; ?>OptionTemplateDynamic;
+                group = 'dynamic';
+                break;
+            case 'dynamic_levels':
+                group = 'dynamic_levels';
+                var am = false;
+                break;
+            case 'amount_percent':
+            case 'amount_fixed':
+            case '0':
+            	var am = true;
+            	var valam = element.getValue();
+                group = 'dynamic_levels';
+                template = <?php echo $target; ?>OptionTemplateDynamicLevels;
+                break;
+            default:
+                template = '';
+                group = 'unknown';
+                break;
+        }
+        if (previousGroupElm.getValue() != group) {
+            if ($(element.readAttribute('id')+'_'+previousGroupElm.getValue())) {
+        		  $(element.readAttribute('id')+'_'+previousGroupElm.getValue()).next().remove();
+                  $(element.readAttribute('id')+'_'+previousGroupElm.getValue()).remove();
+            }
+
+            previousGroupElm.value = group;
+
+            if(group !== 'unknown'){
+                if(group !== 'dynamic_levels'){
+                	template = '<div id="'+element.readAttribute('id')+'_'+group+'" class="grid tier form-list">'+template+'</div><div id="'+element.readAttribute('id')+'_'+group+'_advice"></div';
+                	this.secondTemplate = new Template(template, this.templateSyntax);
+                }
+				
+                data = {};
+                if (!data.option_id) {
+                    data = {};
+                    if(!am)
+                    data.option_id = $(element.readAttribute('id').sub('_discount_type', '_id')).getValue();
+                    else data.option_id = $(element.readAttribute('id').sub('_amount_type', '_id')).getValue();
+                }
+                if(am)
+                	$('<?php echo $id ?>_'+data.option_id+'_amount_type').value = valam;
+   
+                var lvls = $('<?php echo $id ?>_'+data.option_id+'_amount_type_dynamic_levels');
+                if(group == 'dynamic_levels'){            
+                    if(!am){                    	
+	                	this.secondTemplate = new Template(<?php echo $target; ?>OptionTemplateAmountTitle, this.templateSyntax);
+	                	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_title').update(this.secondTemplate.evaluate(data));
+	                	this.secondTemplate = new Template(<?php echo $target; ?>OptionTemplateAmountSelect, this.templateSyntax);
+	                	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_select').update(this.secondTemplate.evaluate(data));
+	                	<?php echo $target; ?>serviceOptionType.bindSelectInputType();
+                    }
+                    else {
+                    	if(element.getValue() == 0 && lvls){
+                    		if(lvls){
+        						lvls.next().remove();
+        						lvls.remove();
+        					}
+                    	}
+                    	else {
+							if(!lvls){
+		                    	template = '<div id="'+element.readAttribute('id')+'_'+group+'" class="grid tier form-list">'+template+'</div><div id="'+element.readAttribute('id')+'_'+group+'_advice"></div';
+		                    	this.secondTemplate = new Template(template, this.templateSyntax);
+		                    	Element.insert(element.readAttribute('id').sub('_amount_type', ''), {'after':this.secondTemplate.evaluate(data)});
+		                        <?php echo $target; ?>clndlsetup('<?php echo $id ?>_'+data.option_id+'_from_date','<?php echo $id ?>_'+data.option_id+'_to_date');
+		                        <?php echo $target; ?>selectOptionType.bindAddButton();
+							}
+							else {
+								$$('#<?php echo $id ?>_'+data.option_id+'_amount_type_dynamic_levels select').each(function(o) {o.value = '';});
+								stwHandleDiscounts('<?php echo $id ?>', true, data.option_id);
+							}
+                    	}
+                    }
+                }
+                else {
+                	if(lvls){
+						lvls.next().remove();
+						lvls.remove();
+					}
+                	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_title').update();
+                	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_select').update();
+                	Element.insert(element.readAttribute('id').sub('_discount_type', ''), {'after':this.secondTemplate.evaluate(data)});
+                    <?php echo $target; ?>clndlsetup('<?php echo $id ?>_'+data.option_id+'_from_date','<?php echo $id ?>_'+data.option_id+'_to_date');
+                    switch(element.getValue()){
+                        case 'dynamic_levels':
+                    		<?php echo $target; ?>selectOptionType.bindAddButton();
+                            break;
+                    }
+                }                
+            }
+            else {
+	           	data = {};
+	            if (!data.option_id) {
+	                 data = {};
+	                 data.option_id = $(element.readAttribute('id').sub('_discount_type', '_id')).getValue();
+				}	           
+	            var lvls = $('<?php echo $id ?>_'+data.option_id+'_amount_type_dynamic_levels');
+	            var selam = $('<?php echo $id; ?>_'+data.option_id+'_amount_type_select');
+	            if(!am && element.readAttribute('id') == '<?php echo $id ?>_'+data.option_id+'_discount_type' && element.getValue() == ''){
+					if(lvls){
+						lvls.next().remove();
+						lvls.remove();
+					}
+					if(selam){
+						$('<?php echo $id; ?>_'+data.option_id+'_amount_type_title').update();
+	                	$('<?php echo $id; ?>_'+data.option_id+'_amount_type_select').update();
+					}
+				}
+            }
+        }
+    },
+    addDataToValues : function(data){
+
+        switch(data.discount_type){
+            case 'fixed':
+                template = <?php echo $target; ?>OptionTemplateFixed;
+                group = 'fixed';
+                break;
+            case 'dynamic':
+                template = <?php echo $target; ?>OptionTemplateDynamic;
+                group = 'dynamic';
+                break;
+            case 'dynamic_levels':
+            	template = <?php echo $target; ?>OptionTemplateDynamicLevels;
+                group = 'dynamic_levels';
+                break;
+        }
+        
+        $('<?php echo $id ?>_'+data.id+'_previous_type').value = group;
+
+        if(group !== 'dynamic_levels')
+        	template = '<div id="<?php echo $id ?>_{{id}}_discount_type_'+group+'" class="grid tier form-list">'+template+'</div><div id="<?php echo $id ?>_{{id}}_discount_type_'+group+'_advice"></div>';
+        else
+        	template = '<div id="<?php echo $id ?>_{{id}}_amount_type_'+group+'" class="grid tier form-list">'+template+'</div><div id="<?php echo $id ?>_{{id}}_amount_type_'+group+'_advice"></div>';
+    	
+        this.secondTemplate = new Template(template, this.templateSyntax);
+
+        Element.insert($('<?php echo $id ?>_'+data.option_id), {'after':this.secondTemplate.evaluate(data)});
+        <?php echo $target; ?>clndlsetup('<?php echo $id ?>_'+data.option_id+'_from_date','<?php echo $id ?>_'+data.option_id+'_to_date');
+
+        switch(data.discount_type){
+            case 'dynamic_levels':
+                data.optionValues.each(function(value) {
+                    <?php echo $target; ?>selectOptionType.add(value);
+                });
+                <?php echo $target; ?>selectOptionType.bindAddButton();
+                break;
+        }
+
+        if (data.discount_rule) {
+            $A($('<?php echo $id ?>_'+data.option_id+'_discount_rule').options).each(function(option){
+                if (option.value==data.discount_rule) option.selected = true;
+            });
+        }
+    },
+    bindSelectInputType : function(){
+        var types = $$('.select-discount-type');
+        for(var i=0;i<types.length;i++){
+            if(!$(types[i]).binded){
+                $(types[i]).binded = true;
+                Event.observe(types[i], 'change', function(event){
+                    <?php echo $target; ?>serviceOptionType.loadStepTwo(event);
+                });
+            }
+        }
+    }
+}
+if($('option_panel')){
+    $('option_panel').remove();
+}
+
+<?php echo $target; ?>serviceOption.bindRemoveButtons();
+
+if($('<?php echo $this->getAddButtonId() ?>')){
+    Event.observe('<?php echo $this->getAddButtonId() ?>', 'click', <?php echo $target; ?>serviceOption.add.bind(<?php echo $target; ?>serviceOption));
+}
+
+Validation.addAllThese([
+    ['required-option-select', '<?php echo $this->__('Please select option') ?>', function(v, elm) {
+        if (elm.getValue() == '' || elm.getValue() == 0) {
+            return false;
+        }
+        return true;
+}]]);
+Validation.addAllThese([
+    ['required-percent-level', '<?php echo $this->__('Please enter percent value for the level') ?>', function(v, elm) {
+        if (elm.getValue() == '') {
+            return false;
+        }
+        return true;
+	}]]);
+<?php foreach ($this->getValues() as $_value): ?>
+<?php echo $target; ?>serviceOption.add(<?php echo $_value->toJson() ?>);
+<?php echo $target; ?>serviceOptionType.addDataToValues(<?php echo $_value->toJson() ?>);
+<?php endforeach; ?>
+//]]>
+</script>
