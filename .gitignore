@@ -3,7 +3,6 @@
 *.class
 .svn/
 build/
-data/
 *.log
 d3/
 .settings/
