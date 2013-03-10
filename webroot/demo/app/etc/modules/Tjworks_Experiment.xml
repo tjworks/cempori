@@ -1,0 +1,10 @@
+<config>
+    <modules>
+        <Tjworks_Experiment>
+		<active>true</active>
+            <codePool>local</codePool>
+    
+        </Tjworks_Experiment>
+</modules>
+</config>
+

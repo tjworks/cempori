@@ -1,0 +1,48 @@
+
+<style>
+  .account-login .block-login {
+    margin-right:0px;
+  }
+  .block-login {
+    padding:0px 0px;
+    margin:0px 0px;
+  }
+  .account-login.facebook-login {
+    margin:auto auto;
+  }
+  .account-create .block-login {
+    
+    width:350px;
+  }
+</style>  
+  <div style=" position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:rgba(0, 0, 0, 0.3);
+    background: url(data:;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAAAATSURBVBhXY2RgYNgHxGAAYuwDAA78AjwwRoQYAAAAAElFTkSuQmCC) repeat scroll transparent\9; /* ie fallback png background image */
+    z-index:99999;
+    color:white;">
+    <div style="width:900px;margin:100px auto;;
+                background: #fff;
+                border: 9px solid #fff;
+                border-radius: 3px;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+                -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+                box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);">
+                
+                      <div style="float:left">
+                        <div class="block" style="width:350px;color:#555">
+                          <?php echo $this->getChildHtml('inchoo_facebook_login') ?>
+                        </div>
+                        <div style="clear:both"></div>
+                        <?php echo $this->getChildHtml('customer_form_login') ?>
+                      </div>
+                        
+                          <?php echo $this->getChildHtml('customer_form_register') ?>
+                        <div style="clear:both"></div>
+    </div>
+</div>

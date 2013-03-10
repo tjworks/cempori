@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<config>    
+    <modules>
+        <Tjworks_Experiment>
+            <version>0.1.0</version>
+        </Tjworks_Experiment>
+    </modules>
+<frontend>
+        <routers>
+            <experiment>
+                <use>standard</use>
+                <args>
+                    <module>Tjworks_Experiment</module>
+                    <frontName>exp</frontName>
+                </args>
+            </experiment>
+        </routers>  
+          <layout>
+            <updates>
+                <tjworks_experiment module="Tjworks_Experiment">
+                    <file>tjworks.xml</file>
+                </tjworks_experiment>
+            </updates>
+        </layout>
+    </frontend>
+
+
+</config>
