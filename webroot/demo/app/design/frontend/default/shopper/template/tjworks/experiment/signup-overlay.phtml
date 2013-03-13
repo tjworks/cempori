@@ -1,4 +1,12 @@
+<?php
 
+  $currentUrl = $this->helper('core/url')->getCurrentUrl();
+  
+?>    
+    
+<!--START OVERLAY -->
+<?php if(! strpos($currentUrl, "customer/account")): ?>
+ 
 <style>
 /**
  *   light blue color: #97d2c9
@@ -139,24 +147,17 @@ function gotoSlide(slideNo){
                  <div class="block-slider">
                     <ul class="slides">
                         
-                        <?php  echo $this->getChildHtml('customer_form_register') ?>
-        
-        
-              
-                        <?php echo $this->getChildHtml('customer_form_login') ?>
+                        <?php  echo $this->getChildHtml('tj_customer_form_register') ?>
+                        <?php echo $this->getChildHtml('tj_customer_form_login') ?>
                     </ul>
                 </div>
               
-              
                 <?php echo $this->getChildHtml('inchoo_facebook_login') ?>
-                
-                  
               </div> <!-- end block-login -->
-              
         </div>
-        
-
       </div> 
-                          
-                         
 </div>
+
+
+<?php endif; ?>
+<!--END OVERLAY -->

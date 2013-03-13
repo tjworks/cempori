@@ -9,7 +9,7 @@
             <template>tjworks/experiment/splash.phtml</template>
           </action>
         </reference>
-          
+          <!--
         <reference name="after_body_start">
             <block type="core/template" template="tjworks/experiment/signup-overlay.phtml" name="tjworks_experiment_signupoverlay" >
                 <block type="inchoo_facebook/template" template="inchoo/facebook/login.phtml" name="inchoo_facebook_login" />
@@ -17,7 +17,7 @@
                 <block type="customer/form_login" name="customer_form_login" template="tjworks/experiment/login.phtml"/>
             </block>
         </reference>
-          
+          -->
         <remove name="header"/>
         <remove name="footer"/>
     </experiment_splash_index>
@@ -27,8 +27,8 @@
         <reference name="after_body_start">
             <block type="core/template" template="tjworks/experiment/signup-overlay.phtml" name="tjworks_experiment_signupoverlay" >
                 <block type="inchoo_facebook/template" template="inchoo/facebook/login.phtml" name="inchoo_facebook_login" />
-                <block type="customer/form_register" name="customer_form_register"  template="tjworks/experiment/register.phtml"/>
-                <block type="customer/form_login" name="customer_form_login" template="tjworks/experiment/login.phtml"/>
+                <block type="customer/form_register" name="tj_customer_form_register"  template="tjworks/experiment/register.phtml"/>
+                <block type="customer/form_login" name="tj_customer_form_login" template="tjworks/experiment/login.phtml"/>
             </block>
         </reference>
    
