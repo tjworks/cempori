@@ -1,5 +1,8 @@
 
 <style>
+/**
+ *   light blue color: #97d2c9
+ */
   .account-login .block-login {
     margin-right:0px;
   }
@@ -14,8 +17,9 @@
     
     width:350px;
   }
-</style>  
-  <div style=" position:absolute;
+  
+  .body-mask {
+    position:absolute;
     top:0;
     left:0;
     right:0;
@@ -23,26 +27,136 @@
     background-color:rgba(0, 0, 0, 0.3);
     background: url(data:;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAAAATSURBVBhXY2RgYNgHxGAAYuwDAA78AjwwRoQYAAAAAElFTkSuQmCC) repeat scroll transparent\9; /* ie fallback png background image */
     z-index:99999;
-    color:white;">
-    <div style="width:900px;margin:100px auto;;
-                background: #fff;
-                border: 9px solid #fff;
-                border-radius: 3px;
-                -webkit-border-radius: 3px;
-                -moz-border-radius: 3px;
-                -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
-                -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
-                box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);">
-                
-                      <div style="float:left">
-                        <div class="block" style="width:350px;color:#555">
-                          <?php echo $this->getChildHtml('inchoo_facebook_login') ?>
-                        </div>
-                        <div style="clear:both"></div>
-                        <?php echo $this->getChildHtml('customer_form_login') ?>
-                      </div>
+    color:white;
+  }
+  .signup-overlay {
+       width:900px;margin:100px auto;;
+      background: #F2F2F2;
+      border: 9px solid #f2f2f2;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+  }
+  
+  .popup {
+      background-color:#F2F2F2;
+      border: 8px solid #fff;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      color:#000;
+      padding:10px;
+      margin:auto;
+  }
+  
+  .homepage-signup {
+      width:450px;
+      height:520px;
+      text-align:center;
+      line-height:2em;
+      margin-top:75px;
+  }
+  .block-login input.input-text-long {
+    width:200px;
+        border: 1px solid #000;
+      border-radius: 1px;
+      -webkit-border-radius: 1px;
+      -moz-border-radius: 1px;
+      -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      margin: 10px auto;
+  }
+  .homepage-signup button {
+    margin-top:10px !important;
+  }
+  .homepage-signup button span span {
+      padding:0px 40px;
+  }
+  .gotcha-note {
+    color:#888;
+    font-size:0.9em;
+  }
+  
+  .homepage-signup .block-login {
+      float:none;
+            margin-left:50px;
+    background:none;
+    border:none;
+    border-left:none;
+    border-right:none;
+    box-shadow:none;
+  }
+  
+  .homepage-signup .block-login .block-title {
+    padding:10px 10px 10px;
+  }
+  .homepage-signup .block-slider {
+      height:320px;
+  }
+  .homepage-signup .slides .input-box {
+    
+      width:80%;
+      margin:auto;
+    
+  }
+</style>  
+<script>
+
+function gotoTab1(){
+    jQuery(".tab1").show();
+    jQuery(".tab2").hide();
+    jQuery(".tab3").hide();
+    
+}
+function gotoTab2(){
+    jQuery(".tab1").hide();
+    jQuery(".tab2").show();
+    jQuery(".tab3").hide();
+}
+function gotoTab3(){
+    jQuery(".tab1").hide();
+    jQuery(".tab2").hide();
+    jQuery(".tab3").show();
+}
+  
+function gotoSlide(slideNo){
+  jQuery(".block-login .block-slider").flexslider(slideNo);
+}
+
+</script>
+  <div class="body-mask">
+      <div class="popup homepage-signup">
+            <img style="margin-bottom:0px" src="/media/site/logo-lr-black-140.png">
+        
+              <div class=" block-login ">
+                 <div class="block-slider">
+                    <ul class="slides">
                         
-                          <?php echo $this->getChildHtml('customer_form_register') ?>
-                        <div style="clear:both"></div>
-    </div>
+                        <?php  echo $this->getChildHtml('customer_form_register') ?>
+        
+        
+              
+                        <?php echo $this->getChildHtml('customer_form_login') ?>
+                    </ul>
+                </div>
+              
+              
+                <?php echo $this->getChildHtml('inchoo_facebook_login') ?>
+                
+                  
+              </div> <!-- end block-login -->
+              
+        </div>
+        
+
+      </div> 
+                          
+                         
 </div>
