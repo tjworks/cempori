@@ -355,6 +355,7 @@ header.banner-logo.fixed {
 header.banner-logo img {
   width:100px;
 }
+
 header a.logo {  text-decoration:none !important; margin:34px 0; }
 header a.logo img{ max-width:100%; height:auto;width:auto\9; /* ie8 */ }
 header .logo strong { position:absolute; top:-999em; left:-999em; width:0; height:0; font-size:0; line-height:0; text-indent:-999em; overflow:hidden; }
