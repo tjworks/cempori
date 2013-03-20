@@ -62,7 +62,6 @@ if ($_category) {
   //echo '<div class="product-category-title">'.$_category->getName().'</div>';
 }
  ?>
-
 <script type="text/javascript">
     var optionsPrice = new Product.OptionsPrice(<?php echo $this->getJsonConfig() ?>);
 </script>
@@ -77,14 +76,8 @@ if ($_category) {
             <input type="hidden" name="product" value="<?php echo $_product->getId() ?>" />
             <input type="hidden" name="related_product" id="related-products-field" value="" />
         </div>
-<!--
-        <div class="product-img-box" style="width:<?php echo $product_img_box_width; ?>px">
-            <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
-            <?php echo $this->getChildHtml('media') ?>
-        </div>
-      -->
       <div style="margin:10px auto">
-        <img src="<?php        echo $_product->getMediaGalleryImages()->getItemByColumnValue('label', 'main banner')->getUrl(); ?>"
+        <img src="<?php        echo $_product->getMediaGalleryImages()->getItemByColumnValue('label', 'banner')->getUrl(); ?>"
       </div>
 
         <div class="product-shop">
