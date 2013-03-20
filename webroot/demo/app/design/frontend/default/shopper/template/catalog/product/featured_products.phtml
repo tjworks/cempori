@@ -9,7 +9,8 @@
 //$_productCollection=$this->getLoadedProductCollection();
 
 // list all products
-$_productCollection = Mage::getResourceModel('catalog/product_collection');
+$_productCollection = Mage::getResourceModel('catalog/product_collection')->addAttributeToSort('entity_id', 'DESC');
+//$_productCollection = Mage::getModel("catalog/product")->getCollection()->addAttributeToSort('id', 'DESC');
 
 $is_story = False;
 
@@ -41,6 +42,9 @@ $imgY = $helper->calculateHeight($imgX);
 <div class="category-products">
 <!--    <h2><?php echo $this->__($this->getBlockTitle());?></h2> -->
     <?php $_collectionSize = $_productCollection->count(); ?>
+    ###
+    <?php echo $_productCollection->count(); ?>
+    !!!
     <ul class="products-grid <?php echo $grid_class; ?>">
     <?php foreach ($_productCollection as $_product): ?>
       
