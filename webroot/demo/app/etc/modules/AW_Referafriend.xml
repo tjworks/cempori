@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <AW_Referafriend>
+            <active>true</active>
+            <codePool>local</codePool>
+        </AW_Referafriend>
+    </modules>
+</config>

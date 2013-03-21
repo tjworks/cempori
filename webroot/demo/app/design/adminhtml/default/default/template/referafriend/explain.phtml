@@ -1,0 +1,218 @@
+<?php
+/**
+ * aheadWorks Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://ecommerce.aheadworks.com/LICENSE-M1.txt
+ *
+ * @category   AW
+ * @package    AW_Referafriend
+ * @copyright  Copyright (c) 2003-2010 aheadWorks Co. (http://www.aheadworks.com)
+ * @license    http://ecommerce.aheadworks.com/LICENSE-M1.txt
+ */
+?>
+<div class="entry-edit">
+    <form id="" action="" method="post">
+        <div class="fieldset rule_explain" id="rule_explain">
+            <span id="explain_text"></span>
+        </div>
+    </form>
+</div>
+<script language="javascript">
+    //Convert prices
+    var convertInCurrency = function(price){
+        var format = "<?php echo  $this->getFormat() ?>";
+        return str_replace(format, '%f', price);
+    }
+    //Str_replace
+    var str_replace = function(haystack, needle, replacement) {
+        var temp = haystack.split(needle);
+        return temp.join(replacement);
+    }
+    //Explain form values to human language
+    var explainRule = function(){
+        var explain_text = '';
+        var new_line = '<br />';
+        var line = '';
+
+        if (document.getElementById('action_amount').value){
+            line = "<?php echo $this->__('This rule gives ') ?>";
+            switch (document.getElementById('action_type').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_FLATRATE ?>":
+                    line += convertInCurrency(document.getElementById('action_amount').value);
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT ?>":
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT_REF_FLATRATE ?>":
+                    line += document.getElementById('action_amount').value;
+                    break;
+            }
+            switch (document.getElementById('action_type').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_FLATRATE ?>":
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT ?>":
+                    line += "<?php echo  $this->__('% from the order total') ?>";
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT_REF_FLATRATE ?>":
+                    line += "<?php echo  $this->__('% from all referrals purchases') ?>"; //TODO
+                    break;
+            }
+            explain_text += line;
+        }
+
+        if (!document.getElementById('target_amount').value){
+            document.getElementById('target_amount').value = 0;
+        }
+
+        if (document.getElementById('target_amount').value){
+            line = "<?php echo $this->__(' discount after reaching ') ?>";
+            switch (document.getElementById('target_type').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_SIGNUPS_QTY ?>":
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASED_QTY ?>":
+                    line += document.getElementById('target_amount').value;
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASE_AMOUNT ?>":
+                    line += convertInCurrency(document.getElementById('target_amount').value);
+                    break;
+            }
+            switch (document.getElementById('target_type').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_SIGNUPS_QTY ?>":
+                    line += "<?php echo  $this->__(' referral sign ups') ?>";
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASED_QTY ?>":
+                    line += "<?php echo  $this->__(' items purchased by referral') ?>";
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASE_AMOUNT ?>":
+                    line += "<?php echo  $this->__(' total referral purchases') ?>";
+                    break;
+            }
+            line += '.';
+            explain_text += line;
+        }
+        // * phrase appears only if purchased amount or purchased items are selected
+        if ((document.getElementById('target_type').value == "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASED_QTY ?>")
+            || (document.getElementById('target_type').value == "<?php echo  AW_Referafriend_Model_Rule:: TARGET_PURCHASE_AMOUNT ?>"))
+        {
+            line = "<?php echo $this->__('The rule checks this condition by summarizing purchases of ') ?>";
+            switch (document.getElementById('applies').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: APPLY_PER_CUSTOMER ?>":
+                    line += "<?php echo  $this->__('each referral') ?>";
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: APPLY_ALL_CUSTOMERS ?>":
+                    line += "<?php echo  $this->__('all referrals') ?>";
+                    break;
+            }
+            line += '.';
+            explain_text += new_line + line;
+        }
+
+        if (!document.getElementById('trig_count').value){
+            document.getElementById('trig_count').value = 0;
+        }
+        if (document.getElementById('trig_count').value){
+            if (document.getElementById('trig_count').value == 1){
+                line = "<?php echo $this->__('The discount cannot be earned ') ?>";
+            } else {
+                line = "<?php echo $this->__('The discount can be earned ') ?>";
+            }
+
+            if (document.getElementById('trig_count').value > 1){
+                line += document.getElementById('trig_count').value;
+                line += "<?php echo $this->__(' times') ?>";
+            }
+            if (document.getElementById('trig_count').value == 0){
+                line += "<?php echo $this->__('unlimited number of times') ?>";
+            }
+            line += "<?php echo $this->__(' by a referrer accumulating discount ') ?>";
+
+            switch (document.getElementById('action_type').value){
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_FLATRATE ?>":
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT_REF_FLATRATE ?>":
+                    line += "<?php echo  $this->__('sum') ?>";
+                    break;
+                case "<?php echo  AW_Referafriend_Model_Rule:: ACTION_PERCENT ?>":
+                    line += "<?php echo  $this->__('percent') ?>";
+                    break;
+            }
+            line += '.';
+            explain_text += new_line + line;
+
+        }
+
+        if (!document.getElementById('discount_usage').value){
+            document.getElementById('discount_usage').value = 0;
+        }
+        if (document.getElementById('discount_usage').value){
+            line = "<?php echo $this->__('The earned discount can be used ') ?>";
+
+            if (document.getElementById('discount_usage').value > 0){
+                line += document.getElementById('discount_usage').value;
+                line += "<?php echo $this->__(' time(s)') ?>";
+            } else {
+                line += "<?php echo $this->__(' unlimited number of times') ?>";
+            }
+
+            explain_text += new_line + line;
+
+            if ((document.getElementById('total_greater').value > 0) || (document.getElementById('discount_greater').value > 0)){
+                line = "<?php echo $this->__(', only if ') ?>";
+                if (document.getElementById('total_greater').value > 0){
+                    //
+                    line += "<?php echo $this->__('the order total is equal or greater than ') ?>";
+                    line += convertInCurrency(document.getElementById('total_greater').value);
+                }
+                if ((document.getElementById('total_greater').value > 0) && (document.getElementById('discount_greater').value > 0)){
+                    line += "<?php echo $this->__(' and ') ?>";
+                }
+                if (document.getElementById('discount_greater').value > 0){
+                    //
+                    line += "<?php echo $this->__('the discount amount is equal or greater than ') ?>";
+                    line += convertInCurrency(document.getElementById('discount_greater').value);
+                }
+                explain_text += line;
+            }
+
+            if (document.getElementById('allow_additional_discount').value == 0){
+                line = "<?php echo $this->__(' and cannot be applied together with a coupon') ?>";
+            } else {
+                line = "<?php echo $this->__(' and can be applied together with a coupon') ?>";
+            }
+            line += '.';
+            explain_text += line;
+
+            if ((document.getElementById('target_type').value != "<?php echo  AW_Referafriend_Model_Rule::TARGET_SIGNUPS_QTY ?>"))
+            {
+                if (document.getElementById('orders_limit').value == 0){
+                    line = "<?php echo $this->__("Total of all referral's orders"); ?>";
+                } else {
+                    line = "<?php echo $this->__('Total of only '); ?>" + document.getElementById('orders_limit').value + "<?php echo $this->__(" first referral's order(s)"); ?>";
+                }
+                explain_text += (new_line + line + "<?php echo $this->__(" is used to earn a discount."); ?>");
+            }
+        }
+        // update
+        document.getElementById('explain_text').update(explain_text);
+    }
+</script>
+<?php /*
+ ** RULES **
+This rule gives X[ % from the order total / % from all referrals purchases / <currency>] discount after reaching X
+[referral sign ups / items purchased by referral / <currency> total referral purchases].
+
+The rule checks this condition by summarizing purchases of [ all referrals / each referral]*.
+
+The discount can be earned [X times / unlimited number of times] by a referrer [accumulating discount [percent / sum]**]
+
+The earned discount can be used [X time(s) / unlimited number of times]
+[, only if [the order total is equal or greater than X /  [the discount amount equal or is greater than X]]
+and [can / cannot] be applied together with a coupon.
+
+[Only X / all] referral's orders used to earn discount.***
+
+* phrase appears only if purchased amount or purchased items are selected
+** appears only if trigger limit > 1
+*** appears only if target Type is not 'Signups quantity'
+*/ ?>

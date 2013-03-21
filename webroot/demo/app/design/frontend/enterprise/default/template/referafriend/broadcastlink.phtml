@@ -1,0 +1,11 @@
+<br />
+<label for="broadcastlink"><?php echo  $this->__('Share the link with your friends:') ?></label><br />
+<textarea name="broadcastlink" id="broadcastlink" style="height:60px;width:99%;" readonly="readonly" onclick="helpLink();"><?php echo  $this->getReferralLink() ?></textarea>
+<script language="javascript">
+    var trig = 0;
+    helpLink = function(){
+        if (trig++ == 0){
+            document.getElementById('broadcastlink').select();
+        }
+    }
+</script>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addCss"><stylesheet>css/referafriend.css</stylesheet></action>
+            <action method="addJs"><script>referafriend/referafriend.js</script></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template" name="referafriend.invite.wrapper" after="-" template="referafriend/invite_wrapper.phtml" />
+        </reference>
+    </default>
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <block type="referafriend/stats_checker" name="aw.referafriend.stats.checker" as="aw_referafriend_stats_checker">
+                <action method="checkDisabledNavigation"></action>
+            </block>
+        </reference>
+    </customer_account>
+
+    <referafriend_index_stats>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="referafriend/stats" name="referafriend.stats"/>
+            <block type="customer/account_dashboard" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+        </reference>
+    </referafriend_index_stats>
+</layout>

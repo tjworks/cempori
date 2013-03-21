@@ -1,0 +1,62 @@
+<?php
+/**
+ * aheadWorks Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://ecommerce.aheadworks.com/LICENSE-M1.txt
+ *
+ * @category   AW
+ * @package    AW_Referafriend
+ * @copyright  Copyright (c) 2003-2010 aheadWorks Co. (http://www.aheadworks.com)
+ * @license    http://ecommerce.aheadworks.com/LICENSE-M1.txt
+ */
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<?php $_invites = $this->getInvites(); ?>
+<div class="page-head">
+    <h3><?php echo $this->__('Referred Friends') ?></h3>
+</div>
+<?php echo $this->getInviteButtonHtml() ?>
+<?php echo $this->getPagerHtml() ?>
+<?php if($_invites->getSize()): ?>
+<table cellspacing="0" class="data-table" id="referred-friends-table">
+    <thead>
+        <tr>
+            <th><?php echo $this->__('Customer Full Name') ?></th>
+            <th><?php echo $this->__('Customer Email') ?></th>
+            <th><?php echo $this->__('Signed up') ?></th>
+            <th><?php echo $this->__('Сonfirmed') ?></th>
+            <th><?php echo $this->__('Items Purchased') ?></th>
+            <th><?php echo $this->__('Total Amount Purchased') ?></th>
+        </tr>
+    </thead>
+    <?php if ($this->showEligible()): ?>
+    <tfoot>
+            <tr>
+                <td colspan="5"><strong><?php echo  $this->__('Total/Eligible for discount:') ?></strong>&nbsp;&nbsp;<?php echo  $this->getTotalAmount() ?>&nbsp;/&nbsp;<?php echo  $this->getEligibleAmount() ?></td>
+            </tr>
+    </tfoot>
+    <?php endif; ?>
+    <tbody>
+        <?php foreach ($_invites as $_invite): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($_invite->getReferralName()) ?></td>
+                <td><?php echo $_invite->getReferralEmail() ?></td>
+                <td><?php echo $_invite->isSignedUp() ? $this->__('yes') : $this->__('no') ?></td>
+                <td><?php echo $_invite->getReferralStatus() ? $this->__('yes') : $this->__('no') ?></td>
+                <td class="a-right"><?php echo $_invite->getPurchasedQty() ?></td>
+                <td class="a-right"><?php echo Mage::app()->getStore()->formatPrice($_invite->getPurchaseAmount(), false) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<script type="text/javascript">decorateTable('referred-friends-table')</script>
+<?php echo $this->getPagerHtml(); ?>
+<?php else: ?>
+    <p><?php echo $this->__('You have no referred friends.'); ?></p>
+<?php endif ?>
+<?php echo  $this->getBLinkHtml() ?>
