@@ -1,3 +1,79 @@
+<?php
+//$_productCollection=$this->getLoadedProductCollection();
+
+// list all products
+//$_productCollection = Mage::getModel('catalog/product')->getCollection()->addAttributeToFilter("lr_content_type",   array('neq' => 3,))->addAttributeToSort('entity_id', 'DESC')->setPageSize(1);
+$_productCollection = Mage::getModel('catalog/product')->getCollection()->addAttributeToSort('entity_id', 'DESC')->setPageSize(10);
+
+foreach ($_productCollection as $_p){
+  $label = $this->helper('shoppersettings')->getLabel($_p);  // s
+  if( $_p->getData("lr_content_type") == 4 )
+    continue;
+  else {
+    $_product = $_p;
+    break;  
+  }
+}
+
+?>
+            
+
+<?php $config = Mage::getStoreConfig('shopperslideshow/flexslider', Mage::app()->getStore()->getId()); ?>
+<!-- SLIDESHOW -->
+<div class="slider">
+    <div id="slide-timeline"></div>
+    <div id="flexslider" class="flexslider">
+        <ul class="slides">
+          
+            <?php
+      $slides = $this->getSlides();
+      foreach($slides as $s) {
+            echo $s['image'];
+            $style = $content = '';
+            $attr = 'data-img-height="0"';
+            if ( !empty($s['image']) ) {
+              $imgSize = getimagesize(Mage::getBaseDir('media') .'/'. $s['image']);
+              if ($imgSize) {
+                $style = "background:url('". Mage::getBaseUrl('media') . $s['image'] . "') 50% 0 no-repeat;";
+                $style = "background:url('". $_product->getMediaGalleryImages()->getItemByColumnValue('label', 'banner')->getUrl(). "') 0 0 no-repeat;";
+                $attr = 'data-img-height="'.$imgSize[1].'"';
+              }
+            }
+            if ( !empty($s['slide_width']) ) {
+              $content = 'style="width:'.$s['slide_width'].'px;"';
+            }
+            break;
+        }
+        ?>
+        
+          <li style="background:url('<?php echo $_product->getMediaGalleryImages()->getItemByColumnValue('label', 'banner')->getUrl();?>') 0 0 no-repeat;" <?php echo $attr; ?> >
+                    <div class="row text-<?php echo $s['slide_align']; ?>">
+                        <div class="content" <?php echo $content; ?>>
+                            <strong><?php echo $label.$_product->getData("name"); ?></strong>
+                            <div class="border"></div>
+                            <p><?php echo nl2br($_product->getData("short_description")); ?></p>
+                            <button class="button button_white" onclick="document.location='<?php echo $_product->getProductUrl(); ?>'" ><span><span>SHOP</span></span></button>
+                        </div>
+                    </div>
+                </li>
+          
+          <li>
+                   <div class="row text-left">
+                        <div class="content">
+                            <strong>Invite Friend and Earn Discount</strong>
+                            <div class="border"></div>
+                            <p>Yes you can earn 10$ for every friend you invite!</p>
+                            <button class="button button_white"><span><span>Invite</span></span></button>
+                        </div>
+                    </div>
+          </li>
+       
+        </ul>
+    </div>
+</div>
+<?php 
+/**
+          
 <?php $config = Mage::getStoreConfig('shopperslideshow/flexslider', Mage::app()->getStore()->getId()); ?>
 <!-- SLIDESHOW -->
 <div class="slider">
@@ -40,12 +116,17 @@
 							<?php endif; ?>
                         </div>
                     </div>
+                    HAHABAB
                 </li>
 				<?php
 			} // foreach($slides as $s) { ?>
         </ul>
     </div>
 </div>
+ * 
+ * 
+ */
+?>
 <script>
     var CONFIG_SLIDESHOW = {
         animation: "<?php echo ( in_array($config['animation'], array('slide', 'fade')) ? $config['animation'] : 'slide' ); ?>",
