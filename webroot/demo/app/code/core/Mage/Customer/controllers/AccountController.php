@@ -215,7 +215,10 @@ class Mage_Customer_AccountController extends Mage_Core_Controller_Front_Action
                 $session->setBeforeAuthUrl($session->getAfterAuthUrl(true));
             }
         }
-        $this->_redirectUrl($session->getBeforeAuthUrl(true));
+        //TJFIX: redirect to home page        
+        $this->_redirectUrl( Mage::getUrl('storefront'));
+        //$this->_redirectUrl($session->getBeforeAuthUrl(true));
+        
     }
 
     /**
