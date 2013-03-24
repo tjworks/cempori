@@ -139,6 +139,15 @@ jQuery(function($){
     });
 
     function header_transform(){
+        if(mobile){
+          $("h1.logo").addClass("mobile");
+          $("a.logo").addClass("mobile");
+        }
+        else{
+          $("h1.logo").removeClass("mobile");
+          $("a.logo").removeClass("mobile");
+        }
+          
         if (mobile) {
             $("header").removeClass("fixed");
             return;

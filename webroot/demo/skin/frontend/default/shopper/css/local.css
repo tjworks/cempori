@@ -336,26 +336,34 @@ header { position:relative; z-index:10020;
          box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.15);}
 .logo { float:none; display: inline-block; }
 
-h1.logo {
-  /**
-  background-image:url("/media/site/LR-MainPage-LogoBanner.png");
+a.logo, h1.logo {
+  display:block;
+  background-image:url("/media/site/logo-flag-100.png");
   background-repeat:no-repeat;
-  background-size:100px 100px;
-  width:300px;
-  height:311px;
+  width:212px;
+  height:281px;
   position:absolute;
-  top:-29px;
   z-index:20000;
   background-position:top;
-  */
+}
+a.logo.mobile, h1.logo.mobile {
+  background-image:url("/media/site/logo-bar-200.png");
+  background-position: top;
+  height:40px;
+  position:relative;
+  background-color:black;
+  width:240px;
+  margin:auto;
+  
 }
 header.banner-logo {
   z-index:10031;
   position:fixed;
   top:0;
-  left:350px;
+  left:150px;
   -webkit-box-shadow:none;
   box-shadow:none;
+  
 }
 header.banner-logo.fixed {
   display:none; 
@@ -365,13 +373,13 @@ header.banner-logo img {
   width:100px;
 }
 
-header a.logo {  text-decoration:none !important; margin:34px 0; }
+/** header a.logo {  text-decoration:none !important; margin:34px 0; } */
 header a.logo img{ max-width:100%; height:auto;width:auto\9; /* ie8 */ }
 header .logo strong { position:absolute; top:-999em; left:-999em; width:0; height:0; font-size:0; line-height:0; text-indent:-999em; overflow:hidden; }
 header h1.logo {padding:0;}
 header.fixed {position:fixed; top:0; width:100%; background:#fff;}
 header.fixed a.logo { margin:14px 0; }
-header.fixed #queldoreiNav, header.fixed #nav {margin:11px 0 14px 300px;}
+header.fixed #queldoreiNav, header.fixed #nav {margin:10px 0 15px 200px;}
 
 .cart-top-container {float:right; position:relative; margin:0px 50px 0 4px;}
 .cart-top {}
@@ -545,7 +553,7 @@ nav .nav-top-title:hover div.icon span, .nav-container .nav-top-title:hover div.
 nav .nav-top-title.active div.icon span, .nav-container .nav-top-title.active div.icon span {background:#fff; }
 
 nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-align:middle;}
-#queldoreiNav { width:600px; margin:0px 0 15px 300px; padding:0; position:relative; border:none; float:left; }
+#queldoreiNav { width:600px; margin:10px 0 15px 200px; padding:0; position:relative; border:none; float:left; }
 .search-field #queldoreiNav {width:560px}
 .below-logo #queldoreiNav {width:auto; margin:0 0 10px 3px}
 
@@ -1984,4 +1992,8 @@ html[xmlns] .slides {display: block;}
 .product-name {
   text-transform: uppercase;
   font-family:"dine1";
+}
+
+.top-switch-bg {
+  display:none;
 }

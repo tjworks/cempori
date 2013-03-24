@@ -37,8 +37,11 @@ if ( $config['design']['below_logo'] ) {
 
 ?>
 
-<!-- HEADER BOF -->
+<!-- HEADER BOF TJ-->
 <div class="header-container">
+  
+    <?php
+    /**
     <div class="top-switch-bg">
         <div class="row clearfix">
             <div class="grid_6">
@@ -50,13 +53,18 @@ if ( $config['design']['below_logo'] ) {
             </div>
         </div>
     </div>
+     * 
+     */
+     ?>
     <div class="header-wrapper <?php echo $hdr_style?>">
         <header>
 			<?php if ( $config['design']['below_logo'] ) : ?>
             <div class="row clearfix">
                 <div class="grid_12">
 			        <?php if ($this->getIsHomePage()):?>
-                    <h1 class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><?php echo $this->getChildHtml('theme_logo', false) ?></a></h1>
+                    <h1 class="logo">
+                      <!-- <strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><?php echo $this->getChildHtml('theme_logo', false) ?></a> -->
+                    </h1>
 			        <?php else:?>
                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
 			        <?php endif?>
@@ -93,11 +101,15 @@ if ( $config['design']['below_logo'] ) {
             <div class="row clearfix">
                 <div class="grid_12 <?php if ( $config['navigation']['use_wide_navigation'] ) { echo 'wide-navigation'; } ?>">
                     <?php if ($this->getIsHomePage()):?>
-                    <h1 class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><?php echo $this->getChildHtml('theme_logo', false) ?></a></h1>
+                    <h1 class="logo">
+                      <!-- <strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><?php echo $this->getChildHtml('theme_logo', false) ?></a> -->
+                    </h1>
+                    
+                    <!-- <h1 class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><?php echo $this->getChildHtml('theme_logo', false) ?></a></h1> -->
                     <?php else:?>
                     <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><?php echo $this->getChildHtml('theme_logo', false) ?></a>
                     <?php endif; ?>
-                    <!-- NAVIGATION -->
+                    <!-- NAVIGATION! -->
                     <div class="mobile-nav">
                         <?php
                         Mage::register('shopperPrefix', 'mobile-');
@@ -114,9 +126,17 @@ if ( $config['design']['below_logo'] ) {
                     ?>
                     <!-- NAVIGATION EOF -->
                     <div class="top-dropdowns">
+                      <?php if($this->helper('customer')->isLoggedIn()):?>
+                        <div style="float:right;margin:0px 5px 0px 20px;font-size:1em;line-height:2em">
+                          <!-- <a href="#">CHECKOUT</a><br/> -->
+                          <a href="/customer/account">MY ACCOUNT</a><br/>
+                          <a href="/customer/account/logout">LOGOUT</a>
+                        </div>
+                      <?php endif?>
                         <?php echo $this->getChildHtml('cartTop') ?>
                         <?php echo $this->getChildHtml('compareTop') ?>
                         <?php echo $this->getChildHtml('topSearch'); ?>
+                        
                         <div class="clear"></div>
                     </div>
                     <?php echo $this->getChildHtml('topContainer'); ?>
