@@ -15,20 +15,82 @@ foreach ($_productCollection as $_p){
   }
 }
 
+// get fb link
+    $link = Mage::getBaseUrl();
+    $store_name = Mage::getStoreConfig('facebookreferral/settings/name');
+    $description = Mage::getStoreConfig('facebookreferral/settings/description');        
+    $picture = "http://www.legacyrow.com/media/site/LR-MainPage-Logo-Txt.png";
+    
+    $fb = array();
+    $fb[] = 'http://www.facebook.com/dialog/feed?';
+    $fb[] .= 'app_id='.$this->helper('facebookreferral')->getAppId().'&';        
+    $fb[] .= 'link='.$this->helper('facebookreferral')->getRefUrl().'&';
+    $fb[] .= 'picture='.$picture.'&';        
+    $fb[] .= 'name=Legacy Row&';
+    $fb[] .= 'description=Invite friend to join Legacy Row&';
+    $fb[] .= 'redirect_uri='.Mage::getBaseUrl();
+    $fb_link= implode($fb);
+
 ?>
             
-
+<style>
+  #referbox a {
+    line-height:32px; margin:20px 0px;display:block;padding-left:32px; background-size:32px 32px;
+  }
+  
+  .home-product-info-bg {
+    margin-left:800px;
+    width:400px;
+    height:100%;
+    position:relative;
+    background-color: #7A7A7A;
+    -moz-opacity: 0.5;
+    opacity:.50;
+    filter: alpha(opacity=50);  
+  }
+  .home-product-info {
+    top:-350px;
+    margin-left:800px;
+    width:400px;
+    height:100%;
+    position:relative;    
+    text-align:center;  
+  }
+  
+  .lr-header-frame {
+    background-image:url('/media/site/logo-white-70.png');
+    background-repeat: no-repeat;
+    background-position: top center;    
+    padding:10px;
+    margin:10px 20px;
+    text-align:center;
+  }
+  .lr-header-frame .product-name {
+    display:block;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    font-size:3em;
+    color:white;
+    margin:40px auto 0px auto;
+    padding:10px 0px;
+  }
+  .description {
+    color:white;
+    padding:5px 15px;
+  }
+  
+</style>
 <?php $config = Mage::getStoreConfig('shopperslideshow/flexslider', Mage::app()->getStore()->getId()); ?>
 <!-- SLIDESHOW -->
 <div class="slider">
     <div id="slide-timeline"></div>
     <div id="flexslider" class="flexslider">
-        <ul class="slides">
+        <ul class="slides" id="homeslider">
           
             <?php
       $slides = $this->getSlides();
       foreach($slides as $s) {
-            echo $s['image'];
+            
             $style = $content = '';
             $attr = 'data-img-height="0"';
             if ( !empty($s['image']) ) {
@@ -47,23 +109,52 @@ foreach ($_productCollection as $_p){
         ?>
         
           <li style="background:url('<?php echo $_product->getMediaGalleryImages()->getItemByColumnValue('label', 'banner')->getUrl();?>') 0 0 no-repeat;" <?php echo $attr; ?> >
-                    <div class="row text-<?php echo $s['slide_align']; ?>">
-                        <div class="content" <?php echo $content; ?>>
-                            <strong><?php echo $label.$_product->getData("name"); ?></strong>
-                            <div class="border"></div>
-                            <p><?php echo nl2br($_product->getData("short_description")); ?></p>
-                            <button class="button button_white" onclick="document.location='<?php echo $_product->getProductUrl(); ?>'" ><span><span>SHOP</span></span></button>
-                        </div>
+                    <div class="home-product-info-bg">
+                      
                     </div>
+                    <div class="home-product-info">
+                      <div class="lr-header-frame">
+                        <span class="product-name"><?php echo $label.$_product->getData("name"); ?></span>
+                      </div>
+                      <div class="description">
+                        <?php echo nl2br($_product->getData("short_description")); ?>
+                      </div>
+                      <button class="button button_white" onclick="document.location='<?php echo $_product->getProductUrl(); ?>'" ><span><span>Learn More</span></span></button>
+                      
+                    </div>
+                    
                 </li>
           
           <li>
-                   <div class="row text-left">
+                   <div class="row">
                         <div class="content">
-                            <strong>Invite Friend and Earn Discount</strong>
+                            <h2>Refer a Friend and Earn Discount</h2>
                             <div class="border"></div>
-                            <p>Yes you can earn 10$ for every friend you invite!</p>
-                            <button class="button button_white"><span><span>Invite</span></span></button>
+                            <p>Yes you can earn 10$ for every friend you invite when they sign up!</p>
+                            <ul id="referbox" style="text-align:left">
+                            
+                              <li>
+                                
+                                <input type="hidden" name="invitation_message" id="invitation_message" style="width:400px;height:50px;" value="I found pretty cool stuff on Legacyrow.com. Check it out!">
+                            
+                              </li>  
+                              <li>
+                                  <a href="#" style="background:url('/media/site/followus_facebook.png') no-repeat" onclick="do_fb()">Share it on Facebook</a> 
+                                  
+                                 <!-- <a target="_blank" class="fb_button fb_button_small" href="<?php echo $fb_link?>">Share it on Facebook</a>
+                                   <a target="_blank" class="fb_button fb_button_small" href="<?php echo $fb_link?>"><span class="fb_button_text">Post referral link to Facebook</span></a> -->
+
+                              </li>
+                              
+                              <li>
+                                  <a href="#" style="background:url('/media/site/followus_twitter.png') no-repeat" onclick="do_tweet()">Tweet it</a>
+                              </li>
+                              
+                                <li>
+                                  <a href="#"  style="background:url('/media/site/mail-25.png') no-repeat" onclick="javascript:jQuery('#referafriend-button').click();setTimeout(  function(){  jQuery('#slide-timeline').stop(true)}, 1000);">Mail it</a>
+                              </li>
+                            </ul>
+                            
                         </div>
                     </div>
           </li>
@@ -71,6 +162,50 @@ foreach ($_productCollection as $_p){
         </ul>
     </div>
 </div>
+<script>
+  function do_tweet(){
+    var url = "https://twitter.com/intent/tweet?text=";
+    url = url+ jQuery("#invitation_message").text();
+    window.open(url);
+  }
+  
+  function do_fb(){
+     var feed = {
+      message:jQuery("#invitation_message").text(),
+      link:"http://www.legacyrow.com", 
+      caption:"Checkout legacyrow.com!"
+    };
+  
+       var obj = {
+          method: 'feed',
+          redirect_uri: 'http://www.legacyrow.com',
+          link: 'http://www.legacyrow.com',
+          picture: 'http://fbrell.com/f8.jpg',
+          name: 'Legacy Row',
+          caption: 'Checkout Legacy Row',
+          description: jQuery("#invitation_message").text()
+        };
+
+        function callback(response) {
+          console.log (  "Post ID: " + response['post_id']);
+        };
+
+        FB.ui(obj, callback);
+//   
+    // FB.api('/me/feed', 'post', feed, function(response) {
+        // if (!response || response.error) {
+          // console.log("Error occurred when posting to FB: ", response.error)
+        // } else {
+          // console.log('Post ID: ' + response.id);
+          // //trackEvent("user", "fb-share-ok")
+        // }     
+        // //$(".ui-dialog").dialog("close")  
+        // //$("#fbconfirm").show()
+        // //$("#fbmessage").hide()
+      // });
+   }
+</script>
+
 <?php 
 /**
           
