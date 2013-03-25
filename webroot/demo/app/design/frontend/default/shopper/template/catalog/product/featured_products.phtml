@@ -37,6 +37,8 @@ if ( !$cms_id ) {
 $item_type= "product";
 $imgX = 252;
 $imgY = $helper->calculateHeight($imgX);
+
+$skipped = 0;
 ?>
 <?php if($_productCollection->count()): ?>
 <div class="category-products">
@@ -48,15 +50,25 @@ $imgY = $helper->calculateHeight($imgX);
         <?php 
           $this->helper('shoppersettings')->getLabel($_product);  // seems make a call would load the extra data
           $is_story =  strlen($_product->getData("author"))>0;
+          // first product should be skipped - it's already showing on top
+          if(!$is_story && !$skipped){
+              $skipped = 1;
+              continue;
+          }
           
         ?>
         <li class="item">
 
             <div class="regular">
+                                
                 <a href="<?php echo $is_story?"stories/":""?><?php echo basename($_product->getProductUrl()) ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">
                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
                     <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX, $imgY) ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX*2, $imgY*2) ?>" width="<?php echo $imgX; ?>" height="<?php echo $imgY; ?>" alt="<?php echo $this->htmlEscape($_product->getName()) ?>" />
                 </a>
+                
+                <?php if($is_story): ?>
+                    <div style="position:absolute;top:0;left:0;z-index:2"><img src="/media/site/icon-story-banner.png"></div>
+                <?php endif?>
                 <div class="product-info">
                     <?php if  (! $is_story ):?>
                         <div class="button-container">
