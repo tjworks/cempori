@@ -1993,7 +1993,9 @@ html[xmlns] .slides {display: block;}
   text-transform: uppercase;
   font-family:"dine1";
 }
-
+.product-info {
+  text-align:left;
+}
 .top-switch-bg {
   display:none;
 }
