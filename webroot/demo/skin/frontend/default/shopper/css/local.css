@@ -1999,3 +1999,8 @@ html[xmlns] .slides {display: block;}
 .top-switch-bg {
   display:none;
 }
+
+button.button span span {
+  font-family: dine1;
+  text-transform:uppercase;
+}
