@@ -70,7 +70,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 				$this->__('Your Facebook account has been successfully connected. Now you can fast login using Facebook Connect anytime.')
 			);
       //TJFIX: redirect to home
-      $this->_redirect("storefront");
+      $this->_redirect("/");
 			//$this->_redirect('customer/account');
 			return;
         }
@@ -131,7 +131,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 				$this->__('Your Facebook account has been successfully connected. Now you can fast login using Facebook Connect anytime.')
 			);
       //TJFIX: redirect to home page
-      $this->_redirect("storefront");
+      $this->_redirect("/");
 			//$this->_redirect('customer/account');
     		return;
 		}
@@ -196,7 +196,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
 			
 			$this->_getCustomerSession()->setCustomerAsLoggedIn($customer);
 			//TJFIX: redirect to home
-			$this->_redirect("storefront");
+			$this->_redirect("/");
 			//$this->_redirect('customer/account');
 			return;
 		
@@ -235,7 +235,7 @@ class Inchoo_Facebook_Customer_AccountController extends Mage_Core_Controller_Fr
         	}
         }
         //TJFIX: redirect to home page after login
-        $redirectUrl =  "storefront";
+        $redirectUrl =  "/";
         
         $this->_redirectUrl($redirectUrl);
     }    
