@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * BelVG LLC.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://store.belvg.com/BelVG-LICENSE-COMMUNITY.txt
+ *
+/******************************************
+ *      MAGENTO EDITION USAGE NOTICE      *
+ ******************************************/
+ /* This package designed for Magento COMMUNITY edition
+ * BelVG does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * BelVG does not provide extension support in case of
+ * incorrect edition usage.
+/******************************************
+ *      DISCLAIMER                        *
+ ******************************************/
+/* Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future.
+ ******************************************
+ * @category   Belvg
+ * @package    Belvg_Referralreward
+ * @copyright  Copyright (c) 2010 - 2011 BelVG LLC. (http://www.belvg.com)
+ * @license    http://store.belvg.com/BelVG-LICENSE-COMMUNITY.txt
+ */
+-->
+<layout version="1.0.0">
+    <default>
+        <reference name="head">
+            <action method="addJs"	ifconfig="referralreward/settings/enabled"><script>prototype/window.js</script></action>
+            <action method="addJs"	ifconfig="referralreward/settings/enabled"><script>belvg/prototype_loader.js</script></action>
+            <action method="addJs"	ifconfig="referralreward/settings/enabled"><script>belvg/tabs.js</script></action>
+            <action method="addJs"	ifconfig="referralreward/settings/enabled"><script>belvg/referralreward.js</script></action>
+            <action method="addCss"	ifconfig="referralreward/settings/enabled"><stylesheet>belvg/css/lighting_window.css</stylesheet></action>
+            <action method="addCss"	ifconfig="referralreward/settings/enabled"><stylesheet>belvg/css/prototype_loader.css</stylesheet></action>
+            <action method="addCss"	ifconfig="referralreward/settings/enabled"><stylesheet>belvg/css/referralreward.css</stylesheet></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template"	name="loader-js">
+                <action method="setTemplate" ifconfig="referralreward/settings/enabled"><template>belvg/referralreward/loader-js.phtml</template></action>
+            </block>
+        </reference>
+    </default>
+
+    <customer_account translate="label">
+        <reference name="left">
+            <block type="referralreward/invite" name="referralreward.invite.leftnav" after="customer_account_navigation" as="referralreward_invite_leftnav">
+                <action method="setTemplate" ifconfig="referralreward/settings/enabled"><template>belvg/referralreward/invite-nav.phtml</template></action>
+            </block>
+            <remove name="belvg.facebookall.block"/>
+            <remove name="belvg.facebookfree.block"/>
+            <remove name="belvg.facebookconnect.block"/>
+        </reference>
+    </customer_account>
+
+    <referralreward_customer_index>
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="referralreward/invite" name="invite-content-block">
+                <action method="setTemplate" ifconfig="referralreward/settings/enabled"><template>belvg/referralreward/invite-content-block.phtml</template></action>
+                <block type="referralreward/invite" name="send-invites" as="send-invites" template="belvg/referralreward/invite-content-block/send-invites.phtml">
+                    <block type="referralreward/invite" name="addressbook" as="addressbook" template="belvg/referralreward/invite-content-block/send-invites/addressbook.phtml"/>
+                    <block type="referralreward/invite" name="accepted-invitations" as="accepted-invitations" template="belvg/referralreward/invite-content-block/send-invites/accepted-invitations.phtml"/>
+                    <block type="referralreward/invite" name="share-links" as="share-links" template="belvg/referralreward/invite-content-block/send-invites/share.phtml"/>
+                    <block type="referralreward/invite" name="facebook-friends" as="facebook-friends">
+                        <action method="setTemplate" ifconfig="referralreward/facebook/enabled"><template>belvg/referralreward/invite-content-block/send-invites/facebook-friends.phtml</template></action>
+                    </block>
+                    <block type="referralreward/invite" name="referral-link-renameform" as="referral-link-renameform" template="belvg/referralreward/invite-content-block/send-invites/rename-form.phtml"/>
+                </block>
+                <block type="core/template" name="fetch-addressbook" as="fetch-addressbook" template="belvg/referralreward/invite-content-block/fetch-addressbook.phtml">
+                    <block type="core/template" name="emails-add" as="emails-add" template="belvg/referralreward/invite-content-block/fetch-addressbook/emails-add.phtml"/>
+                    <block type="core/template" name="facebook-login" as="facebook-login">
+                        <action method="setTemplate" ifconfig="referralreward/facebook/enabled"><template>belvg/referralreward/invite-content-block/fetch-addressbook/facebook-login.phtml</template></action>
+                    </block>
+                    <block type="referralreward/takeout" name="emails-take-out" as="emails-take-out" template="belvg/referralreward/invite-content-block/fetch-addressbook/emails-take-out.phtml" />
+                </block>
+                <block type="referralreward/facebook" name="facebook-script-block" as="fb-block">
+                    <action method="setTemplate" ifconfig="referralreward/facebook/enabled"><template>belvg/referralreward/invite-content-block/fb-block.phtml</template></action>
+                </block>
+            </block>
+        </reference>
+    </referralreward_customer_index>
+
+    <checkout_cart_index translate="label">
+        <reference name="content">
+            <block type="referralreward/invite" name="referralreward.coupon-code" before="checkout.cart.coupon">
+                <action method="setTemplate" ifconfig="referralreward/settings/enabled"><template>belvg/referralreward/checkout/coupon-code.phtml</template></action>
+            </block>
+        </reference>
+    </checkout_cart_index>
+
+</layout> 

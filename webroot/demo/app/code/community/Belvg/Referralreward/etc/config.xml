@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * BelVG LLC.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://store.belvg.com/BelVG-LICENSE-COMMUNITY.txt
+ *
+/******************************************
+ *      MAGENTO EDITION USAGE NOTICE      *
+ ******************************************/
+ /* This package designed for Magento COMMUNITY edition
+ * BelVG does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * BelVG does not provide extension support in case of
+ * incorrect edition usage.
+/******************************************
+ *      DISCLAIMER                        *
+ ******************************************/
+/* Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future.
+ ******************************************
+ * @category   Belvg
+ * @package    Belvg_Referralreward
+ * @copyright  Copyright (c) 2010 - 2011 BelVG LLC. (http://www.belvg.com)
+ * @license    http://store.belvg.com/BelVG-LICENSE-COMMUNITY.txt
+ */
+-->
+<config>
+    <modules>
+        <Belvg_Referralreward>
+            <version>2.0.5</version>
+        </Belvg_Referralreward>
+    </modules>
+    <frontend>
+        <secure_url>
+            <referralreward>/referralreward/</referralreward>
+        </secure_url>
+        <routers>
+            <referralreward>
+                <use>standard</use>
+                <args>
+                    <module>Belvg_Referralreward</module>
+                    <frontName>referralreward</frontName>
+                </args>
+            </referralreward>
+        </routers>
+        <layout>
+            <updates>
+                <referralreward>
+                    <file>belvg/referralreward.xml</file>
+                </referralreward>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Belvg_Timedependent>
+                    <files>
+                        <default>Belvg_Referralreward.csv</default>
+                    </files>
+                </Belvg_Timedependent>
+            </modules>
+        </translate>        
+        <events>
+            <checkout_onepage_controller_success_action>
+                <observers>
+                    <belvg_referralreward_onepage_controller_success>
+                        <type>singleton</type>
+                        <class>referralreward/observer_points</class>
+                        <method>changeCredit</method>
+                    </belvg_referralreward_onepage_controller_success>
+                </observers>
+            </checkout_onepage_controller_success_action>
+            <checkout_multishipping_controller_success_action>
+                <observers>
+                    <belvg_referralreward_multishipping_controller_success>
+                        <type>singleton</type>
+                        <class>referralreward/observer_points</class>
+                        <method>changeCredit</method>
+                    </belvg_referralreward_multishipping_controller_success>
+                </observers>
+            </checkout_multishipping_controller_success_action>
+            <!--<controller_action_predispatch_referralreward_customer_index>-->
+            <controller_action_layout_load_before>
+                <observers>
+                    <belvg_referralreward_check_customer>
+                        <type>singleton</type>
+                        <class>referralreward/observer_points</class>
+                        <method>checkCustomer</method>
+                    </belvg_referralreward_check_customer>
+                    <!--<belvg_referralreward_emails_takeout>
+                        <type>singleton</type>
+                        <class>referralreward/observer_takeout</class>
+                        <method>infoSave</method>
+                    </belvg_referralreward_emails_takeout>-->
+                </observers>
+            </controller_action_layout_load_before>
+            <!--</controller_action_predispatch_referralreward_customer_index>-->
+        </events>
+    </frontend>
+	<!--
+    <admin>
+        <routers>
+            <referralreward_admin>
+                <use>admin</use>
+                <args>
+                    <module>Belvg_Referralreward</module>
+                    <frontName>referralreward_admin</frontName>
+                </args>
+            </referralreward_admin>
+        </routers>
+    </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <referralreward>
+                    <file>belvg/referralreward.xml</file>
+                </referralreward>
+            </updates>
+        </layout>
+    </adminhtml>
+	-->
+    <global>
+        <resources>
+            <referralreward_setup>
+                <setup>
+                    <module>Belvg_Referralreward</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </referralreward_setup>
+            <referralreward_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </referralreward_write>
+            <referralreward_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </referralreward_read>
+        </resources>
+        <blocks>
+            <referralreward><class>Belvg_Referralreward_Block</class></referralreward>
+        </blocks>
+        <models>
+            <referralreward>
+                <class>Belvg_Referralreward_Model</class>
+                <resourceModel>referralreward_mysql4</resourceModel>
+            </referralreward>
+            <referralreward_mysql4>
+                <class>Belvg_Referralreward_Model_Mysql4</class>
+                <entities>
+                    <points>
+                        <table>belvg_referralreward_points</table>
+                    </points>
+                    <friends>
+                        <table>belvg_referralreward_friends</table>
+                    </friends>
+                </entities>
+            </referralreward_mysql4>
+            <customer>
+                <rewrite>
+                    <customer>Belvg_Referralreward_Model_Rewrite_Customer</customer>
+                </rewrite>
+            </customer>
+        </models>
+        <helpers>
+            <referralreward>
+                <class>Belvg_Referralreward_Helper</class>
+            </referralreward>
+        </helpers>
+        <rewrite>
+            <referralreward_invitelink_index>
+                <from><![CDATA[#^/invite/[0-9a-z]#]]></from>
+                <to>/referralreward/invite/index/</to>
+            </referralreward_invitelink_index>
+        </rewrite>
+        <template>
+            <email>
+                <referralreward_settings_invitation_template translate="label" module="referralreward">
+                    <label>Referral Reward: Default Template Invitation</label>
+                    <file>belvg/referralreward_invitation.html</file>
+                    <type>html</type>
+                </referralreward_settings_invitation_template>
+            </email>
+        </template>
+    </global>
+</config>
