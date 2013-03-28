@@ -11,7 +11,15 @@ function checkEmail(){
             <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 
             <form action="<?php echo $this->getPostActionUrl() ?>" method="post" id="form-validate">
-
+ 			<?php
+                          $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+                          $inviteLink = explode('/invite/', $currentUrl);
+			  if(count($inviteLink)>1)
+                            $inviteLink = trim($inviteLink[1], " /");
+	                  else
+			    $inviteLink = "";
+                        ?>
+                    <input type="hidden" name="friend_invitelink" value="<?php echo $inviteLink ?>" />
                     <input type="hidden" name="success_url" value="/confirm-signup"/>
                     <input type="hidden" name="error_url" value="<?php echo $this->getErrorUrl() ?>"/>
 
