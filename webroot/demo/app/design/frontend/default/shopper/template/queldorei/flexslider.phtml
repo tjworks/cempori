@@ -15,22 +15,6 @@ foreach ($_productCollection as $_p){
   }
 }
 
-// get fb link
-    $link = Mage::getBaseUrl();
-    $store_name = Mage::getStoreConfig('facebookreferral/settings/name');
-    $description = Mage::getStoreConfig('facebookreferral/settings/description');        
-    $picture = "http://www.legacyrow.com/media/site/LR-MainPage-Logo-Txt.png";
-    
-    $fb = array();
-    $fb[] = 'http://www.facebook.com/dialog/feed?';
-    $fb[] .= 'app_id='.$this->helper('facebookreferral')->getAppId().'&';        
-    $fb[] .= 'link='.$this->helper('facebookreferral')->getRefUrl().'&';
-    $fb[] .= 'picture='.$picture.'&';        
-    $fb[] .= 'name=Legacy Row&';
-    $fb[] .= 'description=Invite friend to join Legacy Row&';
-    $fb[] .= 'redirect_uri='.Mage::getBaseUrl();
-    $fb_link= implode($fb);
-
 ?>
             
 <style>
@@ -130,37 +114,11 @@ foreach ($_productCollection as $_p){
                 </li>
           
           <li>
-                   <div class="row">
-                        <div class="content">
-                            <h2>Refer a Friend and Earn Discount</h2>
-                            <div class="border"></div>
-                            <p>Yes you can earn 10$ for every friend you invite when they sign up!</p>
-                            <ul id="referbox" style="text-align:left">
-                            
-                              <li>
-                                
-                                <input type="hidden" name="invitation_message" id="invitation_message" style="width:400px;height:50px;" value="I found pretty cool stuff on Legacyrow.com. Check it out!">
-                            
-                              </li>  
-                              <li>
-                                  <a href="#" style="background:url('/media/site/followus_facebook.png') no-repeat" onclick="do_fb()">Share it on Facebook</a> 
-                                  
-                                 <!-- <a target="_blank" class="fb_button fb_button_small" href="<?php echo $fb_link?>">Share it on Facebook</a>
-                                   <a target="_blank" class="fb_button fb_button_small" href="<?php echo $fb_link?>"><span class="fb_button_text">Post referral link to Facebook</span></a> -->
-
-                              </li>
-                              
-                              <li>
-                                  <a href="#" style="background:url('/media/site/followus_twitter.png') no-repeat" onclick="do_tweet()">Tweet it</a>
-                              </li>
-                              
-                                <li>
-                                  <a href="#"  style="background:url('/media/site/mail-25.png') no-repeat" onclick="javascript:jQuery('#referafriend-button').click();setTimeout(  function(){  jQuery('#slide-timeline').stop(true)}, 1000);">Mail it</a>
-                              </li>
-                            </ul>
-                            
-                        </div>
-                    </div>
+            <a href="/referralreward/customer/" alt="Invite Friend">
+                            <img src="/media/site/invite-friend-slide.png" style="width:1200px;height:350px;border:0px">
+            </a>
+                          
+                     
           </li>
        
         </ul>
