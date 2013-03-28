@@ -78,7 +78,17 @@ class Codeclouds_Payleap_Model_Payment extends Mage_Payment_Model_Method_Cc
 		$args['Street'] = $billing->getStreet(1);
 		$args['CVNum'] = $payment->getCcCid();
 		$args['ExtData'] = '<TrainingMode>F</TrainingMode>';
-		
+    $args['ExtData']='<Invoice><BillTo><Name>'. $payment->getCcOwner()
+                .'</Name><Address><Street>'
+                .$billing->getStreet(1)
+                .'</Street><City>'
+                .$billing->getCity()
+                .'</City><State>'
+                .(Mage::getModel('directory/region')->load($billing->getRegionId())->getCode() ) 
+                .'</State><Zip>'
+                .$billing->getPostcode()
+                .'</Zip></Address></BillTo></Invoice>';
+                //Mage::log("Ext data:".$args['ExtData']);
         return $args;
     }
 	private function getNVPRequest(Varien_Object $payment, $method)
@@ -94,6 +104,7 @@ class Codeclouds_Payleap_Model_Payment extends Mage_Payment_Model_Method_Cc
 	
 	private function processPayment($npvStr) {
 		$header = $this->getHeaders();
+    //Mage::log("NVP: ".$npvStr);
 		/*Mage::throwException($this->getApiUrl());
 		die;*/
 		$http = new Varien_Http_Adapter_Curl();
@@ -104,7 +115,7 @@ class Codeclouds_Payleap_Model_Payment extends Mage_Payment_Model_Method_Cc
         $http->setConfig($config);
         $http->write(Zend_Http_Client::POST, $this->getApiUrl(), '1.1', $header, $npvStr);
         $response = $http->read();
-
+        //Mage::log("process result: ".$npvStr);
         if ($http->getErrno()) {
             $http->close();
             $this->errorDetails = array(
@@ -181,7 +192,7 @@ class Codeclouds_Payleap_Model_Payment extends Mage_Payment_Model_Method_Cc
 		}
 		else {
 			$result = @simplexml_load_string($response);
-			
+			//Mage::log("capture response ".$response);
 			if (!$result) {
 				$error = Mage::helper('payleap')->__('Cannot process your payment. Please try again.');
 			}
