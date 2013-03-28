@@ -142,10 +142,12 @@ jQuery(function($){
         if(mobile){
           $("h1.logo").addClass("mobile");
           $("a.logo").addClass("mobile");
+          $("body").addClass("narrow");
         }
         else{
           $("h1.logo").removeClass("mobile");
           $("a.logo").removeClass("mobile");
+          $("body").removeClass("narrow");
         }
           
         if (mobile) {
