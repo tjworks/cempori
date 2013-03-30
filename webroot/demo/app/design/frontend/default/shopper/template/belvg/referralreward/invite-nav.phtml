@@ -31,31 +31,48 @@
 
     $settings   = Mage::helper('referralreward')->getSettings();
 ?>
+<style>
+#referral-balance-box span.price {
+  color:#800000;
+  font-size:1.5em;
+}
+</style>
 <div class="block block-account">
     <div class="block-title">
         <strong><span><?php echo $this->__('Invite Friends'); ?></span></strong>
+       
     </div>
     <div class="block-content">
         <ul><li><a href="<?php echo $this->getUrl('referralreward/customer') ?>">
                     <?php echo $this->__('Send invite') ?>
                 </a>
             </li>
-            <li class="last">
+            <?php
+            /**
+             * <li class="last">
                 <a href="javascript:;" onclick="modalwindow_description('invite-my-credit',420)">
                     <?php echo $this->__('My credit'); ?>
                 </a>
             </li>
+             */
+             ?>
         </ul>
+         <div style="margin:20px 0px 0px 15px" id="referral-balance-box">
+            <?php
+             if($settings['pointinvitee'])
+                    echo $this->__("My Referral Credit: ").   Mage::helper('checkout')->formatPrice($this->getItem()->getPoints() * $settings['pointcost']);
+            ?> 
+          </div>        
+          <?php /**
         <div id="invite-my-credit" style="display:none;">
             <?php echo $this->__("Your Credit is: %s", Mage::helper('checkout')->formatPrice($this->getItem()->getPoints() * $settings['pointcost'])) ?>
             <br><br>
             <?php echo $this->__("Invite friends. You'll get a %s Credit when they place their first order", Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost'])) ?>
-            <br>
-            <?php
-                if($settings['pointinvitee'])
-                    echo $this->__("Friends you have also invited get a %s Credit", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']));
-            ?>
+            
         </div>
+           * 
+           */
+           ?>
     </div>
 </div>
 

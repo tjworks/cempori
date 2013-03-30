@@ -2,19 +2,13 @@
     $link   = $this->getUrl('invite/'.$this->getItem()->getUrl());
     $title  = $this->__('This is a personal registration link to the site');
 ?>
-<ul class="share-links">
-    <li class="title"><?php echo $this->__('Share in') ?>:</li>
-    <li><div>
-            <div class="g-plusone" data-annotation="none" data-href="<?php echo $link ?>"></div>
-            <script type="text/javascript">
-              (function() {
-                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-                po.src = 'https://apis.google.com/js/plusone.js';
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-              })();
-            </script>
-        </div>
-    </li>
+
+<style>
+  .share-links li {
+     padding:3px;
+  }
+</style>
+<ul class="share-links" style="float:left;margin-top:10px;width:250px">
     <li><a class="icosoc facebook"      title="<?php echo $this->__('Share in') ?> Facebook"    target="_blank" rel="nofollow"
             href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $link ?>">
         </a>
@@ -35,6 +29,8 @@
             href="http://www.myspace.com/Modules/PostTo/Pages/?u=<?php echo $link ?>&t=<?php echo $title ?>">
         </a>
     </li>
+  
+    
     <li><a class="icosoc livejournal"	title="<?php echo $this->__('Share in') ?> LiveJournal"	target="_blank" rel="nofollow"
             href="http://www.livejournal.com/update.bml?event=<br /><br /><a href='<?php echo $link ?>' target='_blank' rel='nofollow'><?php echo $title ?></a>">
         </a>
@@ -52,4 +48,15 @@
         </a>
     </li>
         
+         <li><div>
+            <div class="g-plusone" data-annotation="none" data-href="<?php echo $link ?>"></div>
+            <script type="text/javascript">
+              (function() {
+                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+              })();
+            </script>
+        </div>
+    </li>
 </ul>

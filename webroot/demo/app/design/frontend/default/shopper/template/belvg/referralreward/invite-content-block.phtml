@@ -37,31 +37,31 @@
 <?php $link	= array();//Mage::getModel('referralreward/invitelink')->loadInvitelink(); ?>
 <div class="page-title">
     <h1><?php echo $this->__("Invite Friends!") ?></h1>
-    <div class="title-description">
-        <?php
-            echo $this->__("Invite friends. You'll get a %s Credit when they place their first order (if order's amount > %s)",
-                            Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost']),
-                            Mage::helper('checkout')->formatPrice($settings['minorder']) 
-                          );
-            if($settings['pointinvitee'])
-                echo "<br>".$this->__("Friends you have also invited get a %s Credit", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']));
-            echo "<br>".$this->__("Send your invitations now!");
-        ?>
-    </div>
 </div>
 <ul class="messages" id="invite-messages" style="display:none;">
     <li class="success-msg"><ul><li><span></span></li></ul></li>
 </ul>
 <input type="hidden" id="current-url" value="<?php echo $this->helper('core/url')->getCurrentUrl() ?>">
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
-<div class="col-invite">
+<div class="title-description" style="font-size:1.1em;margin-bottom:20px">
+    <?php
+        echo $this->__("You'll get a %s Credit when they place their first order (if order's amount > %s)",
+                        Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost']),
+                        Mage::helper('checkout')->formatPrice($settings['minorder']) 
+                      );
+        if($settings['pointinvitee'])
+            echo "<br>".$this->__("Friends you have also invited get a %s Credit. ", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']));
+        echo "".$this->__("Send your invitations now!");
+    ?>
+</div>
+<div class="col-invite">  
     <ul class="tabs_title tabs_referral">
         <li id="tabs_item1" class="active"><a href="#"><?php echo $this->__("Send Invites") ?></a></li>
-        <li id="tabs_item2"><a href="#"><?php echo $this->__("Fetch Addressbook") ?></a></li>
+        <!--<li id="tabs_item2"><a href="#"><?php echo $this->__("Fetch Addressbook") ?></a></li> -->
     </ul>
     <ul class="tabs_content">
         <li id="tabs_item1_content"><?php echo $this->getChildHtml('send-invites') ?></li>
-        <li id="tabs_item2_content"><?php echo $this->getChildHtml('fetch-addressbook') ?></li>
+        <!-- <li id="tabs_item2_content"><?php echo $this->getChildHtml('fetch-addressbook') ?></li> -->
     </ul>
 </div>
 <script>

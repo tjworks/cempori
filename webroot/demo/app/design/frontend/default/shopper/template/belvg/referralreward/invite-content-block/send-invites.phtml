@@ -30,19 +30,23 @@
  */
 ?>
 <div class="cols send-invites-info">
+   <?php /**
     <div class="col-1">
         <div class="send-block friendslist-message">
             <h3><?php echo $this->__("Invite Message:") ?></h3>
-            <textarea id="invite-textarea-message" rows="3" name="invite-textarea-message" class="textarea-message"><?php echo $this->__("Hey I just found this site, and I find it completely awesome. Have a look!") ?></textarea>
+            <textarea id="invite-textarea-message" rows="3" name="invite-textarea-message" class="textarea-message" style="height:4em"><?php echo $this->__("Hey I just found this site, and I find it completely awesome. Have a look!") ?></textarea>
             <button class="button send-invation" onclick="inviteSelectedFriends('<?php echo $this->getUrl('referralreward/invite/reminderfriends') ?>');">
                 <span><span><?php echo $this->__("Send Invitation") ?></span></span>
             </button>
         </div>
     </div>
-    <div class="col-2">
+    * 
+    */
+    ?>
+    <!-- <div class="col-2"> -->
         <div class="send-block invite-url">
             <a class="invite-url-rename" href="javascript:;" onclick="modalwindow_description('referral-link-renameform', 500)">
-                <?php echo $this->__('Rename your link'); ?>
+                <?php echo $this->__('Customize your link'); ?>
             </a>
             <div id="referral-link-renameform" style="display:none">
                 <?php echo $this->getChildHtml("referral-link-renameform") ?>
@@ -50,19 +54,20 @@
             <h3><?php echo $this->__("Your personal invite link is") ?></h3>
             <strong><?php echo $this->getUrl('invite/'.$this->getItem()->getUrl()); ?></strong>
             <p><?php echo $this->__("Spread this referral link around your friends on this page or by your own means. Only people, registered via this link will bring you credit.") ?></p>
+            <h2 style="margin:10px 0px">Click one of the following icons to invite your friends on your favorite social network. </h2>
         </div>
-    </div>
+    <!--</div> -->
 </div>
 <?php echo $this->getChildHtml('share-links') ?>
 <div class="cols send-invites">
-    <div class="col-1" style="width:100%;" id="send-invites-col-1">
+    <div class="col-1" style="width:100%;  padding:15px;"" id="send-invites-col-1">
         <div class="send-block">
             <ul class="tabs_title sub_tabs_referral">
-                <li id="tabs_item3" class="active"><a href="#"><?php echo $this->__("Addressbook") ?></a></li>
+                <!-- <li id="tabs_item3" class="active"><a href="#"><?php echo $this->__("Addressbook") ?></a></li> -->
                 <li id="tabs_item4"><a href="#"><?php echo $this->__("Accepted Invitations") ?></a></li>
             </ul>
             <ul class="tabs_content">
-                <li id="tabs_item3_content"><?php echo $this->getChildHtml('addressbook') ?></li>
+                <?php /**<li id="tabs_item3_content"><?php echo $this->getChildHtml('addressbook') ?></li> */ ?>
                 <li id="tabs_item4_content"><?php echo $this->getChildHtml('accepted-invitations') ?></li>
             </ul>
         </div>

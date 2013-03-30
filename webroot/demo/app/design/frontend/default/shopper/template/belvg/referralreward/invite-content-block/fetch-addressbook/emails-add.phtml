@@ -31,7 +31,7 @@
 ?>
 <div class="form-Invite-left-sidebar">
     <form id="form-friends-add" action="<?php echo $this->getUrl('referralreward/customer/addfriends') ?>" onsubmit="addFriendsEmails(); return false;" method="post">
-        <textarea id="invite-textarea-to" rows="3" name="invite-textarea-to" class="textarea-to" onblur="if(this.value==''){value='<?php echo $this->__("Enter friends email addresses separated by commas.") ?>';}" onfocus="if(this.value=='<?php echo $this->__("Enter friends email addresses separated by commas.") ?>'){value='';}"><?php echo $this->__("Enter friends email addresses separated by commas.") ?></textarea>
+        <textarea id="invite-textarea-to" rows="3" name="invite-textarea-to" class="textarea-to" style="height:8em" onblur="if(this.value==''){value='<?php echo $this->__("Enter friends email addresses separated by commas.") ?>';}" onfocus="if(this.value=='<?php echo $this->__("Enter friends email addresses separated by commas.") ?>'){value='';}"><?php echo $this->__("Enter friends email addresses separated by commas.") ?></textarea>
         <button class="button send-invation"><span><span><?php echo $this->__("add emails") ?></span></span></button>
     </form>
 </div>
