@@ -162,7 +162,7 @@ td { vertical-align: top; }
    ========================================================================== */
 .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
 /* ==|== primary styles ===================================================== */
-body { font-size:12px; font-family:Arial, Helvetica, sans-serif; color:#1b1a19; background:#fafafa; border-top:5px solid #322c29; }
+body { font-size:12px; font-family:helvetica, sans-serif; color:#1b1a19; background:#fafafa; border-top:5px solid #322c29; }
 a { color:#828282; text-decoration:none; outline: none; }
 a:hover { color:#828282; text-decoration:underline; }
 
@@ -603,7 +603,7 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
 #queldoreiNav ul div.sub-wrapper ul{ padding:16px; width:auto; }
 #queldoreiNav ul li { float:none; border:none; width:210px; line-height:28px; position:relative; }
 #queldoreiNav ul li.last {}
-#queldoreiNav ul li a {float:none; padding:0 10px; font-family:Arial, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
+#queldoreiNav ul li a {float:none; padding:0 10px; font-family:helvetica, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
 #queldoreiNav ul li.active > a {background:#322c29 !important; color:#fff !important; }
 #queldoreiNav ul li.over > a, #queldoreiNav ul li a:hover {background:#f5f4f4; }
 
@@ -668,7 +668,7 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
 #nav ul ul{ padding:16px; width:auto; }
 #nav ul li { float:none; border:none; width:210px; line-height:28px; position:relative; }
 #nav ul li.last {}
-#nav ul li a {float:none; padding:0 10px; font-family:Arial, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
+#nav ul li a {float:none; padding:0 10px; font-family:helvetica, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
 #nav ul li.active > a {background:#322c29 !important; color:#fff !important; }
 #nav ul li.over > a, #nav ul li a:hover {background:#f5f4f4; }
 
@@ -719,7 +719,7 @@ nav.queldorei {position:relative; z-index:10010; display:inline-block; vertical-
 #mobile-nav ul ul{ padding:16px; width:auto; }
 #mobile-nav ul li { float:none; border:none; width:210px; line-height:28px; position:relative; }
 #mobile-nav ul li.last {}
-#mobile-nav ul li a {float:none; padding:0; font-family:Arial, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
+#mobile-nav ul li a {float:none; padding:0; font-family:helvetica, serif; font-size:12px; font-weight:normal; color:#322c29 !important; background:transparent none; }
 #mobile-nav ul li.active > a {background:#322c29 !important; color:#fff !important; }
 #mobile-nav ul li.over > a, #mobile-nav ul li a:hover {background:#f5f4f4; }
 
@@ -1244,7 +1244,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
 #checkout-step-login label {color:#808080; margin:0;}
 
 #checkout-review-table {}
-#checkout-review-table h3 {margin:0; font-size:12px; font-family:Arial,serif; color:#000; color:rgba(0,0,0,0.75);   }
+#checkout-review-table h3 {margin:0; font-size:12px; font-family:helvetica,serif; color:#000; color:rgba(0,0,0,0.75);   }
 
 #checkout-step-review {}
 #checkout-step-review .buttons-set {margin-top:10px; line-height:42px;}
@@ -1567,7 +1567,7 @@ div.alert button:hover{ cursor:pointer; background-position:0 -9px;}
 .product-view .box-up-sell .product-name:hover {color:#000; text-decoration:none;}
 .product-view .box-up-sell .upsell-checkbox {margin:0 4px; line-height:12px; float:left; }
 .product-view .box-up-sell .price-box {overflow:hidden; margin:0px 0 0 4px; line-height:12px; }
-.product-view .box-up-sell .price-box .price {font-size:12px; font-family:Arial,serif; line-height:100%;}
+.product-view .box-up-sell .price-box .price {font-size:12px; font-family:helvetica,serif; line-height:100%;}
 .product-view .box-up-sell .jcarousel-next-horizontal {margin:-55px 0 0 30px; background-color:#efefef}
 .product-view .box-up-sell .jcarousel-prev-horizontal {margin:-55px 0 0 0; background-color:#efefef}
 .product-view .box-up-sell .jcarousel-container-horizontal {width:280px; margin:0;}
@@ -2030,4 +2030,8 @@ h1,h2,h3 {
 
 .narrow .product-category-title {
   padding-left:0px;
+}
+
+p {
+ font-size:125%;
 }
