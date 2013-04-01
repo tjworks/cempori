@@ -2035,3 +2035,7 @@ h1,h2,h3 {
 p {
  font-size:125%;
 }
+.block.horizontal-block {
+  float:none;
+  width:100%;
+}
