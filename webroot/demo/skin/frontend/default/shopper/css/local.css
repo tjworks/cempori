@@ -2031,3 +2031,9 @@ h1,h2,h3 {
 .narrow .product-category-title {
   padding-left:0px;
 }
+
+.block.horizontal-block {
+  float:none;
+  width:100%;
+}
+
