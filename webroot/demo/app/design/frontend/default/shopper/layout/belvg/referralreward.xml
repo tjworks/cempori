@@ -90,11 +90,13 @@
         </reference>
     </referralreward_customer_index>
 
-    <checkout_cart_index translate="label">
-        <reference name="content">
-            <block type="referralreward/invite" name="referralreward.coupon-code" before="checkout.cart.coupon">
-                <action method="setTemplate" ifconfig="referralreward/settings/enabled"><template>belvg/referralreward/checkout/coupon-code.phtml</template></action>
+    <checkout_cart_index >
+        <reference name="checkout.cart">
+           
+         <block type="referralreward/invite" name="referralreward-coupon-code" template="belvg/referralreward/checkout/coupon-code.phtml">
+                <!--<action method="setTemplate" ifconfig="referralreward/settings/enabled"><template></template></action> -->
             </block>
+            
         </reference>
     </checkout_cart_index>
 

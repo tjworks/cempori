@@ -117,8 +117,11 @@
             <?php if (!$this->getIsVirtual()): echo '<div class="cart-block cart-shipping">'.$this->getChildHtml('shipping').'</div>'; endif; ?>
         </div>
         <div class="grid_4">
+            
             <div class="cart-block cart-coupon">
                 <?php echo $this->getChildHtml('coupon') ?>
+                <?php echo $this->getChildHtml("referralreward-coupon-code");?>
+
             </div>
         </div>
         <div class="grid_4">
