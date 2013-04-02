@@ -114,8 +114,8 @@ class Belvg_Referralreward_Helper_Data extends Mage_Core_Helper_Abstract
                 $model->setFromDate(date('Y-m-d'));
                 $model->setCouponType(2);
                 $model->setCouponCode($points->getCouponCode());
-                $model->setUsesPerCoupon(1);
-                //$model->setUsesPerCustomer(1);
+                $model->setUsesPerCoupon(100);
+                $model->setUsesPerCustomer(100);
                 $model->setCustomerGroupIds($groupId);
                 $model->setIsActive(1);
                 $model->setConditionsSerialized('a:6:{s:4:\"type\";s:32:\"salesrule/rule_condition_combine\";s:9:\"attribute\";N;s:8:\"operator\";N;s:5:\"value\";s:1:\"1\";s:18:\"is_value_processed\";N;s:10:\"aggregator\";s:3:\"all\";}');

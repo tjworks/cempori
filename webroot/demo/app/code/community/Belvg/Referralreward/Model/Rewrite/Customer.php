@@ -52,6 +52,12 @@ class Belvg_Referralreward_Model_Rewrite_Customer extends Mage_Customer_Model_Cu
                     $data['status']         = Belvg_Referralreward_Model_Friends::FRIEND_BRING;
                     $friend->setData($data)->save();
                 }
+                
+                $settings       = Mage::helper('referralreward')->getSettings();                
+                $pointsItem = Mage::getModel('referralreward/points')->getItem($points->getCustomerId());
+                $points     = $settings['pointinviter'] + $pointsItem->getPoints();
+                Mage::log("Add credit to inviter, was ".$pointsItem->getPoints()." now ".$points);
+                $pointsItem->setPoints($points)->save();
             }
             $collection = Mage::getModel('referralreward/friends')->getOtherItems($points->getCustomerId(), $customer->getEmail());
             $collection->setDataToAll('status', Belvg_Referralreward_Model_Friends::FRIEND_NO_BRING)->save();

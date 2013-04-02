@@ -61,19 +61,23 @@ class Belvg_Referralreward_Model_Observer_Points{
         $customer_id    = (int)Mage::getSingleton('customer/session')->getId();
         $settings       = Mage::helper('referralreward')->getSettings();
         $pointsItem     = Mage::getModel('referralreward/points')->getItem($customer_id);
-
+        $order_id       = (int)Mage::getSingleton('checkout/session')->getLastOrderId();
+        $tmp_order      = Mage::getModel('sales/order')->load($order_id);
+        
         // Check withdrawn points
         if(Mage::getSingleton('core/session')->getData('mycredit') == 'used'){
             $coupon     = Mage::getModel('salesrule/coupon')->load($pointsItem->getCouponCode(), 'code');
             $rule       = Mage::getModel('salesrule/rule')->load($coupon->getRuleId());
             if($rule->getId())
                 $rule->delete();
-            $pointsItem->setPoints(0)->save();
+            $remain_points = 0;
+            if($tmp_order->getDiscountAmount() < 0 ){
+              $remain_points = $pointsItem->getPoints() + $tmp_order->getDiscountAmount();
+            }
+            Mage::log("Update points from ".$pointsItem->getPoints() . " to ". $remain_points);
+            $pointsItem->setPoints($remain_points)->save();
         }
-
         // Check added points
-        $order_id       = (int)Mage::getSingleton('checkout/session')->getLastOrderId();
-        $tmp_order      = Mage::getModel('sales/order')->load($order_id);
         $order_amt      = (float)$tmp_order->getGrandTotal();
         $minorder       = (float)str_replace(',', '.', $settings['minorder']);
         if($order_amt >= $minorder){

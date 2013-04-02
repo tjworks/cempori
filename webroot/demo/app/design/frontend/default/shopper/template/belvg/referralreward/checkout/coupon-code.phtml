@@ -34,17 +34,39 @@
     $helper->createCouponForReferral();
     $points			= $this->getItem();
     $myCredit		= $points->getPoints() * $settings['pointcost'];
-    if($myCredit){
-        $myCredit	= Mage::helper('checkout')->formatPrice($myCredit);
-        echo'<p>'.
-                $this->__("This is your personal coupon code. Use it to spend your credit.").
-                '<span class="credit-coupon-code">'.$points->getCouponCode().'</span>
-                <br>'.$this->__("Your Credit is:").' <b>'.$myCredit.'</b>
-            </p>';
-    }
-
-    $quoteCouponCode	= Mage::getModel('checkout/cart')->getQuote()->getCouponCode();
+    $quoteCouponCode  = Mage::getModel('checkout/cart')->getQuote()->getCouponCode();
     if($quoteCouponCode==$points->getCouponCode())
             Mage::getSingleton('core/session')->setData('mycredit', 'used');
-    else	Mage::getSingleton('core/session')->setData('mycredit', 'done');
+    else  Mage::getSingleton('core/session')->setData('mycredit', 'done');
+    
+    if($myCredit){
+        $myCredit	= Mage::helper('checkout')->formatPrice($myCredit);
+    }  
+     
+     /**   echo'<div class="checkout-credit" style="margin-bottom:15px;font-size:125%;">'.
+                "You have <span class='price'>$myCredit</span> credit available. <div><a href='#' style='color:#800000;font-weight:bold'>Apply code ".$points->getCouponCode().
+                '</a> to redeem.</div>' .//'<span class="credit-coupon-code">'.$points->getCouponCode().'</span></a>
+                "</div>";
+    }
+*/
+    
 ?>
+<?php if($myCredit):?>
+  <script>
+    function applyCreditCoupon(code){
+        jQuery("#coupon_code").val(code);
+        jQuery(".discount-form button[value*=Apply]").click();
+    }
+  </script>
+  <div class="checkout-credit" style="margin-top:20px;font-size:125%;">
+     You have <span class='price' style="font-weight:bold;color:#800000"><?php echo $myCredit?></span>  credit available.
+    
+    <p style="margin-top:10px">
+      <button class="button" onclick="javascript:applyCreditCoupon('<?php echo $points->getCouponCode()?>');return false">
+        <span>
+          <span>APPLY CREDIT Coupon</span>
+        </span>
+      </button>
+    </p>  
+  </div>
+<?php endif?>
