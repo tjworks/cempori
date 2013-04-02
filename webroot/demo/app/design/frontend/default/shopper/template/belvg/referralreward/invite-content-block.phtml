@@ -45,12 +45,12 @@
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <div class="title-description" style="font-size:1.1em;margin-bottom:20px">
     <?php
-        echo $this->__("You'll get a %s Credit when they place their first order (if order's amount > %s)",
-                        Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost']),
-                        Mage::helper('checkout')->formatPrice($settings['minorder']) 
+        echo $this->__("You'll get a %s Credit for each of your friends who registers with us. ",
+                        Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost'])
+                        //Mage::helper('checkout')->formatPrice($settings['minorder']) 
                       );
         if($settings['pointinvitee'])
-            echo "<br>".$this->__("Friends you have also invited get a %s Credit. ", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']));
+            echo "".$this->__("Friends you invited also get a %s Credit. ", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']));
         echo "".$this->__("Send your invitations now!");
     ?>
 </div>
