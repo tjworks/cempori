@@ -35,9 +35,10 @@ class Belvg_Referralreward_Model_Rewrite_Customer extends Mage_Customer_Model_Cu
      *  Verifying the referral link registration
      */
     public function sendNewAccountEmail($type = 'registered', $backUrl = '', $storeId = '0'){
-
+        
         $customer       = $this;
         $invitelink     = Mage::app()->getRequest()->getParam('friend_invitelink');
+        Mage::log("@TJ: in sendNewAccountEmail: link: $invitelink type $type link length: ". strlen($invitelink));
         if($type=='registered' || $type=='confirmed'){
             $points     = Mage::getModel('referralreward/points')->getItemByUrl($invitelink);
             $friend     = Mage::getModel('referralreward/friends')->getItem($points->getCustomerId(), $customer->getEmail());
@@ -53,11 +54,26 @@ class Belvg_Referralreward_Model_Rewrite_Customer extends Mage_Customer_Model_Cu
                     $friend->setData($data)->save();
                 }
                 
+                //@TJ: assign credits
                 $settings       = Mage::helper('referralreward')->getSettings();                
                 $pointsItem = Mage::getModel('referralreward/points')->getItem($points->getCustomerId());
-                $points     = $settings['pointinviter'] + $pointsItem->getPoints();
-                Mage::log("Add credit to inviter, was ".$pointsItem->getPoints()." now ".$points);
-                $pointsItem->setPoints($points)->save();
+                $credit     = $settings['pointinviter'] + $pointsItem->getPoints();
+                Mage::log("Add credit to inviter ".$pointsItem->getCustomerId().", was ".$pointsItem->getPoints()." now ".$credit);
+                $pointsItem->setPoints($credit)->save();
+                
+                // Invitee added points
+                $pointsItem = Mage::getModel('referralreward/points')->getItem($customer->getId());
+                if(!$pointsItem->getId()){
+                    $pointsItem        = Mage::getModel('referralreward/points');
+                    $pointsItem->setCustomerId($customer->getId())
+                        ->setUrl('c'.$customer->getId())
+                        ->setCouponCode(Mage::helper('referralreward')->createCouponCode(12, false));
+                    $pointsItem->save();
+                }
+                
+                $credit     = $settings['pointinvitee'] + $pointsItem->getPoints();
+                Mage::log("Add credit to invitee ".$customer->getId().", was ".$pointsItem->getPoints()." now ".$credit);
+                $pointsItem->setPoints($credit)->save();
             }
             $collection = Mage::getModel('referralreward/friends')->getOtherItems($points->getCustomerId(), $customer->getEmail());
             $collection->setDataToAll('status', Belvg_Referralreward_Model_Friends::FRIEND_NO_BRING)->save();

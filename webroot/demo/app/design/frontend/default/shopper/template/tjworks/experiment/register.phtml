@@ -24,10 +24,9 @@ function checkEmail(){
                     <input type="hidden" name="error_url" value="<?php echo $this->getErrorUrl() ?>"/>
 
                     <!-- <h2 class="legend first"><?php echo $this->__('Personal Information') ?>!!!</h2> -->
-                    <div style="margin: 10px auto">Enter your email for instant access</div>
+                    <div style="margin:auto;font-weight:bold">ENTER YOUR EMAIL FOR INSTANT ACCESS</div>
                     
                     <div class="input-box">
-                    
                       <input type="text" name="email" id="email_address"
                                        value="<?php echo $this->escapeHtml($this->getFormData()->getEmail()) ?>"
                                        title="<?php echo $this->__('Email Address') ?>"
@@ -36,22 +35,29 @@ function checkEmail(){
                     </div>
                     
             
-                    <button type="button" title="<?php echo $this->__('ENTER') ?>" class="button" onclick="checkEmail()">
-                    <span><span><?php echo $this->__('ENTER') ?></span></span></button>
-            
-                    <div style="width:75%;text-align:center;margin:auto">
+                    <div style="margin:auto">
+                      <div style="float:left;margin:0px 20px 0px 40px">
+                        <button type="button button_white" title="<?php echo $this->__('ENTER') ?>" class="button" onclick="checkEmail();return false;">
+                        <span><span><?php echo $this->__('ENTER') ?></span></span></button>
+                      </div>
+                      <div style="float:left;text-align:left;padding-top:8px">
+                          <div style="font-size:130%;font-weight:bold">ALREADY A MEMBER?</div>
+                          <div style="font-size:200%;font-weight:bold;text-decoration:underline;margin-top:-5px">
+                            <a href="#" onclick="gotoSlide(2);return false;" style="color:#FFF">SIGN IN HERE</a></div>
+                      </div>  
+                      <div style="clear:both"/>
+                    </div>
+                    
+                    <div style="width:75%;text-align:center;margin:30px auto 15px auto">
                       
                       <span class="gotcha-note">
                         By pressing the “enter” button you agree 
-                        to these <a href="#"> Terms and Conditions </a>
+                        to these <a href="/terms" target="_blank"> Terms and Conditions </a>
                       </span>
                     
                     
                     </div>
                  
-                     <p style="margin-top:25px">
-                      Already a member? <a href="#" onclick="gotoSlide(2)">Sign in here</a>
-                      </p>
                       <!--<p>
                       Have Facebook?  Register with Facebook
                       </p>-->
@@ -106,16 +112,13 @@ function checkEmail(){
                     -->
                     <?php echo $this->getChildHtml('persistent.remember.me.tooltip'); ?>
                   
-                    <a href="#" onclick="gotoSlide(0);return false">Back</a>
+                    <a href="#" onclick="gotoSlide(0);return false" style="color:#BBB">Back</a>
                     
                 <?php if (Mage::helper('checkout')->isContextCheckout()): ?>
                   <input name="context" type="hidden" value="checkout"/>
                 <?php endif; ?>
                 
-                
-                <p style="margin-top:25px">
-                      Already a member? <a href="#" onclick="gotoSlide(2);return false">Sign in here</a>
-                </p>
+                 
                     <!--<p>
                       Have Facebook?  Register with Facebook
                       </p>-->
