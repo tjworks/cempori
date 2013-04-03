@@ -2039,3 +2039,8 @@ p {
   float:none;
   width:100%;
 }
+
+button.button {
+  font-size:150%;
+  text-transform:uppercase;
+}

@@ -41,18 +41,22 @@
   
   <style>
     body {
-      background-image:url("/media/site/comingsoon.png");
-      background-repeat:no-repeat;
-      background-position:cover;
-      height:100%;
+      background-color:#333;
+      padding:0px;
+      margin:0px;
+    }
+    img {
     }
     
   </style>
 </head>
+
 <body class="<?php echo $this->getBodyClass()?' '.$this->getBodyClass().'':'' ?><?php echo Mage::getStoreConfig('shoppersettings/design/responsive') ? '': ' non-responsive ' ?>">
 <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
      chromium.org/developers/how-tos/chrome-frame-getting-started -->
 <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<img src="/media/site/splash.jpg" style="height:100%">
+
 <?php echo $this->getChildHtml('after_body_start') ?>
 
 </body>
