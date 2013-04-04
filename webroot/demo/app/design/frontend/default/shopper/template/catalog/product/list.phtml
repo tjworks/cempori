@@ -35,6 +35,7 @@
     $_productCollection=$this->getLoadedProductCollection();
     $_helper = $this->helper('catalog/output');
     $helper = $this->helper('shoppersettings/image');
+    $product_helper = $this->helper('shoppersettings');
 
     $listX = 252;
     $listY = $helper->calculateHeight($listX);
@@ -48,6 +49,8 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
 <p class="note-msg"><?php echo $this->__('There are no products matching the selection.') ?></p>
 <?php } ?>
 <?php else: ?>
+  
+  TJTJ
 <div class="category-products">
     <?php
       // disable toolbar 
@@ -142,11 +145,24 @@ $empty_category_block = Mage::getModel('cms/block')->load('shopper_empty_categor
     <ul class="products-grid <?php echo $grid_class; ?>">
     <?php $i=0; foreach ($_productCollection as $_product): ?>
         <li class="item">
-
+             <?php
+                  $product_helper->getLabel($_product);  // seems make a call would load the extra data
+                  $is_licensed = False;
+                  if(strlen($_product->getData("lr_brand"))>0){
+                    $is_licensed = True; 
+                  }
+                  //else echo "Issss";
+            ?>
             <div class="regular">
                 <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">
                     <?php echo $this->helper('shoppersettings')->getLabel($_product);  ?>
+                    <div style="position:relative">
+                    <!-- <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX, $imgY) ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX*2, $imgY*2) ?>" width="<?php echo $imgX; ?>" height="<?php echo $imgY; ?>" alt="<?php echo $this->htmlEscape($_product->getName()) ?>" /> -->
                     <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX, $imgY) ?>" data-srcX2="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($imgX*2, $imgY*2) ?>" width="<?php echo $imgX; ?>" height="<?php echo $imgY; ?>" alt="<?php echo $this->htmlEscape($_product->getName()) ?>" />
+                    <?php if($is_licensed):?>
+                      <img src="/media/site/icon-exclusive.png" style=" position:absolute;top:0px;left:0;">
+                    <?php endif?>
+                    </div>
                 </a>
                 <div class="product-info">
                     <div class="button-container">
