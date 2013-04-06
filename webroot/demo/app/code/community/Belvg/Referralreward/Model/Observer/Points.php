@@ -38,6 +38,8 @@ class Belvg_Referralreward_Model_Observer_Points{
      *      <controller_action_layout_load_before>
      */
     public function checkCustomer(Varien_Event_Observer $observer){
+      
+        //@TJTODO: this calls for every page load, should be customized
         $customer_id        = (int)Mage::getSingleton('customer/session')->getId();
         if($customer_id){
             $customerPoints = Mage::getModel('referralreward/points')->getItem($customer_id);
@@ -87,13 +89,19 @@ class Belvg_Referralreward_Model_Observer_Points{
                 $pointsItem = Mage::getModel('referralreward/points')->getItem($friend->getCustomerId());
                 $points     = $settings['pointinviter'] + $pointsItem->getPoints();
                 $pointsItem->setPoints($points)->save();
+                Mage::log("REFERRAL-PURCHASE-CREDIT AMOUNT=$points, INVITER=".$friend->getCustomerId().", INVITEE=$customer_id", null, "lr-transaction.log");
                 
-                // Invitee added points
+                
+                /**
+                 * // Invitee added points
+                 
                 $pointsItem = Mage::getModel('referralreward/points')->getItem($customer_id);
                 $points     = $settings['pointinvitee'] + $pointsItem->getPoints();
                 $pointsItem->setPoints($points)->save();
 
                 $friend->setStatus( Belvg_Referralreward_Model_Friends::FRIEND_NO_BRING )->save();
+                 * 
+                 */
             }
         }
     }
