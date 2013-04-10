@@ -58,7 +58,10 @@ class Belvg_Referralreward_Model_Rewrite_Customer extends Mage_Customer_Model_Cu
                 $settings       = Mage::helper('referralreward')->getSettings();                
                 $pointsItem = Mage::getModel('referralreward/points')->getItem($points->getCustomerId());
                 $credit     = $settings['pointinviter'] + $pointsItem->getPoints();
+                if($credit >= 40)
+                  $credit = 40;  // maximum credit 
                 Mage::log("Add credit to inviter ".$pointsItem->getCustomerId().", was ".$pointsItem->getPoints()." now ".$credit);
+                Mage::log("REFERRAL-REGISTRATION-CREDIT AMOUNT=". $settings['pointinviter'] .", RECEIVER=".$pointsItem->getCustomerId().", INVITER=".$pointsItem->getCustomerId().", INVITEE=".$customer->getId(), null, "lr-transaction.log");
                 $pointsItem->setPoints($credit)->save();
                 
                 // Invitee added points
@@ -73,6 +76,7 @@ class Belvg_Referralreward_Model_Rewrite_Customer extends Mage_Customer_Model_Cu
                 
                 $credit     = $settings['pointinvitee'] + $pointsItem->getPoints();
                 Mage::log("Add credit to invitee ".$customer->getId().", was ".$pointsItem->getPoints()." now ".$credit);
+                Mage::log("REFERRAL-SIGNUP-CREDIT AMOUNT=".$settings['pointinvitee'].", RECEIVER=".$customer->getId().", INVITER=".$points->getCustomerId().", INVITEE=".$customer->getId(), null, "lr-transaction.log");
                 $pointsItem->setPoints($credit)->save();
             }
             $collection = Mage::getModel('referralreward/friends')->getOtherItems($points->getCustomerId(), $customer->getEmail());

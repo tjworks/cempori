@@ -111,7 +111,7 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
     <?php endif; // ( !($route == 'customer' && $action == 'login') ) : ?>
     <style>
       footer div.col {
-         width:25%;float:left;height:150px;padding-top:15px;
+         width:33%;float:right;height:150px;padding-top:15px;
       }
       footer h1 {
         color:#EEE;
@@ -132,9 +132,22 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
       footer span {
         font-size:2.5em; color:#EEE;font-weight:bold;
       }
+      .narrow  .footer-columns {
+      }
+      .footer-columns {
+        /** display:none; */
+        width:60%;float:right;
+      }
+      .footer-logo-container {
+        width:30%;float:left;text-align:center;padding-top:10px
+      }
+      .narrow .footer-logo-container {
+        width:300px;margin:auto;float:none;
+      }
+     
     </style>
     <footer >
-        <div style="width:30%;float:left;text-align:center;padding-top:10px">
+        <div class="footer-logo-container">
             <!--  -->
             
             <img src="/media/site/logo-txt-white-150.png">
@@ -142,7 +155,7 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
             <address><?php echo $this->getCopyright(); ?></address>
             
         </div>
-        <div style="width:70%;float:left;"> 
+        <div style="" class="footer-columns"> 
             <div class="col">
                 <!-- <address><?php echo $this->getCopyright(); ?></address> -->
                 <h1>Company</h1>
