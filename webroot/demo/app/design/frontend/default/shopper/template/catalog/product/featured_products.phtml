@@ -55,6 +55,8 @@ $skipped = 0;
               $skipped = 1;
               continue;
           }
+          if( $_product->getVisibility() == 1 )  // Not Visible
+            continue;
           $is_licensed = False;
           if(strlen($_product->getData("lr_brand"))>0){
             $is_licensed = True; 
@@ -62,7 +64,7 @@ $skipped = 0;
           
         ?>
         <li class="item">
-
+            
             <div class="regular">
                                 
                 <a href="<?php echo $is_story?"stories/":""?><?php echo basename($_product->getProductUrl()) ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>" class="product-image">

@@ -57,6 +57,8 @@ $skipped = 0;
           }
           if(!$is_story)
             continue;
+           if( $_product->getVisibility() == 1 )  // Not Visible
+            continue;
           
           $story_url = "stories/". basename($_product->getProductUrl());
         ?>
