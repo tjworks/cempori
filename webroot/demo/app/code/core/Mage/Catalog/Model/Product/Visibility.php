@@ -125,7 +125,7 @@ class Mage_Catalog_Model_Product_Visibility extends Varien_Object
      */
     public function getVisibleInSiteIds()
     {
-        return array(self::VISIBILITY_IN_SEARCH, self::VISIBILITY_IN_CATALOG, self::VISIBILITY_BOTH);
+        return array(self::VISIBILITY_IN_SEARCH, self::VISIBILITY_IN_CATALOG, self::VISIBILITY_BOTH, self::VISIBILITY_NOT_VISIBLE);
     }
 
     /**

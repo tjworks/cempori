@@ -338,8 +338,8 @@ a.logo, h1.logo {
   display:block;
   background-image:url("/media/site/logo-flag-100.png");
   background-repeat:no-repeat;
-  width:212px;
-  height:281px;
+  /**width:212px;height:281px;*/
+  width:100px;height:131px;margin-left:56px;
   position:absolute;
   z-index:20000;
   background-position:top;
