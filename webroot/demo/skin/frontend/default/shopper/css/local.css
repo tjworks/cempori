@@ -377,7 +377,7 @@ header a.logo img{ max-width:100%; height:auto;width:auto\9; /* ie8 */ }
 header .logo strong { position:absolute; top:-999em; left:-999em; width:0; height:0; font-size:0; line-height:0; text-indent:-999em; overflow:hidden; }
 header h1.logo {padding:0;}
 header.fixed {position:fixed; top:0; width:100%; background:#fff;}
-header.fixed a.logo { margin:14px 0; }
+/**header.fixed a.logo { margin:14px 0; }*/
 header.fixed #queldoreiNav, header.fixed #nav {margin:10px 0 15px 200px;}
 
 .cart-top-container {float:right; position:relative; margin:0px 50px 0 4px;}
