@@ -43,6 +43,8 @@
     * 
     */
     ?>
+    <div style="font-size:20px;letter-spacing:-1px;font-weight:bold">SHARE IT WITH YOUR NETWORK AND TAKE ALL THE CREDIT WHEN THEY SIGN UP</div>
+    <?php /**
     <!-- <div class="col-2"> -->
         <div class="send-block invite-url">
             <a class="invite-url-rename" href="javascript:;" onclick="modalwindow_description('referral-link-renameform', 500)">
@@ -56,9 +58,22 @@
             <p><?php echo $this->__("Spread this referral link around your friends on this page or by your own means. Only people, registered via this link will bring you credit.") ?></p>
             <h2 style="margin:10px 0px">Click one of the following icons to invite your friends on your favorite social network. </h2>
         </div>
+     */
+     ?>
     <!--</div> -->
 </div>
 <?php echo $this->getChildHtml('share-links') ?>
+
+<div style="clear:both;"/>
+
+<div style="font-size:20px;letter-spacing:-1px;font-weight:bold;padding:20px 0px">OR COPY YOUR PERSONAL LINK AND SEND IT TO YOUR FRIENDS VIA EMAIL, TEXT, ETC</div>
+
+<div class="black-box" style="margin:auto;width:250px;padding:5px 10px">
+  <h3 style="color:#FFF">
+    <span><?php echo $this->getUrl('invite/'.$this->getItem()->getUrl()); ?></span>
+  </h3>
+</div>
+
 <div class="cols send-invites">
     <div class="col-1" style="width:100%;  padding:15px;"" id="send-invites-col-1">
         <div class="send-block">

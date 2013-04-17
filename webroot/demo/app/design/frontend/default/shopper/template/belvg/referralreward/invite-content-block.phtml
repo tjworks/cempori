@@ -31,12 +31,36 @@
 
     $settings   = Mage::helper('referralreward')->getSettings();
 ?>
+<style>
+  .black-box {
+      background-color:#000;
+      border: 8px solid #000;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+
+      color:#FFF;
+      padding:10px 0px 0px 15px;
+      margin:auto;
+}
+
+.black-box ::selection
+{
+  background-color:#ff0000;
+}
+.black-box ::-moz-selection
+{
+  background-color:#ff0000;
+}
+</style>
 <div id="fb-root"></div>
 
 <?php echo $this->getChildHtml('fb-block') ?>
 <?php $link	= array();//Mage::getModel('referralreward/invitelink')->loadInvitelink(); ?>
 <div class="page-title">
-    <h1><?php echo $this->__("Invite Friends!") ?></h1>
+    <h1><?php echo $this->__("Invite Friends and earn LEGACY ROW CREDITS!") ?></h1>
 </div>
 <ul class="messages" id="invite-messages" style="display:none;">
     <li class="success-msg"><ul><li><span></span></li></ul></li>
@@ -44,9 +68,34 @@
 <input type="hidden" id="current-url" value="<?php echo $this->helper('core/url')->getCurrentUrl() ?>">
 
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
-<h2>HOW DOES IT WORK?</h2>
-<div class="title-description" style="font-size:1.1em;margin-bottom:20px">
+
+<div class="black-box">
+    <div style="float:left;text-align:center;font-weight:bold">
+      <div style="font-size:20px;">2 EASY WAYS TO EARN</div>
+      <div style="font-size:34px;">LEGACY ROW</div>
+      <div style="font-size:20px;font-style:italic">- credits -</div>
+     
+    </div>
+    <div style="float:left;margin-left:20px;font-weight:bold">
+      <span style="font-size:20px;">GET</span>
+      <span style="font-size:60px;">$</span>
+      <span style="font-size:90px;font-weight:bold">5</span>
+    </div>
+    <div style="float:left;width:120px;margin-left:15px;margin-top:5px;font-size:18px">
+      In credits for every invite who joins(up to 30$)
+    </div>
+     <div style="float:left;margin-left:20px;font-weight:bold">
+      <span style="font-size:20px;">GET</span>
+      <span style="font-size:60px;letter-spacing:-10px">$</span>
+      <span style="font-size:90px;font-weight:bold;letter-spacing:-10px">10</span>
+    </div>
+    <div style="float:left;width:120px;margin-left:20px;margin-top:5px;font-size:18px">
+      In credits when a referred friend buys
+    </div>
+    
+     <div style="clear:both"></div>
     <?php
+    /**
         $creditValue = Mage::helper('checkout')->formatPrice($settings['pointinviter'] * $settings['pointcost']);
         echo $this->__("You'll get a %s Credit for each of your friends who registers with us, you can earn up to 30$ referral credit this way. ",
                         $creditValue
@@ -55,8 +104,11 @@
         if($settings['pointinvitee'])
             echo "".$this->__("Friends you invited also get a %s Credit. In addition, if the friend you invited makes a purchase, you get additional %s Credit and this credit has no limit.", Mage::helper('checkout')->formatPrice($settings['pointinvitee'] * $settings['pointcost']), $creditValue  );
         echo "".$this->__("Send your invitations now!");
+     * */
     ?>
 </div>
+
+
 <div class="col-invite">  
     <ul class="tabs_title tabs_referral">
         <li id="tabs_item1" class="active"><a href="#"><?php echo $this->__("Send Invites") ?></a></li>
