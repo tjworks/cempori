@@ -6,7 +6,7 @@ else
 CRONSCRIPT=cron.php
 fi
 
-PHP_BIN=`which php`
+PHP_BIN=/web/server/php/bin/php
 
 # absolute path to magento installation
 INSTALLDIR=`echo $0 | sed 's/cron\.sh//g'`
