@@ -30,7 +30,6 @@
  * @see Mage_Catalog_Block_Product_View
  */
 ?>
-<<<<<<< HEAD
 <?php 
   $custom_tab = Mage::getModel('cms/block')->load('shopper_custom_tab'); 
   $_product = $this->_product;
@@ -40,11 +39,7 @@
   $artist_code = '';
   if(!$is_story)
     $artist_code =$_product->getAttributeText('manufacturer');
- 
 ?>
-=======
-<?php $custom_tab = Mage::getModel('cms/block')->load('shopper_custom_tab'); ?>
->>>>>>> parent of 1bed95e... Hide About tab for stories
 
 <!-- tab titles -->
 <ul class="product-tabs">
@@ -56,14 +51,10 @@
     <?php if($custom_tab->getIsActive()): ?>
         <li id="product_tabs_custom"><a href="#"><?php echo $custom_tab->getTitle(); ?></a></li>
     <?php endif; ?>
-<<<<<<< HEAD
     <?php if($artist_code):?>
       <li id="product_tabs_artistinfo"><a href="#">About Artist</a></li>
     <?php endif; ?>
-=======
     
-    <li id="product_tabs_artistinfo"><a href="#">About</a></li>
->>>>>>> parent of 1bed95e... Hide About tab for stories
 </ul>
 <!-- tab contents -->
 <?php foreach ($this->getTabs() as $_index => $_tab): ?>
@@ -98,18 +89,11 @@
     <div class="product-tabs-content tabs-content" id="product_tabs_custom_contents"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('shopper_custom_tab')->toHtml() ?></div>
 <?php endif; ?>
 
-<<<<<<< HEAD
 <?php if( $artist_code):?>
       <div class="product-tabs-content tabs-content" id="product_tabs_artistinfo_contents">
         <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId("ARTIST_$artist_code")->toHtml() ?>
       </div>
 <?php endif; ?>
-=======
-<div class="product-tabs-content tabs-content" id="product_tabs_artistinfo_contents">
-  Artist Info here
-
-</div>
->>>>>>> parent of 1bed95e... Hide About tab for stories
 <!--
 <div class="product-tabs-accordion clearfix">
     <?php foreach ($this->getTabs() as $_index => $_tab): ?>
