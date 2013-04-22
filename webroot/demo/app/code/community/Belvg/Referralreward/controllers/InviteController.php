@@ -131,8 +131,10 @@ class Belvg_Referralreward_InviteController extends Mage_Core_Controller_Front_A
             ->setTemplate('belvg/referralreward/registration-form.phtml');
         $this->getLayout()->getBlock('content')->append($contentBlock);
         $this->getLayout()->getBlock('head')
-            ->setTitle($this->__('This is a personal registration link to the site'))
-            ->setDescription($this->__('Hey, I find this site absolutely awesome. Take a look!'));
+            #->setTitle($this->__('This is a personal registration link to the site'))
+            #->setDescription($this->__('Hey, I find this site absolutely awesome. Take a look!'));
+            ->setTitle("Join Legacy Row")
+            ->setDescription("Legacy Row, enjoy the finer side of being a fan");
         $this->renderLayout();
     }
 
