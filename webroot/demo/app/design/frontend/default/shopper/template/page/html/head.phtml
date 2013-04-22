@@ -58,7 +58,13 @@
     <?php endif; ?>
 <?php endif; ?>
 <link href='<?php echo $this->getSkinUrl('css/options.css.php'); echo '?store='.Mage::app()->getStore()->getCode();  if ($cat = Mage::registry('current_category')) { echo '&cat='.$cat->getId(); }  ?>' rel='stylesheet' type='text/css'>
-<?php echo $this->getChildHtml() ?>
+<?php 
+   $childHtml = $this->getChildHtml();
+   if($this->helper('customer')->isLoggedIn()){
+      $childHtml = str_replace("<script>utmx('url','A/B');</script>", "<!-- utmx() call is commented out for logged in user -->", $childHtml);
+   }
+   echo $childHtml; 
+ ?>
 <?php echo $this->helper('core/js')->getTranslatorScript() ?>
 <?php echo $this->getIncludes() ?>
 <script type="text/javascript">
