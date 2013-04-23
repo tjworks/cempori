@@ -145,6 +145,19 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
         width:300px;margin:auto;float:none;
       }
      
+      .narrow .footer-columns {
+        /** display:none; */
+        width:100%;float:none;
+      }
+      .narrow footer div.col {
+         float:none;height:150px;padding-top:15px;
+         text-align:center;
+         margin:auto;
+      }
+      .narrow footer h1{
+        text-align:justify
+      }
+      
     </style>
     <footer >
         <div class="footer-logo-container">
@@ -158,12 +171,12 @@ $action = Mage::app()->getFrontController()->getRequest()->getActionName();
         <div style="" class="footer-columns"> 
             <div class="col">
                 <!-- <address><?php echo $this->getCopyright(); ?></address> -->
-                <h1>Company</h1>
-                <ul>
-                  <li><a href="/about">About Us</a></li>
-                  <li><a href="/faq">FAQ</a></li>
-                  <li><a href="mailto:help@legacyrow.com">Contact Us</a></li>
-                </ul>
+                    <h1>Company</h1>
+                    <ul>
+                      <li><a href="/about">About Us</a></li>
+                      <li><a href="/faq">FAQ</a></li>
+                      <li><a href="mailto:help@legacyrow.com">Contact Us</a></li>
+                    </ul>
             </div>
             
             <div class="col">
