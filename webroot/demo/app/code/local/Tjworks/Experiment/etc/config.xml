@@ -22,7 +22,43 @@
                 </tjworks_experiment>
             </updates>
         </layout>
-    </frontend>
-
+          </frontend>
+        <global>
+         <events>
+           <!--
+      <customer_register_success>
+        <observers>
+          <google_analytics_emitter>
+            <type>singleton</type>
+            <class>Tjworks_Experiment_Model_GoogleAnalyticsEmitter</class>
+            <method>onEvent</method>
+          </google_analytics_emitter>
+        </observers>
+      </customer_register_success>     
+          
+       <customer_logout>
+        <observers>
+          <google_analytics_emitter>
+            <type>singleton</type>
+            <class>Tjworks_Experiment_Model_GoogleAnalyticsEmitter</class>
+            <method>onEvent</method>
+          </google_analytics_emitter>
+        </observers>
+      </customer_logout>    -->
+      <customer_login>
+        <observers>
+          <tjworks_experiment_observer>
+            <type>singleton</type>
+            <class>Tjworks_Experiment_Model_Observer</class>
+            <method>onEvent</method>
+          </tjworks_experiment_observer>
+        </observers>
+      </customer_login>  
+    </events>
+  
+    
+      </global>
+     
+   
 
 </config>

@@ -2044,3 +2044,13 @@ button.button {
   font-size:150%;
   text-transform:uppercase;
 }
+
+.narrow .slider {
+  display:none;
+}
+.first-item {
+  display:none
+}
+.narrow .first-item {
+  display:block
+}
