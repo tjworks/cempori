@@ -34,6 +34,12 @@
 <meta name="description" content="<?php echo htmlspecialchars($this->getDescription()) ?>" />
 <meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
 <meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Join Legacy Row" />
+    <meta property="og:image" content="http://www.legacyrow.com/media/site/splash.jpg"/>
+    <meta property="og:description" content="Legacy Row is a lifestyle brand that features exclusive artisan collections, quality products, and journals that celebrate the finer side of being a fan. If you use this link to sign up, you and your friends will earn credits towards the purchase." />
+
+
 <link rel="icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
 <link rel="shortcut icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
 <!--[if lt IE 7]>
@@ -52,7 +58,13 @@
     <?php endif; ?>
 <?php endif; ?>
 <link href='<?php echo $this->getSkinUrl('css/options.css.php'); echo '?store='.Mage::app()->getStore()->getCode();  if ($cat = Mage::registry('current_category')) { echo '&cat='.$cat->getId(); }  ?>' rel='stylesheet' type='text/css'>
-<?php echo $this->getChildHtml() ?>
+<?php 
+   $childHtml = $this->getChildHtml();
+   if($this->helper('customer')->isLoggedIn()){
+      $childHtml = str_replace("<script>utmx('url','A/B');</script>", "<!-- utmx() call is commented out for logged in user -->", $childHtml);
+   }
+   echo $childHtml; 
+ ?>
 <?php echo $this->helper('core/js')->getTranslatorScript() ?>
 <?php echo $this->getIncludes() ?>
 <script type="text/javascript">

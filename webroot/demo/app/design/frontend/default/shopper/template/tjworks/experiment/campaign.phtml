@@ -57,10 +57,71 @@ $imgY = $helper->calculateHeight($imgX);
 $skipped = 0;
 $count = 0;
 ?>
-<div  style="width:700px;margin:auto">
-  
-    <img src="/media/email/logo/default/logo-banner.png" style="width:580px;margin-bottom:40px" align="center"/>
-  
+
+
+
+<style>
+.products-grid.last { border-bottom:0; }
+.products-grid li.item { float:left; width:252px; padding:0; margin:0 15px 30px; position:relative; background:#fff; border:9px solid #fff; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;
+    -webkit-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);
+    box-shadow:0px 0px 6px 0px rgba(0, 0, 0, 0.15);}
+.products-grid li.item a:hover {text-decoration:none; }
+.products-grid h3{ font-size:24px; font-family:"dine1",serif; font-weight:300; color:#000; color:rgba(0,0,0,0.67); letter-spacing:normal; margin:27px 0 26px 2px; text-align:center; }
+.products-grid .button-container {float:right; margin-left:5px; }
+.products-grid .button-container button.button span {width:35px; height:35px; border-radius:100%; -webkit-border-radius:100%; -moz-border-radius:100%; text-indent:-9999px;}
+.products-grid .button-container button.button span span {padding:0; background:url('/media/site/cart.png') 50% 50% no-repeat; }
+.products-grid .product-image {display: block; margin:0 0 12px; position:relative; z-index:1; }
+.products-grid .product-image img {position:relative; z-index:0; max-width:100%; height:auto; width:auto\9; /* ie8 */ }
+.products-grid .product-name {color:#3c3c3c; font-size:14px; font-weight:300; display:block; margin:4px; line-height:120%; text-decoration:none; text-transform:uppercase;letter-spacing:normal}
+.products-grid .product-name:hover {color:#000; text-decoration:none;}
+.products-grid .price-box {margin:0px 0 5px 4px; line-height:14px; letter-spacing:normal }
+/** gird hover mode **/
+.products-grid .regular {}
+.products-grid .hover {display:none; position:absolute; z-index:2; top:-9px; left:-9px; width:252px; padding:0; margin:0 30px 30px 0; background:#fff; border:9px solid #fff; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;
+    -webkit-box-shadow:0px 0px 46px 12px rgba(0, 0, 0, 0.09);
+    -moz-box-shadow:0px 0px 46px 12px rgba(0, 0, 0, 0.09);
+    box-shadow:0px 0px 46px 12px rgba(0, 0, 0, 0.09);}
+.products-grid .hover .price-box{position:absolute; z-index:2; right:11px; min-width:66px; margin:0; padding:0; background:#97d2c9; line-height:18px; text-align:center; -webkit-border-radius:100%; -moz-border-radius:100%; border-radius:100%; }
+.products-grid .hover .price-box .price-label, .products-grid .hover .price-box .label{display:none;}
+.products-grid .hover .price-box sup{color:#fff; color:rgba(255,255,255,0.5); font-size:18px; font-style:normal; top:-0.3em; }
+.products-grid .hover .price-box .price{ color:#fff; font-size:24px; }
+.products-grid .hover .price-box .old-price .price{color:#fff; color:rgba(255,255,255,0.5); font-size:18px; }
+.products-grid .hover .price-box .old-price sup{top:0;}
+.products-grid .hover .product-name {text-align:center;}
+.products-grid .hover .ratings {width:55px; padding:0; margin:0 auto; }
+.products-grid .hover .rating-links {display:none;}
+.products-grid .hover .button-container {float:none; border-top:1px solid #f3f3f3; margin-top:12px; padding-top:13px; text-align:center;}
+.products-grid .hover .button-container button.button span {width:auto; height:19px; line-height:19px; background:transparent none !important; border-radius:0; -webkit-border-radius:0; -moz-border-radius:0; text-indent:0;}
+.products-grid .hover .button-container button.button span span {padding:0; font-size:12px; color:#4d4d4d; text-transform:none; }
+.products-grid .hover .button-container button.button span span em {display:inline-block; float:left; margin:0 13px 0 0; width:24px; height:19px;  background:#97d2c9 url("/media/site/cart.png") 0 0 no-repeat;}
+.products-grid .hover .button-container button.button:hover span span em {background-color:#393431;}
+.products-grid .add-to-links {width:270px; height:40px; margin:9px -9px -9px; background:#fcfcfc; text-align:center;
+   -webkit-box-shadow:inset 0px 5px 6px -4px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow:inset 0px 5px 6px -4px rgba(0, 0, 0, 0.15);
+    box-shadow:inset 0px 5px 6px -4px rgba(0, 0, 0, 0.15);}
+.products-grid .add-to-links li {display:inline; margin:0 5px 0 0; line-height:40px;}
+.products-grid .add-to-links li span {display:inline-block; color:#97d2c9; margin-right:5px;}
+.products-grid .add-to-links a {font-weight:300}
+.products-grid .add-to-links a:hover {text-decoration:none;}
+.products-grid .add-to-links a.link-compare {}
+
+.products-grid {
+  list-style:none;
+
+}
+.price {
+font-weight:400;
+font-size:16px;
+color:#800000;
+padding-left:5px;
+}
+</style>
+
+<div  style="width:690px;margin:auto">
+ 	<div style="margin-bottom:30px;text-align:center;"> 
+    <a href="http://www.legacyrow.com"><img border="0" src="/media/email/logo/default/logo-banner.png" style="width:620px;margin-left:35px" align="center"/></a>
+  	</div>
     <?php $_collectionSize = $_productCollection->count(); ?>
  
     <table class="campaign-table" style="margin:auto">
@@ -101,31 +162,17 @@ $count = 0;
                     <div style="position:absolute;top:0;left:0;z-index:2"><img src="/media/site/icon-story-banner.png"></div>
                 <?php endif?>
                 <div class="product-info">
-                    <?php if  (! $is_story ):?>
-                        <div class="button-container">
-                            <?php if($_product->isSaleable()): ?>
-                            <?php if (Mage::getStoreConfig('shoppersettings/ajax/cart')) : ?>
-                                <?php if ( !($_product->getTypeInstance(true)->hasRequiredOptions($_product) || $_product->isGrouped()) ) { ?>
-                                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart ajax-cart" data-url="<?php echo $this->getAddToCartUrl($_product); ?>" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
-                                    <?php } else { ?>
-                                    <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart show-options" data-id="<?php echo $_product->getId(); ?>"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
-                                    <?php }  ?>
-                                <?php else: ?>
-                                <p><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button></p>
-                                <?php endif; ?>
-                            <?php else: ?> 
-                            <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>      
-                              
-                            <?php endif; ?>
-                        </div>
-                        
-                  <?php endif; ?>
+                <?php if(!$is_story): ?>
+                        <div class="button-container" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')">
+				<a href="<?php echo $_product->getProductUrl() ?>"><img border="0" src="/media/site/cart.png" width="35"></a>
+			</div>
+                <?php endif?>        
                     
                     <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
                     <a class="product-name" href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>"><?php echo $_helper->productAttribute($_product, $_product->getName() , 'name'); ?></a>
                        
                     <?php if  (! $is_story ):?>
-                          <?php echo $this->getPriceHtml($_product, true) ?>
+  				<span class="price">$<?php echo str_replace("0000", "00", $_product->getPrice()); ?></span>
                     <?php else: ?>
                           <p class="author-name"><span><?php echo $_product->getData("author")?></span></p>
                     <?php endif;?>
